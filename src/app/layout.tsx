@@ -59,6 +59,11 @@ export const metadata: Metadata = {
     description: "Joyería artesanal en plata. Envío gratis a partir de $999.",
     images: ["/logo.jpg"],
   },
+  icons: {
+    icon: '/logo.jpg',
+    shortcut: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
   robots: {
     index: true,
     follow: true,
