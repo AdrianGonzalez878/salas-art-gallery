@@ -1,9 +1,43 @@
 'use client'
 
 import { useState } from 'react'
+import { PortableText } from '@portabletext/react'
+import type { PortableTextBlock } from '@/sanity/lib/types'
 
 interface ProductDescriptionCollapseProps {
-  descripcion: string
+  descripcion: PortableTextBlock[] | string
+}
+
+const portableTextComponents = {
+  block: {
+    normal: ({ children }: { children?: React.ReactNode }) => (
+      <p className="text-gray-600 leading-relaxed mb-2 last:mb-0">{children}</p>
+    ),
+  },
+  list: {
+    bullet: ({ children }: { children?: React.ReactNode }) => (
+      <ul className="list-disc list-inside space-y-1 text-gray-600 mb-2">{children}</ul>
+    ),
+    number: ({ children }: { children?: React.ReactNode }) => (
+      <ol className="list-decimal list-inside space-y-1 text-gray-600 mb-2">{children}</ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }: { children?: React.ReactNode }) => (
+      <li className="leading-relaxed">{children}</li>
+    ),
+    number: ({ children }: { children?: React.ReactNode }) => (
+      <li className="leading-relaxed">{children}</li>
+    ),
+  },
+  marks: {
+    strong: ({ children }: { children?: React.ReactNode }) => (
+      <strong className="font-semibold text-gray-800">{children}</strong>
+    ),
+    em: ({ children }: { children?: React.ReactNode }) => (
+      <em className="italic">{children}</em>
+    ),
+  },
 }
 
 export default function ProductDescriptionCollapse({ descripcion }: ProductDescriptionCollapseProps) {
@@ -28,9 +62,13 @@ export default function ProductDescriptionCollapse({ descripcion }: ProductDescr
         </svg>
       </button>
       {isOpen && (
-        <p className="mt-3 text-gray-600 leading-relaxed">
-          {descripcion}
-        </p>
+        <div className="mt-3">
+          {typeof descripcion === 'string' ? (
+            <p className="text-gray-600 leading-relaxed whitespace-pre-line">{descripcion}</p>
+          ) : (
+            <PortableText value={descripcion} components={portableTextComponents} />
+          )}
+        </div>
       )}
     </div>
   )

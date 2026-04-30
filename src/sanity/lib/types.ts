@@ -7,6 +7,16 @@ export interface SanityImage {
   alt?: string
 }
 
+export interface PortableTextBlock {
+  _type: 'block'
+  _key: string
+  style?: string
+  listItem?: 'bullet' | 'number'
+  level?: number
+  markDefs?: { _key: string; _type: string }[]
+  children: { _key: string; _type: 'span'; marks?: string[]; text: string }[]
+}
+
 export interface Producto {
   _id: string
   titulo: string
@@ -20,7 +30,7 @@ export interface Producto {
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
   categoria: 'anillos' | 'collares' | 'aretes' | 'pulseras' | 'dijes' | 'cadenas' | 'juegos'
-  descripcion: string
+  descripcion: PortableTextBlock[]
   disponible: boolean
   ventas?: number
 }

@@ -151,7 +151,7 @@ export const productosCountMasVendidosQuery = groq`
 
 // Búsqueda por texto (titulo o descripcion). $pattern debe ser ej. "%term%" en minúsculas
 export const productosBusquedaQuery = groq`
-  *[_type == "producto" && disponible == true && (lower(titulo) match $pattern || lower(descripcion) match $pattern)] | order(_createdAt desc) [$skip...$end] {
+  *[_type == "producto" && disponible == true && (lower(titulo) match $pattern || lower(pt::text(descripcion)) match $pattern)] | order(_createdAt desc) [$skip...$end] {
     _id,
     titulo,
     slug,
@@ -169,7 +169,7 @@ export const productosBusquedaQuery = groq`
 `
 
 export const productosCountBusquedaQuery = groq`
-  count(*[_type == "producto" && disponible == true && (lower(titulo) match $pattern || lower(descripcion) match $pattern)])
+  count(*[_type == "producto" && disponible == true && (lower(titulo) match $pattern || lower(pt::text(descripcion)) match $pattern)])
 `
 
 // Productos paginados - Más recientes

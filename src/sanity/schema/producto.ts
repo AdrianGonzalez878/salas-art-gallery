@@ -135,8 +135,24 @@ export default defineType({
     defineField({
       name: 'descripcion',
       title: 'Descripción',
-      type: 'text',
-      validation: (Rule) => Rule.required().min(50).max(500),
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [{ title: 'Normal', value: 'normal' }],
+          lists: [
+            { title: 'Lista con viñetas', value: 'bullet' },
+            { title: 'Lista numerada', value: 'number' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Negrita', value: 'strong' },
+              { title: 'Cursiva', value: 'em' },
+            ],
+          },
+        },
+      ],
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'disponible',

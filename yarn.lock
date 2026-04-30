@@ -1564,10 +1564,10 @@
     hls.js "~1.6.15"
     mux-embed "^5.8.3"
 
-"@next/env@16.0.6":
-  version "16.0.6"
-  resolved "https://registry.npmjs.org/@next/env/-/env-16.0.6.tgz"
-  integrity sha512-PFTK/G/vM3UJwK5XDYMFOqt8QW42mmhSgdKDapOlCqBUAOfJN2dyOnASR/xUR/JRrro0pLohh/zOJ77xUQWQAg==
+"@next/env@16.0.10":
+  version "16.0.10"
+  resolved "https://registry.npmjs.org/@next/env/-/env-16.0.10.tgz"
+  integrity sha512-8tuaQkyDVgeONQ1MeT9Mkk8pQmZapMKFh5B+OrFUlG3rVmYTXcXlBetBgTurKXGaIZvkoqRT9JL5K3phXcgang==
 
 "@next/eslint-plugin-next@16.0.6":
   version "16.0.6"
@@ -1576,10 +1576,10 @@
   dependencies:
     fast-glob "3.3.1"
 
-"@next/swc-darwin-arm64@16.0.6":
-  version "16.0.6"
-  resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-16.0.6.tgz"
-  integrity sha512-AGzKiPlDiui+9JcPRHLI4V9WFTTcKukhJTfK9qu3e0tz+Y/88B7vo5yZoO7UaikplJEHORzG3QaBFQfkjhnL0Q==
+"@next/swc-darwin-arm64@16.0.10":
+  version "16.0.10"
+  resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-16.0.10.tgz"
+  integrity sha512-4XgdKtdVsaflErz+B5XeG0T5PeXKDdruDf3CRpnhN+8UebNa5N2H58+3GDgpn/9GBurrQ1uWW768FfscwYkJRg==
 
 "@noble/ed25519@^3.0.0":
   version "3.0.0"
@@ -1860,6 +1860,14 @@
     "@portabletext/toolkit" "^4.0.0"
     "@portabletext/types" "^3.0.0"
 
+"@portabletext/react@^6.0.3":
+  version "6.0.3"
+  resolved "https://registry.npmjs.org/@portabletext/react/-/react-6.0.3.tgz"
+  integrity sha512-xkpykEYKdyR8DJq1oTGKhmwQMqIta8OEHAEMq1EQ5kGOdnVU4ZzU6c+1EZNgyNFpSZs/25ee3kA4Te9ybbQCyA==
+  dependencies:
+    "@portabletext/toolkit" "^5.0.2"
+    "@portabletext/types" "^4.0.2"
+
 "@portabletext/sanity-bridge@^1.2.9":
   version "1.2.9"
   resolved "https://registry.npmjs.org/@portabletext/sanity-bridge/-/sanity-bridge-1.2.9.tgz"
@@ -1888,10 +1896,22 @@
   dependencies:
     "@portabletext/types" "^3.0.0"
 
+"@portabletext/toolkit@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@portabletext/toolkit/-/toolkit-5.0.2.tgz"
+  integrity sha512-Njc1LE1PMJkTx/wEPqZ6sOWGgFgX2B47fxpOQ/Ia4ByhsZoA5Sq8dNvvV5F052j/xE8TbOLiBEjS848FkKADDQ==
+  dependencies:
+    "@portabletext/types" "^4.0.2"
+
 "@portabletext/types@^3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@portabletext/types/-/types-3.0.0.tgz"
   integrity sha512-7U8+bFcnguNtXr4rwMDj0EvJJDRzLaaof2mQqCjUcqxuuJpAppFaATZgrKmPI1uBgtFMi4unk1nIaOOmLHrX8Q==
+
+"@portabletext/types@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/@portabletext/types/-/types-4.0.2.tgz"
+  integrity sha512-djfIGU9n6DRrunlvj2nIDAp17URo/nA4jSXGvf+Gupx8NLLy9fmJBZ3GL8yhqn9lSVc+cKCharjOa3aOBnWbRw==
 
 "@rexxars/react-json-inspector@^9.0.1":
   version "9.0.1"
@@ -6511,25 +6531,25 @@ next-sanity@^11.6.10:
     server-only "^0.0.1"
     use-effect-event "^2.0.3"
 
-"next@^15.1.0-0 || ^16.0.0-0", "next@>= 13", "next@>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc || >=16.0.0-0", next@16.0.6:
-  version "16.0.6"
-  resolved "https://registry.npmjs.org/next/-/next-16.0.6.tgz"
-  integrity sha512-2zOZ/4FdaAp5hfCU/RnzARlZzBsjaTZ/XjNQmuyYLluAPM7kcrbIkdeO2SL0Ysd1vnrSgU+GwugfeWX1cUCgCg==
+"next@^15.1.0-0 || ^16.0.0-0", "next@>= 13", "next@>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc || >=16.0.0-0", next@16.0.10:
+  version "16.0.10"
+  resolved "https://registry.npmjs.org/next/-/next-16.0.10.tgz"
+  integrity sha512-RtWh5PUgI+vxlV3HdR+IfWA1UUHu0+Ram/JBO4vWB54cVPentCD0e+lxyAYEsDTqGGMg7qpjhKh6dc6aW7W/sA==
   dependencies:
-    "@next/env" "16.0.6"
+    "@next/env" "16.0.10"
     "@swc/helpers" "0.5.15"
     caniuse-lite "^1.0.30001579"
     postcss "8.4.31"
     styled-jsx "5.1.6"
   optionalDependencies:
-    "@next/swc-darwin-arm64" "16.0.6"
-    "@next/swc-darwin-x64" "16.0.6"
-    "@next/swc-linux-arm64-gnu" "16.0.6"
-    "@next/swc-linux-arm64-musl" "16.0.6"
-    "@next/swc-linux-x64-gnu" "16.0.6"
-    "@next/swc-linux-x64-musl" "16.0.6"
-    "@next/swc-win32-arm64-msvc" "16.0.6"
-    "@next/swc-win32-x64-msvc" "16.0.6"
+    "@next/swc-darwin-arm64" "16.0.10"
+    "@next/swc-darwin-x64" "16.0.10"
+    "@next/swc-linux-arm64-gnu" "16.0.10"
+    "@next/swc-linux-arm64-musl" "16.0.10"
+    "@next/swc-linux-x64-gnu" "16.0.10"
+    "@next/swc-linux-x64-musl" "16.0.10"
+    "@next/swc-win32-arm64-msvc" "16.0.10"
+    "@next/swc-win32-x64-msvc" "16.0.10"
     sharp "^0.34.4"
 
 node-html-parser@^6.1.13:

@@ -3,8 +3,16 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { ShopTheLook } from '@/sanity/lib/types'
+import type { ShopTheLook, PortableTextBlock } from '@/sanity/lib/types'
 import { useCart } from '@/context/CartContext'
+
+function portableTextToPlain(blocks: PortableTextBlock[] | string | undefined): string {
+  if (!blocks) return ''
+  if (typeof blocks === 'string') return blocks
+  return blocks
+    .map((block) => block.children?.map((span) => span.text).join('') ?? '')
+    .join(' ')
+}
 
 interface ShopTheLookSectionProps {
   data: ShopTheLook
@@ -170,7 +178,7 @@ export default function ShopTheLookSection({
 
                     {/* Descripción - 1 línea en móvil para que siempre se vea el botón; 3 en desktop */}
                     <p className="text-gray-600 line-clamp-1 lg:line-clamp-3 mb-2 lg:mb-4 text-xs lg:text-base min-h-0 shrink">
-                      {productoSeleccionado.producto.descripcion}
+                      {portableTextToPlain(productoSeleccionado.producto.descripcion)}
                     </p>
 
                     {/* Botón Comprar - solo móvil; siempre visible */}
