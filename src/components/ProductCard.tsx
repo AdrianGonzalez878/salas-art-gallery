@@ -1,21 +1,42 @@
+'use client'
+
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
 import type { Producto } from '@/sanity/lib/types'
+
+const INTERVAL = 1500
 
 interface ProductCardProps {
   producto: Producto
 }
 
 export default function ProductCard({ producto }: ProductCardProps) {
-  const imageUrl = producto.imagenPrincipal
-    ? urlFor(producto.imagenPrincipal).width(600).quality(90).url()
-    : '/placeholder.jpg'
+  const [isHovering, setIsHovering] = useState(false)
+  const [imagenActual, setImagenActual] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const rafRef = useRef<number | null>(null)
+  const startRef = useRef<number | null>(null)
+
+  const imagenes = useMemo(() => {
+    const urls: string[] = []
+    if (producto.imagenPrincipal) {
+      urls.push(urlFor(producto.imagenPrincipal).width(600).quality(90).url())
+    }
+    if (producto.galeria && producto.galeria.length > 0) {
+      producto.galeria.forEach((img) => {
+        urls.push(urlFor(img).width(600).quality(90).url())
+      })
+    }
+    if (urls.length === 0) urls.push('/placeholder.jpg')
+    return urls
+  }, [producto.imagenPrincipal, producto.galeria])
 
   // Calcular precio final si tiene descuento
   let precioFinal = producto.precio
   let descuentoLabel = null
-  
+
   if (producto.tieneDescuento && producto.tipoDescuento && producto.valorDescuento) {
     if (producto.tipoDescuento === 'porcentaje') {
       precioFinal = producto.precio * (1 - producto.valorDescuento / 100)
@@ -26,24 +47,93 @@ export default function ProductCard({ producto }: ProductCardProps) {
     }
   }
 
+  const tieneVarias = imagenes.length > 1
+
+  useEffect(() => {
+    if (!isHovering || !tieneVarias) {
+      setImagenActual(0)
+      setProgress(0)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      startRef.current = null
+      return
+    }
+
+    setProgress(0)
+    startRef.current = null
+
+    const tick = (now: number) => {
+      if (!startRef.current) startRef.current = now
+      const elapsed = now - startRef.current
+      const pct = Math.min(elapsed / INTERVAL, 1)
+      setProgress(pct)
+
+      if (pct < 1) {
+        rafRef.current = requestAnimationFrame(tick)
+      } else {
+        setImagenActual((prev) => (prev + 1) % imagenes.length)
+        setProgress(0)
+        startRef.current = null
+        rafRef.current = requestAnimationFrame(tick)
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [isHovering, tieneVarias, imagenes.length])
+
   return (
     <Link
       href={`/productos/${producto.slug.current}`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       className="group flex flex-col h-full bg-white rounded-xl border border-gray-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-300 overflow-hidden"
     >
-      {/* Imagen */}
+      {/* Imagen con cambio en hover */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 shrink-0">
-        <Image
-          src={imageUrl}
-          alt={producto.imagenPrincipal?.alt || producto.titulo}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
-        />
+        {imagenes.map((url, idx) => {
+          const visible = idx === imagenActual
+          return (
+            <Image
+              key={url}
+              src={url}
+              alt={producto.imagenPrincipal?.alt || producto.titulo}
+              fill
+              className={`object-cover transition-opacity duration-500 group-hover:scale-105 ${
+                visible ? 'opacity-100' : 'opacity-0'
+              }`}
+              sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              priority={idx === 0}
+            />
+          )
+        })}
+
         {/* Badge de descuento */}
         {descuentoLabel && (
-          <div className="absolute top-2.5 left-2.5 bg-amber-400 text-gray-900 px-2.5 py-1 rounded-lg font-bold text-xs shadow-sm">
+          <div className="absolute top-2.5 left-2.5 bg-amber-400 text-gray-900 px-2.5 py-1 rounded-lg font-bold text-xs shadow-sm z-10">
             {descuentoLabel}
+          </div>
+        )}
+
+        {/* Barras de progreso tipo stories (solo desktop, solo con varias fotos) */}
+        {tieneVarias && (
+          <div className="absolute bottom-0 left-0 right-0 flex gap-0.5 px-1.5 pb-1.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex">
+            {imagenes.map((_, idx) => (
+              <div key={idx} className="flex-1 h-[3px] rounded-full bg-black/20 overflow-hidden">
+                <div
+                  className="h-full bg-amber-400 transition-none rounded-full"
+                  style={{
+                    width:
+                      idx < imagenActual
+                        ? '100%'
+                        : idx === imagenActual
+                        ? `${progress * 100}%`
+                        : '0%',
+                  }}
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -56,18 +146,18 @@ export default function ProductCard({ producto }: ProductCardProps) {
         </h3>
 
         <div className="flex items-end justify-between gap-2 mt-3">
-          <div className="flex flex-col">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
             {producto.tieneDescuento ? (
               <>
-                <span className="text-xs text-gray-400 line-through leading-none mb-0.5">
+                <span className="text-base text-gray-800 line-through leading-none">
                   ${producto.precio.toLocaleString()}
                 </span>
-                <span className="text-lg sm:text-xl font-bold text-gray-900 leading-none">
+                <span className="text-base font-semibold text-amber-600 leading-none">
                   ${Math.round(precioFinal).toLocaleString()}
                 </span>
               </>
             ) : (
-              <span className="text-lg sm:text-xl font-bold text-gray-900 leading-none">
+              <span className="text-base font-medium text-gray-800 leading-none">
                 ${producto.precio.toLocaleString()}
               </span>
             )}
@@ -82,6 +172,3 @@ export default function ProductCard({ producto }: ProductCardProps) {
     </Link>
   )
 }
-
-
-

@@ -50,25 +50,29 @@ export default function ProductBuyOptions({
     <>
       {/* Precio dinámico */}
       <div className="mb-1 flex items-baseline gap-3 flex-wrap">
-        <p className="text-3xl font-bold text-gray-900">
-          ${finalPrice.toLocaleString()}
-        </p>
-        {mostrarDescuento && (
+        {mostrarDescuento ? (
           <>
-            <p className="text-xl text-gray-400 line-through">
+            <p className="text-2xl text-gray-900 line-through tracking-tight">
               ${precioOriginalFinal.toLocaleString()}
             </p>
+            <p className="text-2xl font-semibold text-amber-600 tracking-tight">
+              ${finalPrice.toLocaleString()}
+            </p>
             {valorDescuento && (
-              <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg">
+              <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
                 {tipoDescuento === 'porcentaje'
                   ? `${valorDescuento}% OFF`
                   : `$${valorDescuento} OFF`}
               </span>
             )}
           </>
+        ) : (
+          <p className="text-2xl font-semibold text-gray-800 tracking-tight">
+            ${finalPrice.toLocaleString()}
+          </p>
         )}
       </div>
-      <p className="text-sm text-gray-500 mb-6">IVA incluido</p>
+      <p className="text-xs text-gray-400 mb-6 tracking-wide">IVA incluido</p>
 
       {/* Selector de complemento */}
       {tieneOpcion && (

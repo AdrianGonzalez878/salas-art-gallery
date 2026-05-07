@@ -16,19 +16,16 @@ export function urlFor(source: SanityImageSource) {
 }
 
 /**
- * Fetch con revalidación automática cada hora para páginas públicas.
- * El webhook /api/revalidate invalida las rutas afectadas inmediatamente
- * cuando se publica contenido en Sanity.
+ * Fetch sin caché: siempre trae datos frescos de Sanity.
+ * Cuando "Lo más vendido" no se actualice automáticamente, el admin
+ * puede forzar la actualización con un redeploy manual desde Vercel.
  */
 export function sanityFetch<T>(
   query: string,
   params?: Record<string, unknown>,
 ): Promise<T> {
   return client.fetch<T>(query, params ?? {}, {
-    next: {
-      // En desarrollo siempre fresco; en producción cachea 1 hora
-      revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600,
-    },
+    cache: 'no-store',
   })
 }
 

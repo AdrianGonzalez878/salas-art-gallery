@@ -1,3 +1,10 @@
+export interface Testimonio {
+  _id: string
+  nombre: string
+  texto: string
+  estrellas: number
+}
+
 export interface SanityImage {
   _type: 'image'
   asset: {
@@ -35,6 +42,7 @@ export interface Producto {
   precioOpcionExtra?: number
   descripcion: PortableTextBlock[]
   disponible: boolean
+  stock?: number
   ventas?: number
 }
 

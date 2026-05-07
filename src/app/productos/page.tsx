@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
@@ -16,6 +17,25 @@ import type { Producto } from '@/sanity/lib/types'
 import ProductGrid from '@/components/ProductGrid'
 import OrdenSelector from '@/components/OrdenSelector'
 import Pagination from '@/components/Pagination'
+
+export const metadata: Metadata = {
+  title: 'Tienda de Joyería en Plata · Oaxaca',
+  description:
+    'Compra joyería artesanal en plata .925: filigrana oaxaqueña, ámbar, marquesita, dijes, collares, aretes, pulseras y anillos. Diseños únicos hechos a mano en Oaxaca, México.',
+  keywords: [
+    'comprar joyería plata Oaxaca',
+    'tienda joyería plata online',
+    'filigrana plata Oaxaca',
+    'ámbar joyería México',
+    'marquesita plata',
+    'dijes plata .925',
+    'aretes plata Oaxaca',
+    'collares plata artesanal',
+  ],
+  alternates: {
+    canonical: '/productos',
+  },
+}
 
 const PRODUCTOS_POR_PAGINA = 20
 

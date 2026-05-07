@@ -125,10 +125,23 @@ export default function CheckoutClient() {
     notas: '',
   })
 
+  // Rastrea si el usuario eligió "Otro" en el selector de país
+  const [paisSelector, setPaisSelector] = useState('México')
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handlePaisSelector = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value
+    setPaisSelector(val)
+    if (val !== 'Otro') {
+      setForm((prev) => ({ ...prev, pais: val, estado: '' }))
+    } else {
+      setForm((prev) => ({ ...prev, pais: '', estado: '' }))
+    }
   }
 
   /* Paso 1 → Paso 2 (solo avanzar si el formulario es válido) */
@@ -470,11 +483,32 @@ export default function CheckoutClient() {
                     <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
                       Estado *
                     </label>
-                    <input
-                      id="estado" name="estado" type="text" required
-                      value={form.estado} onChange={handleChange}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
-                    />
+                    {paisSelector === 'México' ? (
+                      <select
+                        id="estado" name="estado" required
+                        value={form.estado} onChange={handleChange}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 bg-white"
+                      >
+                        <option value="">Selecciona un estado</option>
+                        {[
+                          'Aguascalientes','Baja California','Baja California Sur','Campeche',
+                          'Chiapas','Chihuahua','Ciudad de México','Coahuila','Colima','Durango',
+                          'Estado de México','Guanajuato','Guerrero','Hidalgo','Jalisco',
+                          'Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla',
+                          'Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora',
+                          'Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas',
+                        ].map((e) => (
+                          <option key={e} value={e}>{e}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id="estado" name="estado" type="text" required
+                        placeholder="Escribe tu estado o provincia"
+                        value={form.estado} onChange={handleChange}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                      />
+                    )}
                   </div>
                 </div>
                 <div>
@@ -488,14 +522,29 @@ export default function CheckoutClient() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="pais" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="paisSelector" className="block text-sm font-medium text-gray-700 mb-1">
                     País
                   </label>
-                  <input
-                    id="pais" name="pais" type="text"
-                    value={form.pais} onChange={handleChange}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
-                  />
+                  <select
+                    id="paisSelector"
+                    value={paisSelector}
+                    onChange={handlePaisSelector}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 bg-white"
+                  >
+                    <option value="México">México</option>
+                    <option value="Estados Unidos">Estados Unidos</option>
+                    <option value="Canadá">Canadá</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                  {paisSelector === 'Otro' && (
+                    <input
+                      name="pais" type="text" required
+                      placeholder="Escribe el nombre de tu país"
+                      value={form.pais}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { productosMasVendidosQuery } from '@/sanity/lib/queries'
 import type { Producto } from '@/sanity/lib/types'
 import CarritoContent from '@/components/CarritoContent'
 import MSIStaticBanner from '@/components/MSIStaticBanner'
+import TestimonialsSection from '@/components/TestimonialsSection'
 
 export default async function CarritoPage() {
   const productosMasVendidos = await sanityFetch<Producto[]>(productosMasVendidosQuery)
@@ -14,6 +15,7 @@ export default async function CarritoPage() {
         <MSIStaticBanner />
       </div>
       <CarritoContent productosMasVendidos={list} />
+      <TestimonialsSection />
     </>
   )
 }

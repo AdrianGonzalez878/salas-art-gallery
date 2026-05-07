@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/lib/sanity'
-import { productoPorSlugQuery, productosRelacionadosQuery, postsInstagramQuery } from '@/sanity/lib/queries'
+import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery, postsInstagramQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
 import type { Producto, PostInstagram } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
@@ -15,9 +16,88 @@ import MSIStaticBanner from '@/components/MSIStaticBanner'
 import MSITicker from '@/components/MSITicker'
 import TePodriaGustarSection from '@/components/TePodriaGustarSection'
 import InstagramSection from '@/components/InstagramSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
 
 interface ProductoPageProps {
   params: Promise<{ slug: string }>
+}
+
+function portableTextToPlain(blocks: Array<{ _type: string; children?: Array<{ text?: string }> }>): string {
+  return blocks
+    .filter((b) => b._type === 'block')
+    .map((b) => b.children?.map((c) => c.text ?? '').join('') ?? '')
+    .join(' ')
+    .trim()
+}
+
+export async function generateMetadata({ params }: ProductoPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const producto = await sanityFetch<{
+    titulo: string
+    categoria: string
+    precio: number
+    tieneDescuento?: boolean
+    tipoDescuento?: string
+    valorDescuento?: number
+    descripcion?: Array<{ _type: string; children?: Array<{ text?: string }> }>
+    imagenPrincipal?: { asset: { _ref: string }; alt?: string }
+    slug: string
+  } | null>(productoMetadataQuery, { slug })
+
+  if (!producto) return {}
+
+  let precioFinal = producto.precio
+  if (producto.tieneDescuento && producto.tipoDescuento && producto.valorDescuento) {
+    precioFinal = producto.tipoDescuento === 'porcentaje'
+      ? Math.round(producto.precio * (1 - producto.valorDescuento / 100))
+      : Math.max(0, producto.precio - producto.valorDescuento)
+  }
+
+  const descripcionPlain = producto.descripcion
+    ? portableTextToPlain(producto.descripcion).slice(0, 155)
+    : `${producto.titulo} — joyería artesanal en plata .925 de Oaxaca.`
+
+  const ogImage = producto.imagenPrincipal
+    ? urlFor(producto.imagenPrincipal).width(1200).height(630).url()
+    : '/logo.jpg'
+
+  const categoriaLabel: Record<string, string> = {
+    dijes: 'Dije de plata',
+    collares: 'Collar de plata',
+    aretes: 'Aretes de plata',
+    pulseras: 'Pulsera de plata',
+    anillos: 'Anillo de plata',
+    juegos: 'Juego de joyería en plata',
+    ambar: 'Joyería de ámbar',
+    marquesita: 'Joyería de marquesita',
+    filigrana: 'Filigrana oaxaqueña',
+  }
+  const catLabel = categoriaLabel[producto.categoria] ?? 'Joyería en plata'
+
+  return {
+    title: `${producto.titulo} | ${catLabel} · Oaxaca`,
+    description: descripcionPlain,
+    keywords: [
+      producto.titulo,
+      catLabel,
+      'plata .925',
+      'joyería artesanal Oaxaca',
+      'joyería hecha a mano',
+      'diseños únicos plata',
+      producto.categoria === 'ambar' ? 'ámbar Chiapas' : '',
+      producto.categoria === 'marquesita' ? 'marquesita plata' : '',
+      producto.categoria === 'filigrana' ? 'filigrana oaxaqueña' : '',
+    ].filter(Boolean),
+    openGraph: {
+      title: `${producto.titulo} — $${precioFinal.toLocaleString()} | Conchita Plata`,
+      description: descripcionPlain,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: producto.titulo }],
+      type: 'website',
+    },
+    alternates: {
+      canonical: `/productos/${slug}`,
+    },
+  }
 }
 
 export default async function ProductoPage({ params }: ProductoPageProps) {
@@ -118,14 +198,28 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
               <ProductPurchaseInfo />
               <ProductFlexiblePayments />
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold">Disponibilidad:</span>{' '}
-                  {producto.disponible ? (
-                    <span className="text-green-600">En stock</span>
-                  ) : (
-                    <span className="text-red-600">Agotado</span>
-                  )}
-                </p>
+                {producto.disponible ? (
+                  (() => {
+                    const stock = producto.stock ?? 1
+                    if (stock === 0) {
+                      return (
+                        <p className="text-sm text-red-600 font-medium">Agotado</p>
+                      )
+                    }
+                    if (stock <= 3) {
+                      return (
+                        <p className="text-sm text-amber-600 font-medium">
+                          Últimas {stock} {stock === 1 ? 'unidad disponible' : 'unidades disponibles'}
+                        </p>
+                      )
+                    }
+                    return (
+                      <p className="text-sm text-green-600 font-medium">En stock · {stock} unidades</p>
+                    )
+                  })()
+                ) : (
+                  <p className="text-sm text-red-600 font-medium">Agotado</p>
+                )}
               </div>
               {productUrl ? <ProductShareButtons title={producto.titulo} url={productUrl} /> : null}
             </div>
@@ -136,6 +230,7 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
         <MSITicker />
       </div>
       <TePodriaGustarSection productos={relacionados} />
+      <TestimonialsSection />
       {postsInstagram.length > 0 && (
         <InstagramSection posts={postsInstagram} imageUrls={instagramImageUrls} />
       )}

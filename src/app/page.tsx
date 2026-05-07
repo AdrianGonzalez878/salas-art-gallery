@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sanityFetch, urlFor } from '@/lib/sanity'
 import { productosMasVendidosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorCategoriaQuery, postsInstagramQuery, shopTheLookQuery } from '@/sanity/lib/queries'
@@ -8,6 +9,15 @@ import FeaturedCategorySection from '@/components/FeaturedCategorySection'
 import HeroCarousel from '@/components/HeroCarousel'
 import InstagramSection from '@/components/InstagramSection'
 import ShopTheLookSection from '@/components/ShopTheLookSection'
+
+export const metadata: Metadata = {
+  title: 'Conchita Plata | Joyería artesanal en plata · Oaxaca',
+  description:
+    'Descubre joyería artesanal en plata .925 de Oaxaca: filigrana oaxaqueña, ámbar, marquesita, dijes, collares, aretes y pulseras con diseños únicos hechos a mano. Envío gratis a partir de $999.',
+  alternates: {
+    canonical: '/',
+  },
+}
 
 export default async function Home() {
   // Obtener productos más vendidos, más nuevos, hero, sobre nosotros, secciones destacadas, posts de Instagram y shop the look

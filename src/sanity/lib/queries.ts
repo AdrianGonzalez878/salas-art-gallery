@@ -84,6 +84,20 @@ export const productosSitemapQuery = groq`
   }
 `
 
+export const productoMetadataQuery = groq`
+  *[_type == "producto" && slug.current == $slug][0] {
+    titulo,
+    categoria,
+    precio,
+    tieneDescuento,
+    tipoDescuento,
+    valorDescuento,
+    descripcion,
+    imagenPrincipal,
+    "slug": slug.current
+  }
+`
+
 export const productoPorSlugQuery = groq`
   *[_type == "producto" && slug.current == $slug][0] {
     _id,
@@ -101,6 +115,7 @@ export const productoPorSlugQuery = groq`
     precioOpcionExtra,
     descripcion,
     disponible,
+    stock,
     ventas
   }
 `
@@ -491,6 +506,16 @@ export const promocionesCompraMinima = groq`
     montoMinimo,
     fechaInicio,
     fechaFin
+  }
+`
+
+/** Testimonios activos ordenados */
+export const testimoniosActivosQuery = groq`
+  *[_type == "testimonio" && activo == true] | order(orden asc) {
+    _id,
+    nombre,
+    texto,
+    estrellas
   }
 `
 

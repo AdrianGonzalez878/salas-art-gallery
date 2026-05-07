@@ -210,6 +210,14 @@ export default defineType({
       initialValue: true,
     }),
     defineField({
+      name: 'stock',
+      title: 'Stock (unidades disponibles)',
+      type: 'number',
+      description: 'Cuántas unidades tienes en existencia. Deja en 1 si solo tienes una pieza.',
+      initialValue: 1,
+      validation: (Rule) => Rule.min(0).integer(),
+    }),
+    defineField({
       name: 'ventas',
       title: 'Cantidad de Ventas',
       type: 'number',
@@ -226,18 +234,28 @@ export default defineType({
       tieneDescuento: 'tieneDescuento',
       tipoDescuento: 'tipoDescuento',
       valorDescuento: 'valorDescuento',
+      stock: 'stock',
     },
     prepare(selection) {
-      const { categoria, tieneDescuento, tipoDescuento, valorDescuento } = selection
+      const { categoria, tieneDescuento, tipoDescuento, valorDescuento, stock } = selection
       let subtitle = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : ''
-      
+
       if (tieneDescuento && tipoDescuento && valorDescuento) {
-        const descuentoText = tipoDescuento === 'porcentaje' 
-          ? `${valorDescuento}% OFF` 
+        const descuentoText = tipoDescuento === 'porcentaje'
+          ? `${valorDescuento}% OFF`
           : `$${valorDescuento} OFF`
         subtitle = `${subtitle} • 🏷️ ${descuentoText}`
       }
-      
+
+      const stockNum = stock ?? 1
+      if (stockNum === 0) {
+        subtitle = `${subtitle} • Agotado`
+      } else if (stockNum <= 3) {
+        subtitle = `${subtitle} • ${stockNum} en stock`
+      } else {
+        subtitle = `${subtitle} • ${stockNum} en stock`
+      }
+
       return {
         ...selection,
         subtitle,
