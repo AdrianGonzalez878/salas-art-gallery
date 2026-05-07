@@ -67,7 +67,8 @@ export default function ShopTheLookSection({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-0 items-stretch">
           {/* Imagen de modelo con hotspots - Reducida */}
-          <div className="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden shadow-2xl">
+          {/* Fallback iOS Safari: si no soporta aspect-ratio, usar min-height */}
+          <div className="relative aspect-[3/4] min-h-[420px] sm:min-h-[520px] bg-gray-100 rounded-2xl overflow-hidden shadow-2xl mx-auto w-full max-w-[420px] sm:max-w-none">
             <Image
               src={imagenModeloUrl}
               alt={data.imagenModelo.alt || 'Shop the Look'}
