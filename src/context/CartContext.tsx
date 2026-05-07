@@ -72,8 +72,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (input: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
       setItems((prev) => {
         const existing = prev.find((i) => i.id === input.id)
-        // Piezas únicas: máximo 1 por producto; si ya está, no agregar más
-        if (existing) return prev
+        // Piezas únicas: máximo 1 por producto.
+        // Si ya está pero cambió precio o título (ej. cliente eligió complemento), actualizar.
+        if (existing) {
+          const cambio =
+            existing.price !== input.price || existing.title !== input.title
+          if (!cambio) return prev
+          return prev.map((i) =>
+            i.id === input.id
+              ? { ...i, price: input.price, title: input.title, imageUrl: input.imageUrl }
+              : i
+          )
+        }
         return [
           ...prev,
           {

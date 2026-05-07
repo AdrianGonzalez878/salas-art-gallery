@@ -30,6 +30,9 @@ export interface Producto {
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
   categoria: 'anillos' | 'collares' | 'aretes' | 'pulseras' | 'dijes' | 'cadenas' | 'juegos'
+  tieneOpcionExtra?: boolean
+  nombreOpcionExtra?: string
+  precioOpcionExtra?: number
   descripcion: PortableTextBlock[]
   disponible: boolean
   ventas?: number
@@ -117,12 +120,8 @@ export interface Estadistica {
   subtitulo?: string
   imagenBanner?: SanityImage
   historia: string
-  anosExperiencia: number
   galeria: SanityImage[]
   estadisticas?: Estadistica[]
-  mostrarBotonWhatsApp?: boolean
-  textoBotonWhatsApp?: string
-  numeroWhatsApp?: string
 }export interface SeccionDestacada {
   _id: string
   activo: boolean

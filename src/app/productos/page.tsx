@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { client } from '@/lib/sanity'
+import { sanityFetch } from '@/lib/sanity'
 import {
   productosCountQuery,
   productosCountMasVendidosQuery,
@@ -55,8 +55,8 @@ export default async function ProductosPage({
 
   if (isBusqueda) {
     const [productosList, total] = await Promise.all([
-      client.fetch<Producto[]>(productosBusquedaQuery, { pattern, skip, end }),
-      client.fetch<number>(productosCountBusquedaQuery, { pattern }),
+      sanityFetch<Producto[]>(productosBusquedaQuery, { pattern, skip, end }),
+      sanityFetch<number>(productosCountBusquedaQuery, { pattern }),
     ])
     productos = productosList
     totalProductos = total
@@ -71,8 +71,8 @@ export default async function ProductosPage({
     const query = queries[orden as keyof typeof queries] ?? queries.recientes
     const countQuery = orden === 'mas-vendidos' ? productosCountMasVendidosQuery : productosCountQuery
     const [productosList, total] = await Promise.all([
-      client.fetch<Producto[]>(query, queryParams),
-      client.fetch<number>(countQuery, { categoria: categoriaFiltro }),
+      sanityFetch<Producto[]>(query, queryParams),
+      sanityFetch<number>(countQuery, { categoria: categoriaFiltro }),
     ])
     productos = productosList
     totalProductos = total

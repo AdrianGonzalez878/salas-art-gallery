@@ -133,6 +133,55 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'tieneOpcionExtra',
+      title: '¿Ofrece complemento opcional?',
+      type: 'boolean',
+      description: 'Activa esta opción para dijes (cadena), collares o juegos (pulsera adicional). Solo aplica para esas categorías.',
+      initialValue: false,
+      hidden: ({ parent }) =>
+        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
+    }),
+    defineField({
+      name: 'nombreOpcionExtra',
+      title: 'Nombre del complemento',
+      type: 'string',
+      description: 'Ej: "Cadena", "Pulsera adicional"',
+      initialValue: 'Cadena',
+      hidden: ({ parent }) =>
+        !parent?.tieneOpcionExtra ||
+        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
+      validation: (Rule) =>
+        Rule.custom((valor, context) => {
+          const parent = context.parent as any
+          const categoriaValida = ['dijes', 'collares', 'juegos'].includes(parent?.categoria)
+          if (parent?.tieneOpcionExtra && categoriaValida && !valor?.trim()) {
+            return 'Ingresa el nombre del complemento'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'precioOpcionExtra',
+      title: 'Precio adicional del complemento',
+      type: 'number',
+      description: 'Cuánto se suma al precio si el cliente lo elige',
+      hidden: ({ parent }) =>
+        !parent?.tieneOpcionExtra ||
+        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
+      validation: (Rule) =>
+        Rule.custom((valor, context) => {
+          const parent = context.parent as any
+          const categoriaValida = ['dijes', 'collares', 'juegos'].includes(parent?.categoria)
+          if (parent?.tieneOpcionExtra && categoriaValida) {
+            if (valor === undefined || valor === null) {
+              return 'Ingresa el precio del complemento'
+            }
+            if (valor <= 0) return 'El precio debe ser mayor a 0'
+          }
+          return true
+        }),
+    }),
+    defineField({
       name: 'descripcion',
       title: 'Descripción',
       type: 'array',

@@ -1,13 +1,12 @@
 import Image from 'next/image'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { client } from '@/lib/sanity'
+import { sanityFetch } from '@/lib/sanity'
 import { productoPorSlugQuery, productosRelacionadosQuery, postsInstagramQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
 import type { Producto, PostInstagram } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
-import AddToCartButton from '@/components/AddToCartButton'
-import BuyNowButton from '@/components/BuyNowButton'
+import ProductBuyOptions from '@/components/ProductBuyOptions'
 import ProductDescriptionCollapse from '@/components/ProductDescriptionCollapse'
 import ProductPurchaseInfo from '@/components/ProductPurchaseInfo'
 import ProductFlexiblePayments from '@/components/ProductFlexiblePayments'
@@ -23,7 +22,7 @@ interface ProductoPageProps {
 
 export default async function ProductoPage({ params }: ProductoPageProps) {
   const { slug } = await params
-  const producto: Producto | null = await client.fetch(productoPorSlugQuery, {
+  const producto: Producto | null = await sanityFetch(productoPorSlugQuery, {
     slug,
   })
 
@@ -37,11 +36,11 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
   }
 
   const [relacionados, postsInstagram] = await Promise.all([
-    client.fetch<Producto[]>(productosRelacionadosQuery, {
+    sanityFetch<Producto[]>(productosRelacionadosQuery, {
       categoria: producto.categoria,
       excludeId: producto._id,
     }),
-    client.fetch<PostInstagram[]>(postsInstagramQuery),
+    sanityFetch<PostInstagram[]>(postsInstagramQuery),
   ])
 
   const instagramImageUrls = postsInstagram.map((post) =>
@@ -93,42 +92,28 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {producto.titulo}
               </h1>
-              <div className="mb-1 flex items-baseline gap-3 flex-wrap">
-                <p className="text-3xl font-bold text-gray-900">
-                  ${precioFinal.toLocaleString()}
-                </p>
-                {producto.tieneDescuento && precioFinal < producto.precio && (
-                  <>
-                    <p className="text-xl text-gray-400 line-through">
-                      ${producto.precio.toLocaleString()}
-                    </p>
-                    <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg">
-                      {producto.tipoDescuento === 'porcentaje'
-                        ? `${producto.valorDescuento}% OFF`
-                        : `$${producto.valorDescuento} OFF`}
-                    </span>
-                  </>
-                )}
-              </div>
-              <p className="text-sm text-gray-500 mb-6">IVA incluido</p>
-              <div className="flex flex-col gap-3">
-                <BuyNowButton
-                  id={producto._id}
-                  slug={producto.slug.current}
-                  title={producto.titulo}
-                  price={precioFinal}
-                  imageUrl={imagenPrincipalUrl}
-                />
-                <AddToCartButton
-                  id={producto._id}
-                  slug={producto.slug.current}
-                  title={producto.titulo}
-                  price={precioFinal}
-                  imageUrl={imagenPrincipalUrl}
-                  variant="secondary"
-                  className="flex-1"
-                />
-              </div>
+              <ProductBuyOptions
+                id={producto._id}
+                slug={producto.slug.current}
+                title={producto.titulo}
+                price={precioFinal}
+                precioOriginal={producto.precio}
+                tieneDescuento={producto.tieneDescuento}
+                tipoDescuento={producto.tipoDescuento}
+                valorDescuento={producto.valorDescuento}
+                imageUrl={imagenPrincipalUrl}
+                opcionExtra={
+                  producto.tieneOpcionExtra &&
+                  producto.nombreOpcionExtra &&
+                  producto.precioOpcionExtra &&
+                  ['dijes', 'collares', 'juegos'].includes(producto.categoria)
+                    ? {
+                        nombre: producto.nombreOpcionExtra,
+                        precio: producto.precioOpcionExtra,
+                      }
+                    : undefined
+                }
+              />
               <ProductDescriptionCollapse descripcion={producto.descripcion} />
               <ProductPurchaseInfo />
               <ProductFlexiblePayments />

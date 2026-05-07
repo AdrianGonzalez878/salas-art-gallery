@@ -75,21 +75,6 @@ export default function AboutSection({ data }: AboutSectionProps) {
               {data.historia}
             </p>
 
-            {data.anosExperiencia > 0 && (
-              <div className="mt-8 flex items-center gap-4 p-5 bg-amber-50 rounded-2xl border border-amber-100">
-                <div className="w-12 h-12 rounded-xl bg-amber-400/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs text-amber-700 font-medium uppercase tracking-wide">Trayectoria</p>
-                  <p className="font-display text-2xl font-bold text-gray-900">
-                    +{data.anosExperiencia} {data.anosExperiencia === 1 ? 'año' : 'años'} de experiencia
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

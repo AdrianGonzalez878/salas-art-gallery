@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { client, urlFor } from '@/lib/sanity'
+import { sanityFetch, urlFor } from '@/lib/sanity'
 import { productosConDescuentoQuery, promocionesCompraMinima as promocionesQuery } from '@/sanity/lib/queries'
 import type { Promocion, Producto } from '@/sanity/lib/types'
 import Pagination from '@/components/Pagination'
@@ -66,7 +66,7 @@ export default async function PromocionesPage({
   const categoriaFiltro = categoria && categoriasMap[categoria] ? categoria : ''
 
   // Obtener productos con descuento
-  const productosConDescuento = await client.fetch<Producto[]>(productosConDescuentoQuery)
+  const productosConDescuento = await sanityFetch<Producto[]>(productosConDescuentoQuery)
   let lista = productosConDescuento.filter(
     (p) => p.tieneDescuento && p.tipoDescuento && p.valorDescuento
   )
@@ -106,7 +106,7 @@ export default async function PromocionesPage({
   const hasta = Math.min(inicio + PRODUCTOS_POR_PAGINA, totalProductosOferta)
 
   // Obtener promociones de compra mínima
-  const promociones = await client.fetch<Promocion[]>(promocionesQuery)
+  const promociones = await sanityFetch<Promocion[]>(promocionesQuery)
   const promocionesCompraMinima = filtrarPorFecha(promociones)
 
   return (

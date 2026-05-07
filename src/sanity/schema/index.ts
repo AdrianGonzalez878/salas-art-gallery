@@ -7,6 +7,8 @@ import postInstagram from './postInstagram'
 import shopTheLook from './shopTheLook'
 import promocion from './promocion'
 import cupon from './cupon'
+import testimonio from './testimonio'
+
 export const schemaTypes = [
   producto,
   pedido,
@@ -17,5 +19,6 @@ export const schemaTypes = [
   shopTheLook,
   promocion,
   cupon,
+  testimonio,
 ]
 

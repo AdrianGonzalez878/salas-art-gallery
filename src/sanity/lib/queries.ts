@@ -96,6 +96,9 @@ export const productoPorSlugQuery = groq`
     imagenPrincipal,
     galeria,
     categoria,
+    tieneOpcionExtra,
+    nombreOpcionExtra,
+    precioOpcionExtra,
     descripcion,
     disponible,
     ventas
@@ -378,7 +381,6 @@ export const sobreNosotrosQuery = groq`
       alt
     },
     historia,
-    anosExperiencia,
     galeria[] {
       asset,
       alt

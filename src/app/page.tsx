@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { client, urlFor } from '@/lib/sanity'
+import { sanityFetch, urlFor } from '@/lib/sanity'
 import { productosMasVendidosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorCategoriaQuery, postsInstagramQuery, shopTheLookQuery } from '@/sanity/lib/queries'
 import type { Producto, Hero, SobreNosotros, SeccionDestacada, PostInstagram, ShopTheLook } from '@/sanity/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
@@ -12,19 +12,19 @@ import ShopTheLookSection from '@/components/ShopTheLookSection'
 export default async function Home() {
   // Obtener productos más vendidos, más nuevos, hero, sobre nosotros, secciones destacadas, posts de Instagram y shop the look
   const [productosMasVendidos, productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, postsInstagram, shopTheLook] = await Promise.all([
-    client.fetch<Producto[]>(productosMasVendidosQuery),
-    client.fetch<Producto[]>(productosMasNuevosQuery),
-    client.fetch<Hero | null>(heroQuery),
-    client.fetch<SobreNosotros | null>(sobreNosotrosQuery),
-    client.fetch<SeccionDestacada[]>(seccionesDestacadasQuery),
-    client.fetch<PostInstagram[]>(postsInstagramQuery),
-    client.fetch<ShopTheLook | null>(shopTheLookQuery),
+    sanityFetch<Producto[]>(productosMasVendidosQuery),
+    sanityFetch<Producto[]>(productosMasNuevosQuery),
+    sanityFetch<Hero | null>(heroQuery),
+    sanityFetch<SobreNosotros | null>(sobreNosotrosQuery),
+    sanityFetch<SeccionDestacada[]>(seccionesDestacadasQuery),
+    sanityFetch<PostInstagram[]>(postsInstagramQuery),
+    sanityFetch<ShopTheLook | null>(shopTheLookQuery),
   ])
   
   // Para cada sección destacada, obtener sus productos
   const seccionesConProductos = await Promise.all(
     seccionesDestacadas.map(async (seccion) => {
-      const productos = await client.fetch<Producto[]>(
+      const productos = await sanityFetch<Producto[]>(
         productosPorCategoriaQuery,
         { categoria: seccion.categoria }
       )
@@ -75,7 +75,7 @@ export default async function Home() {
   } : null
 
   return (
-    <div className="min-h-screen bg-white" suppressHydrationWarning>
+    <div className="min-h-screen bg-white">
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden h-screen">

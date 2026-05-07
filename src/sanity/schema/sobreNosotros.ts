@@ -48,13 +48,6 @@ export default defineType({
       validation: (Rule) => Rule.required().min(100).max(1000),
     }),
     defineField({
-      name: 'anosExperiencia',
-      title: 'Años de Experiencia',
-      type: 'number',
-      description: 'Número de años en el negocio',
-      validation: (Rule) => Rule.required().positive().integer(),
-    }),
-    defineField({
       name: 'galeria',
       title: 'Galería de Fotos',
       type: 'array',
@@ -115,36 +108,6 @@ export default defineType({
         },
       ],
       validation: (Rule) => Rule.max(4),
-    }),
-    defineField({
-      name: 'mostrarBotonWhatsApp',
-      title: 'Mostrar botón de WhatsApp (diseño a la medida)',
-      type: 'boolean',
-      description: 'Muestra un botón en la página Conchita Plata para que el cliente pregunte por diseños especiales',
-      initialValue: true,
-    }),
-    defineField({
-      name: 'textoBotonWhatsApp',
-      title: 'Texto del botón WhatsApp',
-      type: 'string',
-      description: 'Ej: "¿Diseño a la medida?", "Solicitar diseño especial"',
-      initialValue: '¿Diseño a la medida?',
-      hidden: ({ parent }) => !parent?.mostrarBotonWhatsApp,
-    }),
-    defineField({
-      name: 'numeroWhatsApp',
-      title: 'Número de WhatsApp',
-      type: 'string',
-      description: 'Número con código de país, sin + ni espacios. Ej: 5219514634015',
-      validation: (Rule) =>
-        Rule.custom((valor, context) => {
-          const parent = context.parent as any
-          if (parent?.mostrarBotonWhatsApp && !valor) {
-            return 'Ingresa el número para el enlace de WhatsApp'
-          }
-          return true
-        }),
-      hidden: ({ parent }) => !parent?.mostrarBotonWhatsApp,
     }),
   ],
   preview: {
