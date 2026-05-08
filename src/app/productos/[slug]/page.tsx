@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/lib/sanity'
 import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery, postsInstagramQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
+import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
 import type { Producto, PostInstagram } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import ProductBuyOptions from '@/components/ProductBuyOptions'
@@ -39,6 +40,8 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
     tieneDescuento?: boolean
     tipoDescuento?: string
     valorDescuento?: number
+    fechaInicioDescuento?: string
+    fechaFinDescuento?: string
     descripcion?: Array<{ _type: string; children?: Array<{ text?: string }> }>
     imagenPrincipal?: { asset: { _ref: string }; alt?: string }
     slug: string
@@ -46,12 +49,14 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
 
   if (!producto) return {}
 
-  let precioFinal = producto.precio
-  if (producto.tieneDescuento && producto.tipoDescuento && producto.valorDescuento) {
-    precioFinal = producto.tipoDescuento === 'porcentaje'
-      ? Math.round(producto.precio * (1 - producto.valorDescuento / 100))
-      : Math.max(0, producto.precio - producto.valorDescuento)
-  }
+  const precioFinal = calcularPrecioFinal(
+    producto.precio,
+    producto.tieneDescuento,
+    producto.tipoDescuento,
+    producto.valorDescuento,
+    producto.fechaInicioDescuento,
+    producto.fechaFinDescuento,
+  )
 
   const descripcionPlain = producto.descripcion
     ? portableTextToPlain(producto.descripcion).slice(0, 155)
@@ -127,15 +132,19 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
     urlFor(post.imagen).width(400).height(400).quality(90).url()
   )
 
-  let precioFinal = producto.precio
-  if (producto.tieneDescuento && producto.tipoDescuento && producto.valorDescuento) {
-    if (producto.tipoDescuento === 'porcentaje') {
-      precioFinal = producto.precio * (1 - producto.valorDescuento / 100)
-    } else if (producto.tipoDescuento === 'monto') {
-      precioFinal = Math.max(0, producto.precio - producto.valorDescuento)
-    }
-  }
-  precioFinal = Math.round(precioFinal)
+  const descuentoActivo = descuentoVigente(
+    producto.tieneDescuento,
+    producto.fechaInicioDescuento,
+    producto.fechaFinDescuento,
+  )
+  const precioFinal = calcularPrecioFinal(
+    producto.precio,
+    producto.tieneDescuento,
+    producto.tipoDescuento,
+    producto.valorDescuento,
+    producto.fechaInicioDescuento,
+    producto.fechaFinDescuento,
+  )
 
   const imagenPrincipalUrl = producto.imagenPrincipal
     ? urlFor(producto.imagenPrincipal).width(1200).quality(90).url()
@@ -178,9 +187,10 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
                 title={producto.titulo}
                 price={precioFinal}
                 precioOriginal={producto.precio}
-                tieneDescuento={producto.tieneDescuento}
+                descuentoActivo={descuentoActivo}
                 tipoDescuento={producto.tipoDescuento}
                 valorDescuento={producto.valorDescuento}
+                textoBadge={producto.textoBadge}
                 imageUrl={imagenPrincipalUrl}
                 opcionExtra={
                   producto.tieneOpcionExtra &&

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
 import type { Producto } from '@/sanity/lib/types'
+import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
 
 const INTERVAL = 1500
 
@@ -33,19 +34,27 @@ export default function ProductCard({ producto }: ProductCardProps) {
     return urls
   }, [producto.imagenPrincipal, producto.galeria])
 
-  // Calcular precio final si tiene descuento
-  let precioFinal = producto.precio
-  let descuentoLabel = null
-
-  if (producto.tieneDescuento && producto.tipoDescuento && producto.valorDescuento) {
-    if (producto.tipoDescuento === 'porcentaje') {
-      precioFinal = producto.precio * (1 - producto.valorDescuento / 100)
-      descuentoLabel = `${producto.valorDescuento}% OFF`
-    } else if (producto.tipoDescuento === 'monto') {
-      precioFinal = Math.max(0, producto.precio - producto.valorDescuento)
-      descuentoLabel = `$${producto.valorDescuento} OFF`
-    }
-  }
+  const vigente = descuentoVigente(
+    producto.tieneDescuento,
+    producto.fechaInicioDescuento,
+    producto.fechaFinDescuento,
+  )
+  const precioFinal = calcularPrecioFinal(
+    producto.precio,
+    producto.tieneDescuento,
+    producto.tipoDescuento,
+    producto.valorDescuento,
+    producto.fechaInicioDescuento,
+    producto.fechaFinDescuento,
+  )
+  const descuentoLabel = vigente && producto.tipoDescuento && producto.valorDescuento
+    ? (() => {
+        const auto = producto.tipoDescuento === 'porcentaje'
+          ? `${producto.valorDescuento}% OFF`
+          : `$${producto.valorDescuento} OFF`
+        return producto.textoBadge?.trim() ? `${producto.textoBadge.trim()} · ${auto}` : auto
+      })()
+    : null
 
   const tieneVarias = imagenes.length > 1
 
@@ -147,7 +156,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
 
         <div className="flex items-end justify-between gap-2 mt-3">
           <div className="flex items-baseline gap-1.5 flex-wrap">
-            {producto.tieneDescuento ? (
+            {vigente ? (
               <>
                 <span className="text-base text-gray-800 line-through leading-none">
                   ${producto.precio.toLocaleString()}

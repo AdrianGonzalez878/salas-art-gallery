@@ -11,9 +11,10 @@ interface ProductBuyOptionsProps {
   price: number
   imageUrl: string
   precioOriginal: number
-  tieneDescuento?: boolean
+  descuentoActivo?: boolean
   tipoDescuento?: 'porcentaje' | 'monto'
   valorDescuento?: number
+  textoBadge?: string
   opcionExtra?: {
     nombre: string
     precio: number
@@ -27,9 +28,10 @@ export default function ProductBuyOptions({
   price,
   imageUrl,
   precioOriginal,
-  tieneDescuento,
+  descuentoActivo,
   tipoDescuento,
   valorDescuento,
+  textoBadge,
   opcionExtra,
 }: ProductBuyOptionsProps) {
   const [conExtra, setConExtra] = useState(false)
@@ -44,7 +46,7 @@ export default function ProductBuyOptions({
   const precioOriginalFinal =
     tieneOpcion && conExtra ? precioOriginal + opcionExtra.precio : precioOriginal
 
-  const mostrarDescuento = tieneDescuento && finalPrice < precioOriginalFinal
+  const mostrarDescuento = descuentoActivo && finalPrice < precioOriginalFinal
 
   return (
     <>
@@ -60,9 +62,12 @@ export default function ProductBuyOptions({
             </p>
             {valorDescuento && (
               <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
-                {tipoDescuento === 'porcentaje'
-                  ? `${valorDescuento}% OFF`
-                  : `$${valorDescuento} OFF`}
+                {(() => {
+                  const auto = tipoDescuento === 'porcentaje'
+                    ? `${valorDescuento}% OFF`
+                    : `$${valorDescuento} OFF`
+                  return textoBadge?.trim() ? `${textoBadge.trim()} · ${auto}` : auto
+                })()}
               </span>
             )}
           </>

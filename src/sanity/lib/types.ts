@@ -34,6 +34,9 @@ export interface Producto {
   tieneDescuento?: boolean
   tipoDescuento?: 'porcentaje' | 'monto'
   valorDescuento?: number
+  textoBadge?: string
+  fechaInicioDescuento?: string
+  fechaFinDescuento?: string
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
   categoria: 'anillos' | 'collares' | 'aretes' | 'pulseras' | 'dijes' | 'cadenas' | 'juegos'
