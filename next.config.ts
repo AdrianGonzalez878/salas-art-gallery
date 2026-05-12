@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    loader: 'custom',
+    loaderFile: './src/lib/sanityImageLoader.ts',
     remotePatterns: [
       {
         protocol: 'https',
@@ -10,7 +12,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    qualities: [75, 95, 100],  // ← Agrega esta línea
+    qualities: [75, 95, 100],
   },
 };
 
