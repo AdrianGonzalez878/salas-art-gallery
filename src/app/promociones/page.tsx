@@ -5,6 +5,7 @@ import { sanityFetch, urlFor } from '@/lib/sanity'
 import { productosConDescuentoQuery, promocionesCompraMinima as promocionesQuery } from '@/sanity/lib/queries'
 import type { Promocion, Producto } from '@/sanity/lib/types'
 import { descuentoVigente } from '@/lib/descuento'
+import AnimateInView from '@/components/AnimateInView'
 import Pagination from '@/components/Pagination'
 import OrdenSelector from '@/components/OrdenSelector'
 
@@ -124,7 +125,8 @@ export default async function PromocionesPage({
               const periodoOferta = formatearPeriodoOferta(promo.fechaInicio, promo.fechaFin)
 
               return (
-                <div key={promo._id} className="relative w-full overflow-hidden">
+                <AnimateInView key={promo._id} y={20}>
+                  <div className="relative w-full overflow-hidden">
                   <div className="relative w-full min-h-[340px] sm:min-h-[420px] md:min-h-[500px] lg:min-h-[580px] xl:min-h-[640px] bg-gray-900">
                     {imagenUrl && (
                       <Image
@@ -178,7 +180,8 @@ export default async function PromocionesPage({
                       )}
                     </div>
                   </div>
-                </div>
+                  </div>
+                </AnimateInView>
               )
             })}
           </div>
@@ -188,7 +191,7 @@ export default async function PromocionesPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         {productosConDescuento.length === 0 && promocionesCompraMinima.length === 0 ? (
           /* Sin promociones */
-          <div className="flex flex-col items-center py-20 text-center">
+          <AnimateInView className="flex flex-col items-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mb-5">
               <svg className="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -207,13 +210,13 @@ export default async function PromocionesPage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
-          </div>
+          </AnimateInView>
         ) : (
           <>
             {productosConDescuento.length > 0 && (
               <div>
                 {/* Cabecera de sección */}
-                <div className="mb-8 rounded-2xl bg-white border border-gray-100 shadow-sm p-6 sm:p-8">
+                <AnimateInView className="mb-8 rounded-2xl bg-white border border-gray-100 shadow-sm p-6 sm:p-8">
                   <div className="flex flex-col items-center text-center">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-0.5 bg-amber-400" />
@@ -279,11 +282,11 @@ export default async function PromocionesPage({
                       ))}
                     </div>
                   </div>
-                </div>
+                </AnimateInView>
 
                 {/* Grid productos */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
-                  {productosPagina.map((producto) => {
+                  {productosPagina.map((producto, index) => {
                     const imagenUrl = urlFor(producto.imagenPrincipal)
                       .width(400).height(400).quality(90).url()
 
@@ -301,63 +304,70 @@ export default async function PromocionesPage({
                         : `$${valor} OFF`
 
                     return (
-                      <Link
+                      <AnimateInView
                         key={producto._id}
-                        href={`/productos/${producto.slug.current}`}
-                        className="group block bg-white rounded-xl border border-gray-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-300 overflow-hidden"
+                        delay={(index % 4) * 0.06}
+                        y={16}
                       >
-                        {/* Imagen */}
-                        <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                          <Image
-                            src={imagenUrl}
-                            alt={producto.titulo}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          />
-                          {/* Badge de descuento */}
-                          <div className="absolute top-2.5 left-2.5 bg-amber-400 text-gray-900 px-2.5 py-1 rounded-lg font-bold text-xs shadow-sm">
-                            {descuentoLabel}
+                        <Link
+                          href={`/productos/${producto.slug.current}`}
+                          className="group block bg-white rounded-xl border border-gray-100 shadow-sm hover:border-amber-300 hover:shadow-md transition-all duration-300 overflow-hidden"
+                        >
+                          {/* Imagen */}
+                          <div className="relative aspect-square bg-gray-50 overflow-hidden">
+                            <Image
+                              src={imagenUrl}
+                              alt={producto.titulo}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            />
+                            {/* Badge de descuento */}
+                            <div className="absolute top-2.5 left-2.5 bg-amber-400 text-gray-900 px-2.5 py-1 rounded-lg font-bold text-xs shadow-sm">
+                              {descuentoLabel}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Info */}
-                        <div className="p-3 sm:p-4">
-                          <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-amber-700 transition-colors">
-                            {producto.titulo}
-                          </h3>
-                          <p className="text-xs text-gray-400 mb-2.5 line-clamp-1 capitalize">
-                            {producto.categoria}
-                          </p>
-                          <div className="flex items-end justify-between gap-2">
-                            <div>
-                              <p className="text-xs text-gray-400 line-through leading-none mb-0.5">
-                                ${producto.precio.toLocaleString()}
-                              </p>
-                              <p className="text-lg sm:text-xl font-bold text-gray-900 leading-none">
-                                ${Math.round(precioFinal).toLocaleString()}
-                              </p>
-                            </div>
-                            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-400 group-hover:text-white transition-colors">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
+                          {/* Info */}
+                          <div className="p-3 sm:p-4">
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-amber-700 transition-colors">
+                              {producto.titulo}
+                            </h3>
+                            <p className="text-xs text-gray-400 mb-2.5 line-clamp-1 capitalize">
+                              {producto.categoria}
+                            </p>
+                            <div className="flex items-end justify-between gap-2">
+                              <div>
+                                <p className="text-xs text-gray-400 line-through leading-none mb-0.5">
+                                  ${producto.precio.toLocaleString()}
+                                </p>
+                                <p className="text-lg sm:text-xl font-bold text-gray-900 leading-none">
+                                  ${Math.round(precioFinal).toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:bg-amber-400 group-hover:text-white transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Link>
+                        </Link>
+                      </AnimateInView>
                     )
                   })}
                 </div>
 
                 {totalPaginasOferta > 1 && (
-                  <Pagination
-                    paginaActual={paginaActual}
-                    totalPaginas={totalPaginasOferta}
-                    basePath="/promociones"
-                    categoria={categoriaFiltro || undefined}
-                    orden={orden !== 'recientes' ? orden : undefined}
-                  />
+                  <AnimateInView className="mt-8">
+                    <Pagination
+                      paginaActual={paginaActual}
+                      totalPaginas={totalPaginasOferta}
+                      basePath="/promociones"
+                      categoria={categoriaFiltro || undefined}
+                      orden={orden !== 'recientes' ? orden : undefined}
+                    />
+                  </AnimateInView>
                 )}
               </div>
             )}

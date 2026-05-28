@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
+import { trackAddToCart } from '@/lib/marketingPixels'
 
 export interface BuyNowButtonProps {
   id: string
@@ -27,6 +28,7 @@ export default function BuyNowButton({
 
   const handleClick = () => {
     addItem({ id, slug, title, price, imageUrl, quantity })
+    trackAddToCart({ id, name: title, price, quantity })
     router.push('/carrito/checkout')
   }
 

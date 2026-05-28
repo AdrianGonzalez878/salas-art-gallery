@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { descuentoVigente } from '@/lib/descuento'
 
 export default defineType({
   name: 'producto',
@@ -230,8 +231,10 @@ export default defineType({
     }),
     defineField({
       name: 'disponible',
-      title: 'Disponible',
+      title: 'Disponible en tienda',
       type: 'boolean',
+      description:
+        'Desactiva esta casilla si el producto ya se vendió o no quieres mostrarlo en la web. No aparecerá en catálogo, búsqueda ni promociones.',
       initialValue: true,
     }),
     defineField({
@@ -251,39 +254,111 @@ export default defineType({
       validation: (Rule) => Rule.min(0).integer(),
     }),
   ],
+  orderings: [
+    {
+      title: 'Disponibles primero',
+      name: 'disponibleDesc',
+      by: [
+        { field: 'disponible', direction: 'desc' },
+        { field: 'titulo', direction: 'asc' },
+      ],
+    },
+    {
+      title: 'No disponibles primero',
+      name: 'disponibleAsc',
+      by: [
+        { field: 'disponible', direction: 'asc' },
+        { field: 'titulo', direction: 'asc' },
+      ],
+    },
+    {
+      title: 'Con descuento primero',
+      name: 'descuentoDesc',
+      by: [
+        { field: 'tieneDescuento', direction: 'desc' },
+        { field: 'titulo', direction: 'asc' },
+      ],
+    },
+    {
+      title: 'Título A–Z',
+      name: 'tituloAsc',
+      by: [{ field: 'titulo', direction: 'asc' }],
+    },
+  ],
   preview: {
     select: {
       title: 'titulo',
       media: 'imagenPrincipal',
       categoria: 'categoria',
+      disponible: 'disponible',
       tieneDescuento: 'tieneDescuento',
       tipoDescuento: 'tipoDescuento',
       valorDescuento: 'valorDescuento',
+      fechaInicioDescuento: 'fechaInicioDescuento',
+      fechaFinDescuento: 'fechaFinDescuento',
       stock: 'stock',
     },
     prepare(selection) {
-      const { categoria, tieneDescuento, tipoDescuento, valorDescuento, stock } = selection
-      let subtitle = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : ''
+      const {
+        title,
+        categoria,
+        disponible,
+        tieneDescuento,
+        tipoDescuento,
+        valorDescuento,
+        fechaInicioDescuento,
+        fechaFinDescuento,
+        stock,
+      } = selection
 
-      if (tieneDescuento && tipoDescuento && valorDescuento) {
-        const descuentoText = tipoDescuento === 'porcentaje'
-          ? `${valorDescuento}% OFF`
-          : `$${valorDescuento} OFF`
-        subtitle = `${subtitle} • 🏷️ ${descuentoText}`
+      const parts: string[] = []
+
+      if (disponible === false) {
+        parts.push('🔴 No disponible')
+      } else {
+        parts.push('✅ Disponible')
       }
 
-      const stockNum = stock ?? 1
-      if (stockNum === 0) {
-        subtitle = `${subtitle} • Agotado`
-      } else if (stockNum <= 3) {
-        subtitle = `${subtitle} • ${stockNum} en stock`
+      if (tieneDescuento && tipoDescuento && valorDescuento) {
+        const descuentoText =
+          tipoDescuento === 'porcentaje'
+            ? `${valorDescuento}% OFF`
+            : `$${valorDescuento} OFF`
+
+        const ahora = new Date()
+        let estadoExtra = ''
+        if (fechaInicioDescuento && new Date(fechaInicioDescuento) > ahora) {
+          estadoExtra = ' ⏳ programado'
+        } else if (fechaFinDescuento && new Date(fechaFinDescuento) < ahora) {
+          estadoExtra = ' ⌛ expirado'
+        } else if (!descuentoVigente(tieneDescuento, fechaInicioDescuento, fechaFinDescuento)) {
+          estadoExtra = ' ⏸️ inactivo'
+        }
+
+        parts.push(`🏷️ ${descuentoText}${estadoExtra}`)
+      } else if (tieneDescuento) {
+        parts.push('⚠️ Descuento incompleto')
       } else {
-        subtitle = `${subtitle} • ${stockNum} en stock`
+        parts.push('— Sin descuento')
+      }
+
+      if (disponible !== false) {
+        const stockNum = stock ?? 1
+        if (stockNum === 0) {
+          parts.push('⚠️ Sin stock')
+        } else {
+          parts.push(`📦 ${stockNum} uds.`)
+        }
+      }
+
+      if (categoria) {
+        parts.push(categoria.charAt(0).toUpperCase() + categoria.slice(1))
       }
 
       return {
-        ...selection,
-        subtitle,
+        title,
+        subtitle: parts.join(' · '),
+        media: selection.media,
       }
     },
   },

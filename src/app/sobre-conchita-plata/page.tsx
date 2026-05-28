@@ -5,6 +5,7 @@ import { sobreNosotrosQuery } from '@/sanity/lib/queries'
 import type { SobreNosotros } from '@/sanity/lib/types'
 import type { Metadata } from 'next'
 import GaleriaCarousel from '@/components/GaleriaCarousel'
+import AnimateInView from '@/components/AnimateInView'
 import TestimonialsSection from '@/components/TestimonialsSection'
 
 export const metadata: Metadata = {
@@ -72,7 +73,7 @@ export default async function SobreConchitaPlataPage() {
 
       {/* ── Estadísticas ─────────────────────────────────────── */}
       {data?.estadisticas && data.estadisticas.length > 0 && (
-        <section className="border-b border-gray-100">
+        <AnimateInView as="section" className="border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
               {data.estadisticas.map((stat, idx) => (
@@ -85,12 +86,12 @@ export default async function SobreConchitaPlataPage() {
               ))}
             </div>
           </div>
-        </section>
+        </AnimateInView>
       )}
 
       {/* ── Historia + galería ───────────────────────────────── */}
       {data ? (
-        <section className="py-16 md:py-24">
+        <AnimateInView as="section" className="py-16 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
 
@@ -120,10 +121,10 @@ export default async function SobreConchitaPlataPage() {
               )}
             </div>
           </div>
-        </section>
+        </AnimateInView>
       ) : (
         /* Sin contenido en Sanity */
-        <section className="py-24">
+        <AnimateInView as="section" className="py-24">
           <div className="max-w-2xl mx-auto px-4 text-center">
             <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
             <h2 className="font-display text-3xl font-bold text-gray-900 mb-4">Conchita Plata</h2>
@@ -141,13 +142,13 @@ export default async function SobreConchitaPlataPage() {
               </svg>
             </Link>
           </div>
-        </section>
+        </AnimateInView>
       )}
 
       <TestimonialsSection />
 
       {/* ── CTA ──────────────────────────────────────────────── */}
-      <section className="py-14 bg-gray-900">
+      <AnimateInView as="section" className="py-14 bg-gray-900">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
@@ -166,10 +167,10 @@ export default async function SobreConchitaPlataPage() {
             </svg>
           </Link>
         </div>
-      </section>
+      </AnimateInView>
 
       {/* ── Valores / cierre ─────────────────────────────────── */}
-      <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
+      <AnimateInView as="section" className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -224,7 +225,7 @@ export default async function SobreConchitaPlataPage() {
             ))}
           </div>
         </div>
-      </section>
+      </AnimateInView>
 
     </div>
   )

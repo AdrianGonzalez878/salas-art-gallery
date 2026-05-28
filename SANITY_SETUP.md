@@ -106,3 +106,4 @@ Asegúrate de configurar las variables de entorno en tu plataforma de hosting:
 - Accede a `https://tu-dominio.com/studio` y verifica que funcione
 - Prueba crear/editar un producto desde producción
 
+

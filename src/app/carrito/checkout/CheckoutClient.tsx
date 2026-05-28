@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 import { urlFor } from '@/lib/sanity'
 import { computeShippingCost, montoFaltanteParaEnvioGratis, UMBRAL_ENVIO_GRATIS_MXN } from '@/lib/shipping'
+import { trackInitiateCheckout, trackPurchase } from '@/lib/marketingPixels'
 import type { Promocion } from '@/sanity/lib/types'
 
 /* Cargar PaymentBrick solo en el cliente (usa window.MercadoPago) */
@@ -46,6 +47,21 @@ export default function CheckoutClient() {
       setError('El pago fue cancelado. Puedes intentar de nuevo cuando quieras.')
     }
   }, [searchParams])
+
+  const initCheckoutTracked = useRef(false)
+  useEffect(() => {
+    if (items.length === 0 || initCheckoutTracked.current) return
+    initCheckoutTracked.current = true
+    trackInitiateCheckout({
+      value: total,
+      items: items.map((i) => ({
+        id: i.id,
+        name: i.title,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+    })
+  }, [items, total])
 
   const handleApplyCoupon = async () => {
     setCouponError(null)
@@ -198,6 +214,17 @@ export default function CheckoutClient() {
       /* El Brick captura el error lanzado y lo muestra en su UI */
       throw new Error(data.error || 'Error al procesar el pago.')
     }
+
+    trackPurchase({
+      value: total,
+      orderId: data.numeroPedido,
+      items: items.map((i) => ({
+        id: i.id,
+        name: i.title,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+    })
 
     clearCart()
     const pedidoParam = encodeURIComponent(data.numeroPedido || '')

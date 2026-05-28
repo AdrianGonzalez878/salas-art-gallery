@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import AnimateInView from '@/components/AnimateInView'
 import { urlFor } from '@/lib/sanity'
 import type { SeccionDestacada, Producto } from '@/sanity/lib/types'
 import ProductCarousel from './ProductCarousel'
@@ -27,7 +28,7 @@ export default function FeaturedCategorySection({
       : 'text-center justify-center'
 
   return (
-    <section className="pt-0 pb-16 bg-white border-t border-gray-100">
+    <AnimateInView as="section" className="pt-0 pb-16 bg-white border-t border-gray-100">
       {/* Banner full-width */}
       <div className="relative overflow-hidden mb-12">
         <div className="relative h-[260px] sm:h-[320px] md:h-[400px] lg:h-[560px] xl:h-[680px] bg-gray-900">
@@ -96,6 +97,6 @@ export default function FeaturedCategorySection({
           <p className="text-center text-gray-400 text-sm">No hay productos disponibles en esta categoría</p>
         </div>
       )}
-    </section>
+    </AnimateInView>
   )
 }

@@ -1,11 +1,31 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import type { Producto } from '@/sanity/lib/types'
+import AnimateInView from '@/components/AnimateInView'
 import ProductCard from './ProductCard'
 
 interface ProductGridProps {
   productos: Producto[]
 }
 
+function useGridColumns() {
+  const [cols, setCols] = useState(2)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const update = () => setCols(mq.matches ? 4 : 2)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  return cols
+}
+
 export default function ProductGrid({ productos }: ProductGridProps) {
+  const cols = useGridColumns()
+
   if (productos.length === 0) {
     return (
       <div className="flex flex-col items-center py-20 text-center">
@@ -22,11 +42,15 @@ export default function ProductGrid({ productos }: ProductGridProps) {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
-      {productos.map((producto) => (
-        <ProductCard key={producto._id} producto={producto} />
+      {productos.map((producto, index) => (
+        <AnimateInView
+          key={producto._id}
+          delay={(index % cols) * 0.06}
+          y={16}
+        >
+          <ProductCard producto={producto} />
+        </AnimateInView>
       ))}
     </div>
   )
 }
-
-

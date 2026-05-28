@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 
 interface SearchPreviewItem {
@@ -49,6 +49,7 @@ const mobileNavButton =
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProductosOpen, setIsProductosOpen] = useState(false)
+  const [isDesktopProductosOpen, setIsDesktopProductosOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchPreviewItem[]>([])
@@ -56,10 +57,28 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   /** Escritorio: solo ícono de lupa hasta que el usuario abre el campo */
   const [desktopSearchExpanded, setDesktopSearchExpanded] = useState(false)
+  const [canHoverNav, setCanHoverNav] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const desktopSearchInputRef = useRef<HTMLInputElement>(null)
+  const productosMenuRef = useRef<HTMLDivElement>(null)
   const { totalItems } = useCart()
   const router = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setIsDesktopProductosOpen(false)
+    setIsMenuOpen(false)
+    setIsProductosOpen(false)
+    setIsSearchOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const update = () => setCanHoverNav(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
 
   useEffect(() => {
     const q = searchQuery.trim()
@@ -88,10 +107,26 @@ export default function Navbar() {
           setDesktopSearchExpanded(false)
         }
       }
+      if (
+        productosMenuRef.current &&
+        !productosMenuRef.current.contains(e.target as Node)
+      ) {
+        setIsDesktopProductosOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [searchQuery])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDesktopProductosOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -110,9 +145,9 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Navbar - Parte superior */}
-      <nav className="hidden md:block sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <nav className="hidden lg:block sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-28 lg:h-32">
+          <div className="flex justify-between items-center h-20 lg:h-24">
             {/* Logo */}
             <Link
               href="/"
@@ -123,7 +158,7 @@ export default function Navbar() {
                 alt="Conchita Logo"
                 width={320}
                 height={100}
-                className="h-24 lg:h-28 w-auto object-contain"
+                className="h-16 lg:h-20 w-auto object-contain"
                 quality={100}
                 priority
               />
@@ -136,24 +171,52 @@ export default function Navbar() {
               </Link>
 
               {/* Productos con dropdown de categorías */}
-              <div className="relative group shrink-0">
-                <button type="button" className={`${desktopNavButton} shrink-0`}>
+              <div
+                ref={productosMenuRef}
+                className="relative shrink-0"
+                onMouseEnter={() => {
+                  if (canHoverNav) setIsDesktopProductosOpen(true)
+                }}
+                onMouseLeave={() => {
+                  if (canHoverNav) setIsDesktopProductosOpen(false)
+                }}
+              >
+                <button
+                  type="button"
+                  className={`${desktopNavButton} shrink-0`}
+                  aria-expanded={isDesktopProductosOpen}
+                  aria-haspopup="true"
+                  onClick={() => setIsDesktopProductosOpen((open) => !open)}
+                >
                   Productos
                   <svg
-                    className="ml-1 h-4 w-4"
+                    className={`ml-1 h-4 w-4 transition-transform duration-200 ${
+                      isDesktopProductosOpen ? 'rotate-180' : ''
+                    }`}
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden
                   >
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
+                <div
+                  className={`absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg transition-all duration-200 border border-gray-100 z-50 ${
+                    isDesktopProductosOpen
+                      ? 'opacity-100 visible pointer-events-auto'
+                      : 'opacity-0 invisible pointer-events-none'
+                  }`}
+                >
                   <div className="py-1">
-                    <Link href="/productos" className={desktopDropdownLinkStrong}>
+                    <Link
+                      href="/productos"
+                      className={desktopDropdownLinkStrong}
+                      onClick={() => setIsDesktopProductosOpen(false)}
+                    >
                       Todos los productos
                     </Link>
                     {categorias.map((categoria) => (
@@ -161,6 +224,7 @@ export default function Navbar() {
                         key={categoria.href}
                         href={categoria.href}
                         className={desktopDropdownLink}
+                        onClick={() => setIsDesktopProductosOpen(false)}
                       >
                         {categoria.nombre}
                       </Link>
@@ -184,7 +248,7 @@ export default function Navbar() {
             <div className="flex items-center space-x-3 lg:space-x-4 shrink-0">
               <div
                 ref={searchRef}
-                className={`hidden md:block relative shrink-0 transition-[width] duration-200 ease-out ${
+                className={`hidden lg:block relative shrink-0 transition-[width] duration-200 ease-out ${
                   desktopSearchExpanded ? 'w-44 lg:w-56' : 'w-10'
                 }`}
               >
@@ -330,7 +394,7 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Navbar - Parte inferior flotante */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50">
         {/* Barra inferior: cuando el menú está cerrado, solo la barra flotante */}
         {!isMenuOpen && (
           <div
@@ -510,7 +574,7 @@ export default function Navbar() {
                 ) : null}
                 {/* Vista búsqueda móvil — mismo patrón que Productos (sin absolute para que no colapse el layout) */}
                 {isSearchOpen ? (
-                  <div className="overflow-y-auto flex-1 min-h-0 p-6 pb-4 w-full flex flex-col md:hidden">
+                  <div className="overflow-y-auto flex-1 min-h-0 p-6 pb-4 w-full flex flex-col lg:hidden">
                     <button
                       type="button"
                       onClick={() => { setIsSearchOpen(false); setSearchQuery('') }}

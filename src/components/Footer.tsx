@@ -14,7 +14,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 border-t-4 border-amber-500">
       {/* Espacio extra en móvil: navbar flotante (Navegación + carrito) + safe-area iPhone */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-[calc(8.75rem+env(safe-area-inset-bottom,0px))] md:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-[calc(8.75rem+env(safe-area-inset-bottom,0px))] lg:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Marca + confianza */}
           <div className="sm:col-span-2 lg:col-span-4">
@@ -243,12 +243,12 @@ export default function Footer() {
             <p className="text-xs text-gray-600">
               Desarrollado por{' '}
               <a
-                href="https://adriangonzdev.com"
+                href="https://argaweb.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-amber-400 transition-colors duration-200 underline underline-offset-2 decoration-gray-600 hover:decoration-amber-400"
               >
-                adriangonzdev.com
+                argaweb.com
               </a>
             </p>
           </div>

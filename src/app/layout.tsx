@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
+import MarketingPixels from "@/components/MarketingPixels";
 import { CartProvider } from "@/context/CartContext";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -116,6 +117,7 @@ export default function RootLayout({
             <ConditionalFooter />
           </main>
         </CartProvider>
+        <MarketingPixels />
         <Analytics />
         <SpeedInsights />
       </body>

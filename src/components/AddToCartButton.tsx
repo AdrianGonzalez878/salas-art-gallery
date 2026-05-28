@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useCart } from '@/context/CartContext'
+import { trackAddToCart } from '@/lib/marketingPixels'
 
 export interface AddToCartButtonProps {
   id: string
@@ -39,6 +40,7 @@ export default function AddToCartButton({
       e.stopPropagation()
     }
     addItem({ id, slug, title, price, imageUrl, quantity })
+    trackAddToCart({ id, name: title, price, quantity })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }

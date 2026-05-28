@@ -5,10 +5,12 @@ import { productosMasVendidosQuery, productosMasNuevosQuery, heroQuery, sobreNos
 import type { Producto, Hero, SobreNosotros, SeccionDestacada, PostInstagram, ShopTheLook } from '@/sanity/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import AboutSection from '@/components/AboutSection'
+import AnimateInView from '@/components/AnimateInView'
 import FeaturedCategorySection from '@/components/FeaturedCategorySection'
 import HeroCarousel from '@/components/HeroCarousel'
 import InstagramSection from '@/components/InstagramSection'
 import ShopTheLookSection from '@/components/ShopTheLookSection'
+import StarCategoryShortcuts from '@/components/StarCategoryShortcuts'
 
 export const metadata: Metadata = {
   title: 'Conchita Plata | Joyería artesanal en plata · Oaxaca',
@@ -125,28 +127,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Trust band ───────────────────────────────────────── */}
-      <section className="py-8 sm:py-12 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-3 gap-3 sm:gap-6">
-            {[
-              { icon: 'M5 13l4 4L19 7', label: 'Calidad Garantizada', desc: 'Cada pieza verificada y sellada en plata .925' },
-              { icon: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4', label: 'Envío Rápido', desc: 'Empaque seguro y entrega en todo México' },
-              { icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', label: 'Hecho con Amor', desc: 'Piezas únicas diseñadas con pasión' },
-            ].map(({ icon, label, desc }) => (
-              <div key={label} className="flex flex-col items-center text-center rounded-2xl p-4 sm:p-6 border border-amber-100 hover:border-amber-300 hover:shadow-sm transition-all duration-300">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-amber-50 flex items-center justify-center mb-3 sm:mb-4">
-                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-amber-600" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <path d={icon} />
-                  </svg>
-                </div>
-                <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 leading-tight mb-1">{label}</h3>
-                <p className="hidden sm:block text-xs text-gray-500 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── Atajos a categorías estrella ─────────────────────── */}
+      <StarCategoryShortcuts />
 
       {/* ── Shop the Look ────────────────────────────────────── */}
       {shopTheLookData && (
@@ -159,7 +141,7 @@ export default async function Home() {
 
       {/* ── Lo Más Vendido ───────────────────────────────────── */}
       {productosMasVendidosList.length > 0 && (
-        <section className="pt-12 pb-16 bg-white">
+        <AnimateInView as="section" className="pt-12 pb-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center gap-3 mb-3">
@@ -174,12 +156,12 @@ export default async function Home() {
           <div className="px-4 sm:px-6 lg:px-8">
             <ProductCarousel productos={productosMasVendidosList} />
           </div>
-        </section>
+        </AnimateInView>
       )}
 
       {/* ── Lo Más Nuevo ─────────────────────────────────────── */}
       {productosMasNuevosList.length > 0 && (
-        <section className="pt-12 pb-16 bg-gray-50">
+        <AnimateInView as="section" className="pt-12 pb-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center gap-3 mb-3">
@@ -205,7 +187,7 @@ export default async function Home() {
               </svg>
             </Link>
           </div>
-        </section>
+        </AnimateInView>
       )}
 
       {/* ── Sobre Nosotros ───────────────────────────────────── */}

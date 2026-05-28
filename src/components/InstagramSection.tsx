@@ -1,3 +1,4 @@
+import AnimateInView from '@/components/AnimateInView'
 import InstagramCarousel from './InstagramCarousel'
 import type { PostInstagram } from '@/sanity/lib/types'
 
@@ -16,7 +17,7 @@ export default function InstagramSection({ posts, imageUrls }: InstagramSectionP
   )
 
   return (
-    <section className="py-16 bg-gray-50 border-t border-gray-100">
+    <AnimateInView as="section" className="py-16 bg-gray-50 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabecera */}
         <div className="flex flex-col items-center text-center mb-10">
@@ -54,6 +55,6 @@ export default function InstagramSection({ posts, imageUrls }: InstagramSectionP
           </a>
         </div>
       </div>
-    </section>
+    </AnimateInView>
   )
 }

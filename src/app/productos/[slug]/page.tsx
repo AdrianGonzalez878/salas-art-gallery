@@ -16,8 +16,10 @@ import ProductShareButtons from '@/components/ProductShareButtons'
 import MSIStaticBanner from '@/components/MSIStaticBanner'
 import MSITicker from '@/components/MSITicker'
 import TePodriaGustarSection from '@/components/TePodriaGustarSection'
+import AnimateInView from '@/components/AnimateInView'
 import InstagramSection from '@/components/InstagramSection'
 import TestimonialsSection from '@/components/TestimonialsSection'
+import ProductViewTracker from '@/components/ProductViewTracker'
 
 interface ProductoPageProps {
   params: Promise<{ slug: string }>
@@ -157,6 +159,11 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ProductViewTracker
+        id={producto._id}
+        name={producto.titulo}
+        price={precioFinal}
+      />
       <div className="w-full">
         <MSIStaticBanner />
       </div>
@@ -164,74 +171,98 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 p-0 sm:p-6 lg:p-8">
             {/* Galería interactiva */}
-            <ProductImageGallery
-              imagenPrincipalUrl={imagenPrincipalUrl}
-              imagenPrincipalAlt={producto.imagenPrincipal?.alt || producto.titulo}
-              imagenesGaleria={imagenesGaleria}
-              titulo={producto.titulo}
-            />
+            <AnimateInView y={20}>
+              <ProductImageGallery
+                imagenPrincipalUrl={imagenPrincipalUrl}
+                imagenPrincipalAlt={producto.imagenPrincipal?.alt || producto.titulo}
+                imagenesGaleria={imagenesGaleria}
+                titulo={producto.titulo}
+              />
+            </AnimateInView>
 
             {/* Información del producto */}
             <div className="flex flex-col justify-center px-4 py-4 sm:px-0 sm:py-0">
-              <div className="mb-4">
-                <span className="inline-block text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full capitalize">
-                  {producto.categoria}
-                </span>
-              </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                {producto.titulo}
-              </h1>
-              <ProductBuyOptions
-                id={producto._id}
-                slug={producto.slug.current}
-                title={producto.titulo}
-                price={precioFinal}
-                precioOriginal={producto.precio}
-                descuentoActivo={descuentoActivo}
-                tipoDescuento={producto.tipoDescuento}
-                valorDescuento={producto.valorDescuento}
-                textoBadge={producto.textoBadge}
-                imageUrl={imagenPrincipalUrl}
-                opcionExtra={
-                  producto.tieneOpcionExtra &&
-                  producto.nombreOpcionExtra &&
-                  producto.precioOpcionExtra &&
-                  ['dijes', 'collares', 'juegos'].includes(producto.categoria)
-                    ? {
-                        nombre: producto.nombreOpcionExtra,
-                        precio: producto.precioOpcionExtra,
+              <AnimateInView delay={0.05} y={16}>
+                <div className="mb-4">
+                  <span className="inline-block text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full capitalize">
+                    {producto.categoria}
+                  </span>
+                </div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                  {producto.titulo}
+                </h1>
+              </AnimateInView>
+
+              <AnimateInView delay={0.1} y={16}>
+                <ProductBuyOptions
+                  id={producto._id}
+                  slug={producto.slug.current}
+                  title={producto.titulo}
+                  price={precioFinal}
+                  precioOriginal={producto.precio}
+                  descuentoActivo={descuentoActivo}
+                  tipoDescuento={producto.tipoDescuento}
+                  valorDescuento={producto.valorDescuento}
+                  textoBadge={producto.textoBadge}
+                  imageUrl={imagenPrincipalUrl}
+                  opcionExtra={
+                    producto.tieneOpcionExtra &&
+                    producto.nombreOpcionExtra &&
+                    producto.precioOpcionExtra &&
+                    ['dijes', 'collares', 'juegos'].includes(producto.categoria)
+                      ? {
+                          nombre: producto.nombreOpcionExtra,
+                          precio: producto.precioOpcionExtra,
+                        }
+                      : undefined
+                  }
+                />
+              </AnimateInView>
+
+              <AnimateInView delay={0.15} y={16}>
+                <ProductDescriptionCollapse descripcion={producto.descripcion} />
+              </AnimateInView>
+
+              <AnimateInView delay={0.2} y={16}>
+                <ProductPurchaseInfo />
+              </AnimateInView>
+
+              <AnimateInView delay={0.25} y={16}>
+                <ProductFlexiblePayments />
+              </AnimateInView>
+
+              <AnimateInView delay={0.3} y={16}>
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  {producto.disponible ? (
+                    (() => {
+                      const stock = producto.stock ?? 1
+                      if (stock === 0) {
+                        return (
+                          <p className="text-sm text-red-600 font-medium">Agotado</p>
+                        )
                       }
-                    : undefined
-                }
-              />
-              <ProductDescriptionCollapse descripcion={producto.descripcion} />
-              <ProductPurchaseInfo />
-              <ProductFlexiblePayments />
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                {producto.disponible ? (
-                  (() => {
-                    const stock = producto.stock ?? 1
-                    if (stock === 0) {
+                      if (stock <= 3) {
+                        return (
+                          <p className="text-sm text-amber-600 font-medium">
+                            Últimas {stock} {stock === 1 ? 'unidad disponible' : 'unidades disponibles'}
+                          </p>
+                        )
+                      }
                       return (
-                        <p className="text-sm text-red-600 font-medium">Agotado</p>
+                        <p className="text-sm text-green-600 font-medium">En stock · {stock} unidades</p>
                       )
-                    }
-                    if (stock <= 3) {
-                      return (
-                        <p className="text-sm text-amber-600 font-medium">
-                          Últimas {stock} {stock === 1 ? 'unidad disponible' : 'unidades disponibles'}
-                        </p>
-                      )
-                    }
-                    return (
-                      <p className="text-sm text-green-600 font-medium">En stock · {stock} unidades</p>
-                    )
-                  })()
-                ) : (
-                  <p className="text-sm text-red-600 font-medium">Agotado</p>
-                )}
-              </div>
-              {productUrl ? <ProductShareButtons title={producto.titulo} url={productUrl} /> : null}
+                    })()
+                  ) : (
+                    <p className="text-sm text-red-600 font-medium">Agotado</p>
+                  )}
+                </div>
+              </AnimateInView>
+
+              {productUrl ? (
+                <AnimateInView delay={0.35} y={16}>
+                  <ProductShareButtons title={producto.titulo} url={productUrl} />
+                </AnimateInView>
+              ) : null}
             </div>
           </div>
         </div>

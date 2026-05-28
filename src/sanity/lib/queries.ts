@@ -577,3 +577,16 @@ export const cuponesActivosQuery = groq`
     fechaFin
   }
 `
+
+// Primer producto disponible que coincida con un término (para atajos de categoría en home)
+export const productoImagenPorTerminoQuery = groq`
+  *[_type == "producto" && disponible == true && (
+    lower(titulo) match $pattern ||
+    lower(pt::text(descripcion)) match $pattern
+  )] | order(ventas desc, _createdAt desc) [0] {
+    imagenPrincipal {
+      asset,
+      alt
+    }
+  }
+`

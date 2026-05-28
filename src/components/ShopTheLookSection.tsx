@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import AnimateInView from '@/components/AnimateInView'
 import type { ShopTheLook, PortableTextBlock } from '@/sanity/lib/types'
 import { useCart } from '@/context/CartContext'
 
@@ -48,7 +49,7 @@ export default function ShopTheLookSection({
   }
 
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
+    <AnimateInView as="section" className="py-16 bg-white relative overflow-hidden">
       {/* Encabezado */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center">
@@ -226,6 +227,6 @@ export default function ShopTheLookSection({
           </div>
         </div>
       </div>
-    </section>
+    </AnimateInView>
   )
 }

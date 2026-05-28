@@ -1,7 +1,8 @@
+import AnimateInView from '@/components/AnimateInView'
+import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { sanityFetch } from '@/lib/sanity'
 import { testimoniosActivosQuery } from '@/sanity/lib/queries'
 import type { Testimonio } from '@/sanity/lib/types'
-import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 
 export default async function TestimonialsSection() {
   const testimonios = await sanityFetch<Testimonio[]>(testimoniosActivosQuery)
@@ -9,7 +10,7 @@ export default async function TestimonialsSection() {
   if (!testimonios || testimonios.length === 0) return null
 
   return (
-    <section className="py-14 md:py-20 bg-white border-t border-gray-100">
+    <AnimateInView as="section" className="py-14 md:py-20 bg-white border-t border-gray-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-10 lg:px-16">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -26,6 +27,6 @@ export default async function TestimonialsSection() {
 
         <TestimonialsCarousel testimonios={testimonios} />
       </div>
-    </section>
+    </AnimateInView>
   )
 }
