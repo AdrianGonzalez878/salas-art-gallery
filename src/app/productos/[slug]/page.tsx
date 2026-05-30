@@ -157,8 +157,39 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       urlFor(img).width(1200).quality(90).url()
     ) || []
 
+  const stock = producto.stock ?? 1
+  const disponibilidadSchema = !producto.disponible || stock === 0
+    ? 'https://schema.org/OutOfStock'
+    : 'https://schema.org/InStock'
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: producto.titulo,
+    description: producto.descripcion
+      ? portableTextToPlain(
+          producto.descripcion as Array<{ _type: string; children?: Array<{ text?: string }> }>
+        )
+      : `${producto.titulo} — joyería artesanal en plata .925 de Oaxaca.`,
+    image: [imagenPrincipalUrl, ...imagenesGaleria],
+    sku: producto.slug.current,
+    brand: { '@type': 'Brand', name: 'Conchita Plata' },
+    offers: {
+      '@type': 'Offer',
+      url: productUrl || `https://conchitaplata.com/productos/${producto.slug.current}`,
+      priceCurrency: 'MXN',
+      price: precioFinal,
+      availability: disponibilidadSchema,
+      seller: { '@type': 'Organization', name: 'Conchita Plata' },
+    },
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ProductViewTracker
         id={producto._id}
         name={producto.titulo}

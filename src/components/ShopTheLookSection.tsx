@@ -51,13 +51,20 @@ export default function ShopTheLookSection({
   return (
     <AnimateInView as="section" className="py-16 bg-white relative overflow-hidden">
       {/* Encabezado */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+        <div className="flex flex-col items-center text-center">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-0.5 bg-amber-400" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
+              Compra el look
+            </span>
+            <div className="w-8 h-0.5 bg-amber-400" />
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
             {data.titulo}
           </h2>
           {data.descripcion && (
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-500 text-sm sm:text-base max-w-md mx-auto">
               {data.descripcion}
             </p>
           )}
