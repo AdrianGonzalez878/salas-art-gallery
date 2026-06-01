@@ -86,7 +86,7 @@ export default async function StarCategoryShortcuts() {
   )
 
   return (
-    <AnimateInView as="section" className="py-8 sm:py-12 bg-white border-b border-gray-100">
+    <section className="py-8 sm:py-12 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -141,6 +141,6 @@ export default async function StarCategoryShortcuts() {
           ))}
         </div>
       </div>
-    </AnimateInView>
+    </section>
   )
 }
