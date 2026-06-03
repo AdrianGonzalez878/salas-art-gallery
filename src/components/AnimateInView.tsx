@@ -2,6 +2,7 @@
 
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react'
+import { useTouchLikeDevice } from '@/hooks/useTouchLikeDevice'
 
 type AnimateTag = 'div' | 'section' | 'article'
 
@@ -27,20 +28,21 @@ export default function AnimateInView({
   children,
 }: AnimateInViewProps) {
   const prefersReducedMotion = useReducedMotion()
+  const isTouchLike = useTouchLikeDevice()
   const ref = useRef<HTMLElement>(null)
 
-  // 1ª opción: animación normal al entrar en viewport
+  // 1ª opción (todas las pantallas): animación al entrar en viewport
   const isInView = useInView(ref, {
     once: true,
     amount: 0.12,
     margin: '0px 0px -40px 0px',
   })
 
-  // 2ª opción: solo si Safari no disparó useInView pero el elemento ya está visible
+  // 2ª opción (solo móvil/tablet táctil): si Safari no disparó useInView
   const [fallbackShow, setFallbackShow] = useState(false)
 
   useEffect(() => {
-    if (prefersReducedMotion || isInView) return
+    if (!isTouchLike || prefersReducedMotion || isInView) return
 
     const tryFallback = () => {
       const el = ref.current
@@ -50,14 +52,21 @@ export default function AnimateInView({
       }
     }
 
-    const timer = setTimeout(tryFallback, 350)
-    window.addEventListener('load', tryFallback, { once: true })
+    tryFallback()
+    let innerRaf = 0
+    const outerRaf = requestAnimationFrame(() => {
+      innerRaf = requestAnimationFrame(tryFallback)
+    })
+    const t1 = setTimeout(tryFallback, 50)
+    const t2 = setTimeout(tryFallback, 150)
 
     return () => {
-      clearTimeout(timer)
-      window.removeEventListener('load', tryFallback)
+      cancelAnimationFrame(outerRaf)
+      if (innerRaf) cancelAnimationFrame(innerRaf)
+      clearTimeout(t1)
+      clearTimeout(t2)
     }
-  }, [prefersReducedMotion, isInView])
+  }, [isTouchLike, prefersReducedMotion, isInView])
 
   const StaticTag = as
 
@@ -66,7 +75,7 @@ export default function AnimateInView({
   }
 
   const MotionTag = motion[as]
-  const shouldShow = isInView || fallbackShow
+  const shouldShow = isInView || (isTouchLike && fallbackShow)
 
   return (
     <MotionTag
