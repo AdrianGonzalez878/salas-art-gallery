@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from 'react'
 
-const QUERY = '(hover: none), (pointer: coarse)'
+/** iPhone, Android, iPad en layout móvil (alineado con breakpoint lg del sitio). */
+const QUERY = '(hover: none), (pointer: coarse), (max-width: 1023px)'
 
 function getMediaQuery() {
   return window.matchMedia(QUERY)
