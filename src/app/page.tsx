@@ -13,9 +13,9 @@ import ShopTheLookSection from '@/components/ShopTheLookSection'
 import StarCategoryShortcuts from '@/components/StarCategoryShortcuts'
 
 export const metadata: Metadata = {
-  title: 'Conchita Plata | Joyería artesanal en plata · Oaxaca',
+  title: 'Salas Art Gallery | Galería de arte contemporáneo',
   description:
-    'Descubre joyería artesanal en plata .925 de Oaxaca: filigrana oaxaqueña, ámbar, marquesita, dijes, collares, aretes y pulseras con diseños únicos hechos a mano. Envío gratis a partir de $999.',
+    'Descubre obras de arte contemporáneo en Salas Art Gallery: pintura, escultura y fotografía de artistas seleccionados. Compra piezas únicas en línea.',
   alternates: {
     canonical: '/',
   },

@@ -4,7 +4,7 @@ import { schemaTypes } from './src/sanity/schema'
 
 export default defineConfig({
   name: 'default',
-  title: 'Tienda de Joyería',
+  title: 'Salas Art Gallery',
 
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',

@@ -19,18 +19,16 @@ import OrdenSelector from '@/components/OrdenSelector'
 import Pagination from '@/components/Pagination'
 
 export const metadata: Metadata = {
-  title: 'Tienda de Joyería en Plata · Oaxaca',
+  title: 'Obras | Salas Art Gallery',
   description:
-    'Compra joyería artesanal en plata .925: filigrana oaxaqueña, ámbar, marquesita, dijes, collares, aretes, pulseras y anillos. Diseños únicos hechos a mano en Oaxaca, México.',
+    'Explora el catálogo de Salas Art Gallery: pintura, escultura, fotografía y más. Obras únicas de artistas contemporáneos.',
   keywords: [
-    'comprar joyería plata Oaxaca',
-    'tienda joyería plata online',
-    'filigrana plata Oaxaca',
-    'ámbar joyería México',
-    'marquesita plata',
-    'dijes plata .925',
-    'aretes plata Oaxaca',
-    'collares plata artesanal',
+    'comprar arte online',
+    'catálogo de arte',
+    'pintura contemporánea',
+    'escultura',
+    'fotografía artística',
+    'Salas Art Gallery obras',
   ],
   alternates: {
     canonical: '/productos',

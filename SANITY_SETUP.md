@@ -6,7 +6,7 @@
 
 1. Ve a [https://sanity.io](https://sanity.io) y crea una cuenta (es gratis)
 2. Crea un nuevo proyecto
-3. Elige un nombre para tu proyecto (ej: "tienda-joyeria")
+3. Elige un nombre para tu proyecto (ej: "salas-art-gallery")
 4. Selecciona el dataset (por defecto es "production")
 
 ### 2. Obtener las credenciales

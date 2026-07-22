@@ -30,7 +30,7 @@ export default function GaleriaCarousel({ imagenes }: GaleriaCarouselProps) {
 
         {/* Badge decorativo */}
         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2.5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Conchita Plata</p>
+          <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Salas Art Gallery</p>
           <p className="text-[11px] text-gray-500">Joyería artesanal en plata</p>
         </div>
 

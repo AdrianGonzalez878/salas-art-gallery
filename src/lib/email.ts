@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = 'Conchita Plata <notificaciones@conchitaplata.com>'
+const FROM = 'Salas Art Gallery <notificaciones@salasartgallery.com>'
 
 function getAppUrl(): string {
   if (process.env.NEXT_PUBLIC_APP_URL) {
@@ -44,7 +44,7 @@ function formatMXN(amount: number) {
 function emailHeader(logoUrl: string, subtitle: string) {
   return `
   <div style="background:#111827;padding:24px 32px;text-align:center;">
-    <img src="${logoUrl}" alt="Conchita Plata" width="120" height="auto"
+    <img src="${logoUrl}" alt="Salas Art Gallery" width="120" height="auto"
       style="display:inline-block;max-height:60px;object-fit:contain;" />
     <p style="color:#d1d5db;margin:8px 0 0;font-size:13px;letter-spacing:0.05em;">${subtitle}</p>
   </div>`
@@ -53,7 +53,7 @@ function emailHeader(logoUrl: string, subtitle: string) {
 function emailFooter() {
   return `
   <div style="background:#f9fafb;padding:16px 32px;text-align:center;font-size:12px;color:#9ca3af;border-top:1px solid #e5e7eb;">
-    Conchita Plata &mdash; notificación automática
+    Salas Art Gallery &mdash; notificación automática
   </div>`
 }
 
@@ -231,7 +231,7 @@ export async function sendConfirmacionCliente(data: NuevoPedidoData) {
   await resend.emails.send({
     from: FROM,
     to: cliente.email,
-    subject: `¡Recibimos tu pedido! ${numeroPedido} — Conchita Plata`,
+    subject: `¡Recibimos tu pedido! ${numeroPedido} — Salas Art Gallery`,
     html,
   })
 }
@@ -318,7 +318,7 @@ export async function sendPedidoEnviado(opts: {
   await resend.emails.send({
     from: FROM,
     to: clienteEmail,
-    subject: `📦 Tu pedido ${numeroPedido} está en camino — Conchita Plata`,
+    subject: `📦 Tu pedido ${numeroPedido} está en camino — Salas Art Gallery`,
     html,
   })
 }

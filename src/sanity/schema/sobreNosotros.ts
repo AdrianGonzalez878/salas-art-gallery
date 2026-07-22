@@ -28,9 +28,9 @@ export default defineType({
     }),
     defineField({
       name: 'imagenBanner',
-      title: 'Imagen del banner (página Conchita Plata)',
+      title: 'Imagen del banner (página Sobre nosotros)',
       type: 'image',
-      description: 'Imagen horizontal para el banner de la página "Sobre Conchita Plata". Recomendado: 1920×600 px o similar en formato horizontal.',
+      description: 'Imagen horizontal para el banner de la página "Sobre nosotros". Recomendado: 1920×600 px o similar en formato horizontal.',
       options: { hotspot: true },
       fields: [
         {
@@ -44,7 +44,7 @@ export default defineType({
       name: 'historia',
       title: 'Historia',
       type: 'text',
-      description: 'La historia de Conchita Plata, cómo se fundó, etc.',
+      description: 'La historia de Salas Art Gallery, cómo se fundó, etc.',
       validation: (Rule) => Rule.required().min(100).max(1000),
     }),
     defineField({

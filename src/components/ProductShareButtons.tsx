@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 
-const BRAND_NAME = 'Conchita Plata'
+const BRAND_NAME = 'Salas Art Gallery'
 
 /** Mensaje completo para pegar (copiar, WhatsApp): más contexto que solo la URL */
 function buildFullShareMessage(productTitle: string, productUrl: string): string {

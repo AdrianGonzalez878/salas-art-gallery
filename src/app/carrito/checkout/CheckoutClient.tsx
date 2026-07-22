@@ -239,10 +239,10 @@ export default function CheckoutClient() {
   const Banner = (
     <div className="bg-white border-b border-gray-200 h-28 sm:h-28 md:h-32">
       <div className="max-w-6xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <Link href="/" className="flex items-center h-full py-2" aria-label="Conchita Plata - Ir al inicio">
+        <Link href="/" className="flex items-center h-full py-2" aria-label="Salas Art Gallery - Ir al inicio">
           <Image
             src="/logo.jpg"
-            alt="Conchita Plata Joyería"
+            alt="Salas Art Gallery"
             width={240}
             height={75}
             className="h-full w-auto object-contain"

@@ -155,7 +155,7 @@ export default function Navbar() {
             >
               <Image
                 src="/logo.jpg"
-                alt="Conchita Logo"
+                alt="Salas Art Gallery Logo"
                 width={320}
                 height={100}
                 className="h-16 lg:h-20 w-auto object-contain"
@@ -164,7 +164,7 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Desktop Navigation: Inicio → Productos → Promociones → Sobre Conchita Plata */}
+            {/* Desktop Navigation: Inicio → Productos → Promociones → Sobre Salas Art Gallery */}
             <div className="flex items-center space-x-6 lg:space-x-8 flex-1 justify-center min-w-0">
               <Link href="/" className={`${desktopNavLink} shrink-0`}>
                 Inicio
@@ -237,10 +237,10 @@ export default function Navbar() {
                 Promociones
               </Link>
               <Link
-                href="/sobre-conchita-plata"
+                href="/sobre-nosotros"
                 className={`${desktopNavLink} shrink-0 text-sm lg:text-base whitespace-nowrap`}
               >
-                Sobre Conchita Plata
+                Sobre nosotros
               </Link>
             </div>
 
@@ -474,7 +474,7 @@ export default function Navbar() {
                       <Link href="/" onClick={() => setIsMenuOpen(false)}>
                         <Image
                           src="/logo.jpg"
-                          alt="Conchita Logo"
+                          alt="Salas Art Gallery Logo"
                           width={200}
                           height={70}
                           className="h-16 w-auto object-contain"
@@ -518,11 +518,11 @@ export default function Navbar() {
                         Promociones
                       </Link>
                       <Link
-                        href="/sobre-conchita-plata"
+                        href="/sobre-nosotros"
                         className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Sobre Conchita Plata
+                        Sobre nosotros
                       </Link>
                       <button
                         type="button"

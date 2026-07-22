@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-const INSTAGRAM_URL = 'https://www.instagram.com/conchitaplata.925'
-const WHATSAPP_URL = 'https://wa.me/529512351547'
-const EMAIL = 'conchitaplatatienda@gmail.com'
-const PHONE_DISPLAY = '+52 951 235 1547'
-const PHONE_TEL = '+529512351547'
+// TODO: reemplazar con Instagram / WhatsApp / teléfono reales de Salas Art Gallery
+const INSTAGRAM_URL = 'https://www.instagram.com/salasartgallery'
+const WHATSAPP_URL = 'https://wa.me/520000000000'
+const EMAIL = 'contacto@salasartgallery.com'
+const PHONE_DISPLAY = '+52 000 000 0000'
+const PHONE_TEL = '+520000000000'
 
 const linkClass = 'text-gray-400 hover:text-amber-300 transition-colors'
 const headingClass = 'text-white font-semibold mb-4 text-sm uppercase tracking-wide text-amber-400/90'
@@ -21,7 +22,7 @@ export default function Footer() {
             <div className="mb-4">
               <Image
                 src="/logo.jpg"
-                alt="Conchita Plata"
+                alt="Salas Art Gallery"
                 width={200}
                 height={70}
                 className="h-16 w-auto object-contain"
@@ -29,7 +30,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-400 mb-5 max-w-md text-sm leading-relaxed">
-              Tu tienda de joyería de confianza. Piezas en plata diseñadas con pasión y atención al detalle.
+              Galería de arte contemporáneo. Obras únicas de artistas seleccionados, con envíos seguros y atención personalizada.
             </p>
             <ul className="space-y-2.5 text-sm text-gray-400">
               <li className="flex gap-2">
@@ -73,8 +74,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/sobre-conchita-plata" className={linkClass}>
-                  Sobre Conchita Plata
+                <Link href="/sobre-nosotros" className={linkClass}>
+                  Sobre nosotros
                 </Link>
               </li>
               <li>
@@ -149,7 +150,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex rounded-[22%] shadow-md ring-1 ring-white/15 transition-all hover:scale-105 hover:brightness-110 hover:ring-white/25"
-                aria-label="Instagram @conchitaplata.925"
+                aria-label="Instagram @salasartgallery"
               >
                 <svg className="w-11 h-11" viewBox="0 0 24 24" aria-hidden>
                   <defs>
@@ -168,7 +169,7 @@ export default function Footer() {
                 </svg>
               </a>
             </div>
-            <p className="text-xs text-gray-500 mt-3">@conchitaplata.925</p>
+            <p className="text-xs text-gray-500 mt-3">@salasartgallery</p>
           </div>
         </div>
 
@@ -237,7 +238,7 @@ export default function Footer() {
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <p className="text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} Conchita Plata. Todos los derechos reservados.
+              &copy; {new Date().getFullYear()} Salas Art Gallery. Todos los derechos reservados.
             </p>
             <span className="hidden sm:inline text-gray-700 text-xs" aria-hidden>·</span>
             <p className="text-xs text-gray-600">

@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from 'react'
 
-const CART_STORAGE_KEY = 'conchita-cart'
+const CART_STORAGE_KEY = 'salas-cart'
 
 export interface CartItem {
   id: string

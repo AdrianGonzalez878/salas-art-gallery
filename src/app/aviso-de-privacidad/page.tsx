@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Aviso de privacidad | Conchita Plata',
+  title: 'Aviso de privacidad | Salas Art Gallery',
   description: 'Aviso de privacidad y protección de datos personales.',
 }
 
@@ -15,7 +15,7 @@ export default function AvisoPrivacidadPage() {
         <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-6">Aviso de privacidad</h1>
         <div className="prose prose-gray max-w-none text-gray-700 space-y-4 text-sm sm:text-base leading-relaxed">
           <p>
-            <strong>Conchita Plata</strong> se compromete a proteger la privacidad de los datos personales que nos
+            <strong>Salas Art Gallery</strong> se compromete a proteger la privacidad de los datos personales que nos
             proporcionas al usar nuestro sitio web o realizar una compra.
           </p>
           <p>
@@ -29,8 +29,8 @@ export default function AvisoPrivacidadPage() {
           </p>
           <p>
             Puedes solicitar acceso, rectificación o eliminación de tus datos escribiendo a{' '}
-            <a href="mailto:conchita-plata04@hotmail.com" className="text-amber-700 hover:underline">
-              conchita-plata04@hotmail.com
+            <a href="mailto:contacto@salasartgallery.com" className="text-amber-700 hover:underline">
+              contacto@salasartgallery.com
             </a>
             .
           </p>

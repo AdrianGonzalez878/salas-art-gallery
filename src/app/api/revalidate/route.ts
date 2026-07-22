@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 /**
  * Webhook de revalidación llamado por Sanity cuando cambia contenido.
  * Configurar en sanity.io/manage → API → Webhooks con:
- *   URL: https://conchitaplata.com/api/revalidate?secret=TU_SECRETO
+ *   URL: https://salasartgallery.com/api/revalidate?secret=TU_SECRETO
  *   Trigger: create, update, delete
  *   Filter: (opcional) _type == "producto" || _type == "hero" || ...
  */

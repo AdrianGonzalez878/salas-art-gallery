@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Términos y condiciones | Conchita Plata',
-  description: 'Términos y condiciones de uso de la tienda Conchita Plata.',
+  title: 'Términos y condiciones | Salas Art Gallery',
+  description: 'Términos y condiciones de uso de la tienda Salas Art Gallery.',
 }
 
 export default function TerminosPage() {
@@ -15,7 +15,7 @@ export default function TerminosPage() {
         <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-6">Términos y condiciones</h1>
         <div className="prose prose-gray max-w-none text-gray-700 space-y-4 text-sm sm:text-base leading-relaxed">
           <p>
-            Al usar el sitio web de <strong>Conchita Plata</strong> y realizar pedidos, aceptas estos términos.
+            Al usar el sitio web de <strong>Salas Art Gallery</strong> y realizar pedidos, aceptas estos términos.
           </p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Los precios publicados incluyen IVA y pueden cambiar sin previo aviso, salvo pedidos ya confirmados y pagados.</li>
@@ -26,7 +26,7 @@ export default function TerminosPage() {
           </ul>
           <p>
             Para dudas sobre tu pedido o estos términos, contáctanos por{' '}
-            <a href="mailto:conchita-plata04@hotmail.com" className="text-amber-700 hover:underline">
+            <a href="mailto:contacto@salasartgallery.com" className="text-amber-700 hover:underline">
               correo
             </a>{' '}
             o WhatsApp.

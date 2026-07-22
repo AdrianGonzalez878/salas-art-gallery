@@ -40,7 +40,7 @@ export default async function AdminPage() {
               </svg>
             </div>
             <span className="font-semibold text-gray-900 text-sm tracking-wide">
-              Conchita Plata <span className="text-gray-400 font-normal">/ Admin</span>
+              Salas Art Gallery <span className="text-gray-400 font-normal">/ Admin</span>
             </span>
           </div>
           <AdminLogoutButton />

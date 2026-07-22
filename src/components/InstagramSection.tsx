@@ -28,16 +28,16 @@ export default function InstagramSection({ posts, imageUrls }: InstagramSectionP
           </div>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Instagram</h2>
           <p className="text-gray-500 max-w-md text-sm sm:text-base mb-4">
-            Descubre nuestras últimas creaciones y el día a día de Conchita Plata
+            Descubre nuestras últimas creaciones y el día a día de Salas Art Gallery
           </p>
           <a
-            href="https://www.instagram.com/conchitaplata.925"
+            href="https://www.instagram.com/salasartgallery"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-medium text-pink-600 hover:text-pink-700 transition-colors"
           >
             {igIcon}
-            @conchitaplata.925
+            @salasartgallery
           </a>
         </div>
 
@@ -45,7 +45,7 @@ export default function InstagramSection({ posts, imageUrls }: InstagramSectionP
 
         <div className="text-center mt-10">
           <a
-            href="https://www.instagram.com/conchitaplata.925"
+            href="https://www.instagram.com/salasartgallery"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"

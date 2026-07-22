@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '',                        changeFrequency: 'daily',   priority: 1.0  },
     { path: '/productos',              changeFrequency: 'daily',   priority: 0.95 },
     { path: '/promociones',            changeFrequency: 'daily',   priority: 0.85 },
-    { path: '/sobre-conchita-plata',   changeFrequency: 'monthly', priority: 0.7  },
+    { path: '/sobre-nosotros',   changeFrequency: 'monthly', priority: 0.7  },
     { path: '/aviso-de-privacidad',    changeFrequency: 'yearly',  priority: 0.3  },
     { path: '/terminos',               changeFrequency: 'yearly',  priority: 0.3  },
   ]

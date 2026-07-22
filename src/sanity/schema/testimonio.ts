@@ -16,7 +16,7 @@ export default defineType({
       name: 'texto',
       title: 'Texto del testimonio',
       type: 'text',
-      description: 'Lo que dice la clienta sobre Conchita Plata',
+      description: 'Lo que dice la clienta sobre Salas Art Gallery',
       validation: (Rule) => Rule.required().min(20).max(300),
     }),
     defineField({

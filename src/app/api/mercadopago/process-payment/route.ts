@@ -207,13 +207,13 @@ export async function POST(request: Request) {
 
   const paymentBody: Record<string, unknown> = {
     transaction_amount: totalCalculado,
-    description: 'Conchita Plata Joyería',
+    description: 'Salas Art Gallery',
     payment_method_id: fd.payment_method_id,
     installments: Number(fd.installments ?? 1),
     payer: payerObj,
     external_reference: numeroPedido,
     ...(baseUrl.startsWith('https') && { notification_url: `${baseUrl}/api/mercadopago/webhook` }),
-    statement_descriptor: 'CONCHITA PLATA',
+    statement_descriptor: 'SALAS ART',
   }
 
   // Campos opcionales de tarjeta

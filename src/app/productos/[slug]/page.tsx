@@ -62,41 +62,38 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
 
   const descripcionPlain = producto.descripcion
     ? portableTextToPlain(producto.descripcion).slice(0, 155)
-    : `${producto.titulo} — joyería artesanal en plata .925 de Oaxaca.`
+    : `${producto.titulo} — obra disponible en Salas Art Gallery.`
 
   const ogImage = producto.imagenPrincipal
     ? urlFor(producto.imagenPrincipal).width(1200).height(630).url()
     : '/logo.jpg'
 
   const categoriaLabel: Record<string, string> = {
-    dijes: 'Dije de plata',
-    collares: 'Collar de plata',
-    aretes: 'Aretes de plata',
-    pulseras: 'Pulsera de plata',
-    anillos: 'Anillo de plata',
-    juegos: 'Juego de joyería en plata',
-    ambar: 'Joyería de ámbar',
-    marquesita: 'Joyería de marquesita',
-    filigrana: 'Filigrana oaxaqueña',
+    dijes: 'Obra',
+    collares: 'Obra',
+    aretes: 'Obra',
+    pulseras: 'Obra',
+    anillos: 'Obra',
+    juegos: 'Obra',
+    ambar: 'Obra',
+    marquesita: 'Obra',
+    filigrana: 'Obra',
   }
-  const catLabel = categoriaLabel[producto.categoria] ?? 'Joyería en plata'
+  const catLabel = categoriaLabel[producto.categoria] ?? 'Obra de arte'
 
   return {
-    title: `${producto.titulo} | ${catLabel} · Oaxaca`,
+    title: `${producto.titulo} | ${catLabel}`,
     description: descripcionPlain,
     keywords: [
       producto.titulo,
       catLabel,
-      'plata .925',
-      'joyería artesanal Oaxaca',
-      'joyería hecha a mano',
-      'diseños únicos plata',
-      producto.categoria === 'ambar' ? 'ámbar Chiapas' : '',
-      producto.categoria === 'marquesita' ? 'marquesita plata' : '',
-      producto.categoria === 'filigrana' ? 'filigrana oaxaqueña' : '',
+      'Salas Art Gallery',
+      'arte contemporáneo',
+      'galería de arte',
+      'obra de arte',
     ].filter(Boolean),
     openGraph: {
-      title: `${producto.titulo} — $${precioFinal.toLocaleString()} | Conchita Plata`,
+      title: `${producto.titulo} — $${precioFinal.toLocaleString()} | Salas Art Gallery`,
       description: descripcionPlain,
       images: [{ url: ogImage, width: 1200, height: 630, alt: producto.titulo }],
       type: 'website',
@@ -170,17 +167,17 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       ? portableTextToPlain(
           producto.descripcion as Array<{ _type: string; children?: Array<{ text?: string }> }>
         )
-      : `${producto.titulo} — joyería artesanal en plata .925 de Oaxaca.`,
+      : `${producto.titulo} — obra disponible en Salas Art Gallery.`,
     image: [imagenPrincipalUrl, ...imagenesGaleria],
     sku: producto.slug.current,
-    brand: { '@type': 'Brand', name: 'Conchita Plata' },
+    brand: { '@type': 'Brand', name: 'Salas Art Gallery' },
     offers: {
       '@type': 'Offer',
-      url: productUrl || `https://conchitaplata.com/productos/${producto.slug.current}`,
+      url: productUrl || `https://salasartgallery.com/productos/${producto.slug.current}`,
       priceCurrency: 'MXN',
       price: precioFinal,
       availability: disponibilidadSchema,
-      seller: { '@type': 'Organization', name: 'Conchita Plata' },
+      seller: { '@type': 'Organization', name: 'Salas Art Gallery' },
     },
   }
 

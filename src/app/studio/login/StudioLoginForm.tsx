@@ -50,7 +50,7 @@ export default function StudioLoginForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">Conchita Plata</h1>
+          <h1 className="text-2xl font-bold text-white">Salas Art Gallery</h1>
           <p className="text-gray-400 mt-1 text-sm">Acceso a Sanity Studio</p>
         </div>
 
@@ -119,7 +119,7 @@ export default function StudioLoginForm() {
         </div>
 
         <p className="text-center text-gray-600 text-xs mt-6">
-          Conchita Plata © {new Date().getFullYear()}
+          Salas Art Gallery © {new Date().getFullYear()}
         </p>
       </div>
     </div>

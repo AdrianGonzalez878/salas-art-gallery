@@ -31,7 +31,7 @@ export default function AboutSection({ data }: AboutSectionProps) {
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl">
                 <Image
                   src={urlFor(data.galeria[0]).width(800).height(600).quality(90).url()}
-                  alt={data.galeria[0].alt || 'Conchita Plata'}
+                  alt={data.galeria[0].alt || 'Salas Art Gallery'}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"

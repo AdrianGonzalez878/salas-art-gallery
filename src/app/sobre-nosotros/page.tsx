@@ -9,23 +9,22 @@ import AnimateInView from '@/components/AnimateInView'
 import TestimonialsSection from '@/components/TestimonialsSection'
 
 export const metadata: Metadata = {
-  title: 'Nuestra Historia | Joyería artesanal en plata de Oaxaca',
+  title: 'Nuestra Historia | Salas Art Gallery',
   description:
-    'Conoce la historia de Conchita Plata: artesanos oaxaqueños especializados en filigrana, ámbar, marquesita y plata .925. Décadas creando joyería única hecha a mano en Oaxaca, México.',
+    'Conoce la historia de Salas Art Gallery: una galería dedicada al arte contemporáneo, con obras de artistas seleccionados en pintura, escultura y fotografía.',
   keywords: [
-    'historia Conchita Plata',
-    'artesanos joyería Oaxaca',
-    'filigrana oaxaqueña artesanal',
-    'joyería ámbar Oaxaca',
-    'marquesita plata Oaxaca',
-    'plata .925 artesanal México',
+    'historia Salas Art Gallery',
+    'galería de arte',
+    'arte contemporáneo',
+    'artistas contemporáneos',
+    'galería de arte México',
   ],
   alternates: {
-    canonical: '/sobre-conchita-plata',
+    canonical: '/sobre-nosotros',
   },
 }
 
-export default async function SobreConchitaPlataPage() {
+export default async function SobreNosotrosPage() {
   const data = await sanityFetch<SobreNosotros | null>(sobreNosotrosQuery)
 
   return (
@@ -39,7 +38,7 @@ export default async function SobreConchitaPlataPage() {
               {data?.imagenBanner?.asset ? (
                 <Image
                   src={urlFor(data.imagenBanner).width(1920).quality(90).url()}
-                  alt={data.imagenBanner.alt || 'Conchita Plata'}
+                  alt={data.imagenBanner.alt || 'Salas Art Gallery'}
                   fill
                   className="object-cover"
                   sizes="(min-width: 1024px) 1280px, 100vw"
@@ -57,7 +56,7 @@ export default async function SobreConchitaPlataPage() {
                   {/* Decorative line */}
                   <div className="w-10 h-0.5 bg-amber-400 mb-4 sm:mb-5" />
                   <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-3 sm:mb-4">
-                    {data?.titulo || 'Conchita Plata'}
+                    {data?.titulo || 'Salas Art Gallery'}
                   </h1>
                   {data?.subtitulo && (
                     <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-xl leading-relaxed">
@@ -115,7 +114,7 @@ export default async function SobreConchitaPlataPage() {
                 <GaleriaCarousel
                   imagenes={data.galeria.map((img, idx) => ({
                     url: urlFor(img).width(900).quality(90).url(),
-                    alt: img.alt || `Conchita Plata ${idx + 1}`,
+                    alt: img.alt || `Salas Art Gallery ${idx + 1}`,
                   }))}
                 />
               )}
@@ -127,16 +126,15 @@ export default async function SobreConchitaPlataPage() {
         <AnimateInView as="section" className="py-24">
           <div className="max-w-2xl mx-auto px-4 text-center">
             <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
-            <h2 className="font-display text-3xl font-bold text-gray-900 mb-4">Conchita Plata</h2>
+            <h2 className="font-display text-3xl font-bold text-gray-900 mb-4">Salas Art Gallery</h2>
             <p className="text-gray-600 leading-relaxed mb-10">
-              Tu tienda de joyería de confianza. Piezas únicas en plata, diseñadas con pasión
-              y dedicación. Pronto podrás conocer más de nuestra historia aquí.
+              Galería de arte contemporáneo. Pronto podrás conocer más de nuestra historia aquí.
             </p>
             <Link
               href="/productos"
               className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
             >
-              Ver productos
+              Ver obras
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -152,10 +150,10 @@ export default async function SobreConchitaPlataPage() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
-            Encuentra tu pieza perfecta
+            Encuentra tu próxima obra
           </h2>
           <p className="text-gray-400 text-sm sm:text-base mb-8 max-w-xl mx-auto">
-            Explora nuestra colección completa de joyería artesanal en plata .925 y encuentra la pieza que te enamore.
+            Explora el catálogo de Salas Art Gallery y descubre piezas únicas de arte contemporáneo.
           </p>
           <Link
             href="/productos"
@@ -193,8 +191,8 @@ export default async function SobreConchitaPlataPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 ),
-                title: 'Plata genuina',
-                desc: 'Todas nuestras piezas son elaboradas en plata .925, certificadas y de alta calidad.',
+                title: 'Artistas seleccionados',
+                desc: 'Trabajamos con artistas contemporáneos y obras curadas con criterio y cuidado.',
               },
               {
                 icon: (
@@ -202,8 +200,8 @@ export default async function SobreConchitaPlataPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 ),
-                title: 'Hecho con amor',
-                desc: 'Cada pieza lleva consigo la dedicación y el cuidado de nuestras artesanas.',
+                title: 'Piezas únicas',
+                desc: 'Cada obra tiene su propia historia, técnica y presencia en el espacio.',
               },
               {
                 icon: (
@@ -212,7 +210,7 @@ export default async function SobreConchitaPlataPage() {
                   </svg>
                 ),
                 title: 'Envío seguro',
-                desc: 'Tu pedido llega protegido y con seguimiento. Gratis a partir de $999.',
+                desc: 'Tu pedido llega protegido y con seguimiento. Embalaje especial para obras de arte.',
               },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">

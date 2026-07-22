@@ -238,7 +238,7 @@ export async function POST(request: Request) {
     auto_return: 'approved' as const,
     external_reference: numeroPedido,
     notification_url: `${baseUrl}/api/mercadopago/webhook`,
-    statement_descriptor: 'CONCHITA PLATA',
+    statement_descriptor: 'SALAS ART',
   }
 
   try {
