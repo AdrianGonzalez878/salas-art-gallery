@@ -58,7 +58,7 @@ export const metadata: Metadata = {
       "Obras de arte contemporáneo: pintura, escultura y fotografía. Piezas únicas de artistas seleccionados.",
     images: [
       {
-        url: "/logo.jpg",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "Salas Art Gallery – Galería de arte contemporáneo",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Salas Art Gallery | Galería de arte contemporáneo",
     description: "Obras de arte contemporáneo: pintura, escultura y fotografía.",
-    images: ["/logo.jpg"],
+    images: ["/logo.png"],
   },
   icons: {
     icon: [

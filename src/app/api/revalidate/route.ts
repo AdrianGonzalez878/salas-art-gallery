@@ -33,6 +33,8 @@ export async function POST(request: NextRequest) {
     // Siempre revalidar inicio y listas
     revalidatePath('/', 'page')
     revalidatePath('/productos', 'page')
+    revalidatePath('/artistas', 'page')
+    revalidatePath('/exposiciones', 'page')
     revalidatePath('/promociones', 'page')
 
     // Si es un producto y tiene slug, revalidar solo esa página
@@ -40,15 +42,24 @@ export async function POST(request: NextRequest) {
       revalidatePath(`/productos/${slug}`, 'page')
     }
 
-    // Si es contenido de inicio
-    if (type === 'hero' || type === 'sobreNosotros' || type === 'seccionDestacada' || type === 'shopTheLook' || type === 'postInstagram') {
-      revalidatePath('/', 'page')
+    if (type === 'artista') {
+      revalidatePath('/artistas', 'page')
+      if (slug) revalidatePath(`/artistas/${slug}`, 'page')
     }
 
-    // Si es una promoción
-    if (type === 'promocion') {
-      revalidatePath('/promociones', 'page')
-      revalidatePath('/carrito/checkout', 'page')
+    if (type === 'paginaArtistas') {
+      revalidatePath('/artistas', 'page')
+    }
+
+    if (type === 'exposicion') {
+      revalidatePath('/', 'page')
+      revalidatePath('/exposiciones', 'page')
+      if (slug) revalidatePath(`/exposiciones/${slug}`, 'page')
+    }
+
+    // Si es contenido de inicio
+    if (type === 'hero' || type === 'sobreNosotros' || type === 'seccionDestacada') {
+      revalidatePath('/', 'page')
     }
 
     // Revalidar tag genérico de Sanity (usado por fetch con next.tags)

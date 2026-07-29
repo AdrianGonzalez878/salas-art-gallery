@@ -51,12 +51,12 @@ export default function ProductShareButtons({ title, url }: ProductShareButtonsP
   }
 
   const btnBase =
-    'flex items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all shadow-sm hover:scale-105 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
+    'flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer transition-all shadow-sm hover:scale-105 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
 
   return (
-    <div className="mt-6 pt-6 border-t border-gray-200">
-      <div className="mb-3">
-        <p className="text-sm font-semibold text-gray-700">Compartir</p>
+    <div className="mt-3 pt-3 border-t border-gray-200 sm:mt-6 sm:pt-6">
+      <div className="mb-2 sm:mb-3">
+        <p className="text-xs sm:text-sm font-semibold text-gray-700">Compartir</p>
 
       </div>
       <div className="flex flex-wrap gap-2">

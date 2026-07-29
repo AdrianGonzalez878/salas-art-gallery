@@ -88,8 +88,8 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
             key={producto._id}
             className={[
               'snap-start shrink-0',
-              // ancho adaptativo: móvil más pequeño, desktop más grande
-              'w-[36vw] sm:w-[260px] md:w-[280px] lg:w-[300px] xl:w-[350px] 2xl:w-[380px]',
+              // En desktop ocupan un cuarto del carrusel: se ven al menos 4 obras a la vez.
+              'w-[36vw] sm:w-[260px] md:w-[280px] lg:w-[calc((100%-3rem)/4)]',
             ].join(' ')}
           >
             <ProductCard producto={producto} />

@@ -6,6 +6,7 @@ interface PaginationProps {
   paginaActual: number
   totalPaginas: number
   categoria?: string
+  subcategoria?: string
   orden?: string
   q?: string
   /** Si se indica, los enlaces usan esta ruta (ej: /promociones) en lugar de /productos */
@@ -16,6 +17,7 @@ export default function Pagination({
   paginaActual,
   totalPaginas,
   categoria,
+  subcategoria,
   orden,
   q,
   basePath = '/productos',
@@ -26,6 +28,7 @@ export default function Pagination({
     const params = new URLSearchParams()
     if (q) params.set('q', q)
     if (categoria) params.set('categoria', categoria)
+    if (subcategoria) params.set('subcategoria', subcategoria)
     if (orden && orden !== 'recientes') params.set('orden', orden)
     params.set('page', String(page))
     return `${basePath}?${params.toString()}`

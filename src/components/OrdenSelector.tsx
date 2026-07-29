@@ -31,7 +31,7 @@ export default function OrdenSelector() {
         className="min-w-[160px] rounded-lg border-0 bg-transparent py-1.5 pl-0 pr-6 text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none [color-scheme:light]"
       >
         <option value="recientes">Más recientes</option>
-        <option value="mas-vendidos">Más vendidos</option>
+        <option value="destacadas">Destacadas</option>
         <option value="precio-asc">Precio: menor a mayor</option>
         <option value="precio-desc">Precio: mayor a menor</option>
       </select>

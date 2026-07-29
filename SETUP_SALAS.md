@@ -68,4 +68,5 @@ Sustitúyelos cuando tengas los reales.
 
 ## Logo
 
-Reemplaza `public/logo.jpg`, favicons e `icon.png` / `apple-icon.png` con la marca de Salas.
+Logo y favicons actuales: `public/logo.png`, `icon-48/192/512.png`, `apple-icon.png`.
+Si cambias la marca, reemplaza esos archivos y los de `src/app/icon.png` / `apple-icon.png`.

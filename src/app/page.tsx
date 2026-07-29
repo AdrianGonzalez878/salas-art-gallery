@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sanityFetch, urlFor } from '@/lib/sanity'
-import { productosMasVendidosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorCategoriaQuery, postsInstagramQuery, shopTheLookQuery } from '@/sanity/lib/queries'
-import type { Producto, Hero, SobreNosotros, SeccionDestacada, PostInstagram, ShopTheLook } from '@/sanity/lib/types'
+import { productosDestacadosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorCategoriaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
+import type { Producto, Hero, SobreNosotros, SeccionDestacada, Exposicion, Artista } from '@/sanity/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import AboutSection from '@/components/AboutSection'
 import AnimateInView from '@/components/AnimateInView'
 import FeaturedCategorySection from '@/components/FeaturedCategorySection'
 import HeroCarousel from '@/components/HeroCarousel'
-import InstagramSection from '@/components/InstagramSection'
-import ShopTheLookSection from '@/components/ShopTheLookSection'
 import StarCategoryShortcuts from '@/components/StarCategoryShortcuts'
+import ExposicionesSection from '@/components/ExposicionesSection'
+import ArtistasHomeSection from '@/components/ArtistasHomeSection'
+import VisitaGaleriaForm from '@/components/VisitaGaleriaForm'
 
 export const metadata: Metadata = {
   title: 'Salas Art Gallery | Galería de arte contemporáneo',
@@ -22,15 +23,15 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  // Obtener productos más vendidos, más nuevos, hero, sobre nosotros, secciones destacadas, posts de Instagram y shop the look
-  const [productosMasVendidos, productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, postsInstagram, shopTheLook] = await Promise.all([
-    sanityFetch<Producto[]>(productosMasVendidosQuery),
+  // Obtener obras destacadas, más nuevas, hero, artistas, sobre nosotros, secciones destacadas y exposiciones
+  const [productosDestacados, productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, exposiciones, artistas] = await Promise.all([
+    sanityFetch<Producto[]>(productosDestacadosQuery),
     sanityFetch<Producto[]>(productosMasNuevosQuery),
     sanityFetch<Hero | null>(heroQuery),
     sanityFetch<SobreNosotros | null>(sobreNosotrosQuery),
     sanityFetch<SeccionDestacada[]>(seccionesDestacadasQuery),
-    sanityFetch<PostInstagram[]>(postsInstagramQuery),
-    sanityFetch<ShopTheLook | null>(shopTheLookQuery),
+    sanityFetch<Exposicion[]>(exposicionesQuery),
+    sanityFetch<Artista[]>(artistasQuery),
   ])
   
   // Para cada sección destacada, obtener sus productos
@@ -45,22 +46,27 @@ export default async function Home() {
   )
   
   // Tomar los primeros 8 de cada categoría
-  const productosMasVendidosList = productosMasVendidos.slice(0, 8)
+  const productosDestacadosList = productosDestacados.slice(0, 5)
   const productosMasNuevosList = productosMasNuevos.slice(0, 8)
 
   // Valores por defecto si no hay hero activo
   const heroData = hero || {
-    titulo: 'Joyería Excepcional',
-    subtitulo: 'Descubre nuestra colección única de anillos, collares, aretes y más. Cada pieza está diseñada con pasión y atención al detalle.',
+    titulo: 'Salas Art Gallery',
+    subtitulo: 'Casa de arte. Descubre obras de artistas seleccionados en litografía, óleos, cerámica, bronce y más.',
     imagenesCarrusel: [],
-    textoBotonPrincipal: 'Ver Productos',
+    textoBotonPrincipal: 'Ver obras',
     hrefBotonPrincipal: '/productos',
-    textoBotonSecundario: 'Explorar Categorías',
-    hrefBotonSecundario: '/productos?categoria=anillos',
+    textoBotonSecundario: 'Agendar una visita',
+    hrefBotonSecundario: '/galeria',
     mostrarBadge: false,
   }
 
   // Generar URLs de las imágenes del carrusel en el servidor
+  /** Preview de video local: copia tus MP4 a public/videos/ y activa en .env.local */
+  const heroVideoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO?.trim() || null
+  const heroVideoSrcMobile = process.env.NEXT_PUBLIC_HERO_VIDEO_MOBILE?.trim() || null
+  const hasHeroVideo = Boolean(heroVideoSrc || heroVideoSrcMobile)
+
   const imagenesCarrusel = heroData.imagenesCarrusel
     ?.filter((slide) => slide?.imagenDesktop && slide?.imagenMobile) // Solo slides con ambas imágenes
     .map((slide) => ({
@@ -69,145 +75,191 @@ export default async function Home() {
       alt: slide.alt || 'Hero image',
     })) || []
 
-  // Generar URLs de las imágenes de Instagram en el servidor
-  const instagramImageUrls = postsInstagram.map((post) =>
-    urlFor(post.imagen).width(400).height(400).quality(90).url()
-  )
-
-  // Generar URLs de Shop the Look en el servidor
-  const shopTheLookData = shopTheLook ? {
-    ...shopTheLook,
-    imagenModeloUrl: urlFor(shopTheLook.imagenModelo).width(1200).quality(95).url(),
-    productosConImagenes: shopTheLook.productos.map((item) => ({
-      producto: item.producto,
-      posicionX: item.posicionX,
-      posicionY: item.posicionY,
-      imagenUrl: urlFor(item.producto.imagenPrincipal).width(600).quality(90).url(),
-    })),
-  } : null
-
   return (
     <div className="min-h-screen bg-white">
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden h-screen">
-        {imagenesCarrusel.length > 0 && (
-          <HeroCarousel imagenes={imagenesCarrusel} />
+      <section className="relative overflow-hidden h-[78svh]">
+        {(imagenesCarrusel.length > 0 || hasHeroVideo) && (
+          <HeroCarousel
+            imagenes={imagenesCarrusel}
+            videoSrc={heroVideoSrc}
+            videoSrcMobile={heroVideoSrcMobile}
+          />
         )}
-        <div className="relative z-30 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-5xl mx-auto space-y-8">
-            {/* Línea decorativa ámbar */}
-            <div className="flex justify-center">
-              <div className="w-12 h-0.5 bg-amber-400" />
-            </div>
-
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 drop-shadow-2xl animate-fadeIn leading-tight">
+        <div className="relative z-30 h-full flex flex-col items-center justify-end md:justify-center px-4 sm:px-6 lg:px-8 pb-10 md:pb-0 text-center">
+          <div
+            className={`max-w-5xl mx-auto space-y-4 md:space-y-8 ${
+              hasHeroVideo ? 'animate-hero-content-delayed' : ''
+            }`}
+          >
+            <h1
+              className={`font-display text-[2rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] font-light text-white mb-3 md:mb-6 drop-shadow-lg sm:leading-[1.05] tracking-[0.04em] ${
+                hasHeroVideo ? '' : 'animate-fadeIn'
+              }`}
+            >
               {heroData.titulo}
             </h1>
             {heroData.subtitulo && (
-              <p className="text-xl sm:text-2xl md:text-3xl text-white/95 mb-8 max-w-3xl mx-auto drop-shadow-lg animate-fadeInUp font-light leading-relaxed">
+              <p
+                className={`font-sans text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-5 md:mb-8 max-w-3xl mx-auto drop-shadow-md font-light leading-relaxed tracking-wide ${
+                  hasHeroVideo ? '' : 'animate-fadeInUp'
+                }`}
+              >
                 {heroData.subtitulo}
               </p>
             )}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
+            <div
+              className={`flex flex-row gap-2.5 sm:gap-4 justify-center ${
+                hasHeroVideo ? '' : 'animate-fadeInUp'
+              }`}
+              style={hasHeroVideo ? undefined : { animationDelay: '0.3s', animationFillMode: 'both' }}
+            >
               <Link
                 href={heroData.hrefBotonPrincipal || '/productos'}
-                className="inline-flex items-center justify-center px-10 py-5 border border-transparent text-lg font-semibold rounded-lg text-black bg-yellow-400 hover:bg-yellow-500 hover:scale-105 transition-all shadow-2xl"
+                className="inline-flex flex-1 sm:flex-initial items-center justify-center min-w-0 px-4 py-3.5 sm:px-10 sm:py-5 border border-transparent text-sm sm:text-lg font-semibold rounded-lg text-black bg-yellow-400 hover:bg-yellow-500 sm:hover:scale-105 transition-all shadow-2xl"
               >
                 {heroData.textoBotonPrincipal || 'Ver Productos'}
               </Link>
               <Link
-                href={heroData.hrefBotonSecundario || '/productos?categoria=anillo'}
-                className="inline-flex items-center justify-center px-10 py-5 border-2 border-white text-lg font-semibold rounded-lg text-white hover:bg-white/10 hover:scale-105 transition-all shadow-2xl backdrop-blur-sm"
+                href={heroData.hrefBotonSecundario || '/galeria'}
+                className="inline-flex flex-1 sm:flex-initial items-center justify-center min-w-0 px-4 py-3.5 sm:px-10 sm:py-5 border-2 border-white text-sm sm:text-lg font-semibold rounded-lg text-white hover:bg-white/10 sm:hover:scale-105 transition-all shadow-2xl backdrop-blur-sm"
               >
-                {heroData.textoBotonSecundario || 'Explorar Categorías'}
+                {heroData.textoBotonSecundario || 'Agendar una visita'}
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Atajos a categorías estrella ─────────────────────── */}
-      <StarCategoryShortcuts />
+      <div className="lg:mx-auto lg:max-w-[1440px] lg:border-x lg:border-gray-100">
+        {/* ── Atajos a categorías estrella ─────────────────────── */}
+        <StarCategoryShortcuts />
 
-      {/* ── Shop the Look ────────────────────────────────────── */}
-      {shopTheLookData && (
-        <ShopTheLookSection
-          data={shopTheLookData}
-          imagenModeloUrl={shopTheLookData.imagenModeloUrl}
-          productosConImagenes={shopTheLookData.productosConImagenes}
-        />
-      )}
+        {/* ── Exposiciones ─────────────────────────────────────── */}
+        {exposiciones.length > 0 && <ExposicionesSection exposiciones={exposiciones} />}
 
-      {/* ── Lo Más Vendido ───────────────────────────────────── */}
-      {productosMasVendidosList.length > 0 && (
-        <AnimateInView as="section" className="pt-12 pb-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-0.5 bg-amber-400" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">Colección</span>
-                <div className="w-8 h-0.5 bg-amber-400" />
+        {/* ── Artistas colaboradores ────────────────────────────── */}
+        <ArtistasHomeSection artistas={artistas} />
+
+        {/* ── Obras destacadas ─────────────────────────────────── */}
+        {productosDestacadosList.length > 0 && (
+          <AnimateInView as="section" className="relative isolate py-14 sm:py-20">
+            <div
+              className="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-violet-950"
+              aria-hidden
+            />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end mb-8 sm:mb-10">
+                <div className="lg:col-span-7">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300 mb-3">
+                    Selección de la galería
+                  </p>
+                  <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-light text-white leading-[0.95]">
+                    Obras destacadas
+                  </h2>
+                </div>
+                <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col gap-4 lg:items-start">
+                  <p className="max-w-sm text-sm sm:text-base text-violet-100/75 leading-relaxed">
+                    Piezas únicas elegidas por su presencia, técnica y diálogo con la colección.
+                  </p>
+                  <Link
+                    href="/productos"
+                    className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-white hover:text-violet-200 transition-colors"
+                  >
+                    Ver selección completa
+                    <span aria-hidden>→</span>
+                  </Link>
+                </div>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Lo Más Vendido</h2>
-              <p className="text-gray-500 text-sm sm:text-base max-w-md">Las joyas favoritas de nuestras clientas</p>
+              <ProductCarousel productos={productosDestacadosList} />
+            </div>
+          </AnimateInView>
+        )}
+
+        {/* ── Lo Más Nuevo ─────────────────────────────────────── */}
+        {productosMasNuevosList.length > 0 && (
+          <AnimateInView as="section" className="py-14 sm:py-20 bg-[#f7f6f8]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8 sm:mb-10 border-b border-gray-200 pb-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-2">
+                    Archivo reciente
+                  </p>
+                  <h2 className="font-display text-3xl sm:text-4xl font-light text-gray-900">
+                    Lo más nuevo
+                  </h2>
+                </div>
+                <p className="max-w-sm text-sm text-gray-600 leading-relaxed sm:text-right">
+                  Las últimas obras incorporadas a la colección.
+                </p>
+              </div>
+              <ProductCarousel productos={productosMasNuevosList} />
+              <div className="mt-9 flex justify-center">
+                <Link
+                  href="/productos"
+                  className="inline-flex items-center gap-2 rounded-full bg-violet-700 px-6 py-3 text-sm font-semibold text-white hover:bg-violet-800 transition-colors"
+                >
+                  Explorar todas las obras
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </div>
+          </AnimateInView>
+        )}
+
+        {/* ── Sobre Nosotros ───────────────────────────────────── */}
+        {sobreNosotros && (
+          <AboutSection data={sobreNosotros} />
+        )}
+
+        {/* ── Secciones Destacadas ─────────────────────────────── */}
+        {seccionesConProductos.map(({ seccion, productos }, index) => (
+          <FeaturedCategorySection
+            key={seccion._id}
+            seccion={seccion}
+            productos={productos}
+            variant={index % 2 === 0 ? 'dark' : 'light'}
+          />
+        ))}
+
+        {/* ── Agenda tu visita ─────────────────────────────────── */}
+        <AnimateInView as="section" className="relative isolate py-14 sm:py-20 bg-white">
+          <div
+            className="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-[#f7f6f8]"
+            aria-hidden
+          />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-9 lg:gap-14 items-start">
+              <div className="lg:col-span-2 pt-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-4">
+                  Visita con cita previa
+                </p>
+                <h2 className="font-display text-3xl sm:text-4xl font-light leading-[1.05] text-gray-900 mb-4">
+                  Conoce el lugar donde el arte sucede
+                </h2>
+                <p className="text-sm sm:text-base leading-relaxed text-gray-600 max-w-md">
+                  Agenda una visita para recorrer la galería, descubrir las obras en persona y recibir atención personalizada.
+                </p>
+                <ul className="mt-7 space-y-3 text-sm text-gray-600">
+                  <li className="flex gap-3">
+                    <span className="text-violet-600" aria-hidden>•</span>
+                    Horario confirmado directamente contigo
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-violet-600" aria-hidden>•</span>
+                    Grupos de hasta 12 personas
+                  </li>
+                </ul>
+              </div>
+
+              <div className="lg:col-span-3 rounded-2xl border border-violet-100 bg-white p-5 sm:p-8 shadow-sm">
+                <VisitaGaleriaForm />
+              </div>
             </div>
           </div>
-          <div className="px-4 sm:px-6 lg:px-8">
-            <ProductCarousel productos={productosMasVendidosList} />
-          </div>
         </AnimateInView>
-      )}
-
-      {/* ── Lo Más Nuevo ─────────────────────────────────────── */}
-      {productosMasNuevosList.length > 0 && (
-        <AnimateInView as="section" className="pt-12 pb-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-0.5 bg-amber-400" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">Nuevos Ingresos</span>
-                <div className="w-8 h-0.5 bg-amber-400" />
-              </div>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Lo Más Nuevo</h2>
-              <p className="text-gray-500 text-sm sm:text-base max-w-md">Descubre las últimas incorporaciones a la colección</p>
-            </div>
-          </div>
-          <div className="px-4 sm:px-6 lg:px-8">
-            <ProductCarousel productos={productosMasNuevosList} />
-          </div>
-          <div className="text-center mt-10">
-            <Link
-              href="/productos"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors"
-            >
-              Ver todos los productos
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
-        </AnimateInView>
-      )}
-
-      {/* ── Sobre Nosotros ───────────────────────────────────── */}
-      {sobreNosotros && (
-        <AboutSection data={sobreNosotros} />
-      )}
-
-      {/* ── Secciones Destacadas ─────────────────────────────── */}
-      {seccionesConProductos.map(({ seccion, productos }) => (
-        <FeaturedCategorySection
-          key={seccion._id}
-          seccion={seccion}
-          productos={productos}
-        />
-      ))}
-
-      {/* ── Instagram Feed ───────────────────────────────────── */}
-      {postsInstagram && postsInstagram.length > 0 && (
-        <InstagramSection posts={postsInstagram} imageUrls={instagramImageUrls} />
-      )}
+      </div>
     </div>
   )
 }

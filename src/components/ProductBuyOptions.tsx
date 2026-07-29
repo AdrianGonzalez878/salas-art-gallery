@@ -15,6 +15,7 @@ interface ProductBuyOptionsProps {
   tipoDescuento?: 'porcentaje' | 'monto'
   valorDescuento?: number
   textoBadge?: string
+  showPrice?: boolean
   opcionExtra?: {
     nombre: string
     precio: number
@@ -32,6 +33,7 @@ export default function ProductBuyOptions({
   tipoDescuento,
   valorDescuento,
   textoBadge,
+  showPrice = true,
   opcionExtra,
 }: ProductBuyOptionsProps) {
   const [conExtra, setConExtra] = useState(false)
@@ -50,34 +52,39 @@ export default function ProductBuyOptions({
 
   return (
     <>
-      {/* Precio dinámico */}
-      <div className="mb-1 flex items-baseline gap-3 flex-wrap">
-        {mostrarDescuento ? (
-          <>
-            <p className="text-2xl text-gray-900 line-through tracking-tight">
-              ${precioOriginalFinal.toLocaleString()}
-            </p>
-            <p className="text-2xl font-semibold text-amber-600 tracking-tight">
-              ${finalPrice.toLocaleString()}
-            </p>
-            {valorDescuento && (
-              <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
-                {(() => {
-                  const auto = tipoDescuento === 'porcentaje'
-                    ? `${valorDescuento}% OFF`
-                    : `$${valorDescuento} OFF`
-                  return textoBadge?.trim() ? `${textoBadge.trim()} · ${auto}` : auto
-                })()}
-              </span>
+      {showPrice && (
+        <>
+          <div className="mb-1 flex items-baseline gap-3 flex-wrap">
+            {mostrarDescuento ? (
+              <>
+                <p className="text-2xl text-gray-900 line-through tracking-tight">
+                  ${precioOriginalFinal.toLocaleString()}
+                </p>
+                <p className="text-2xl font-semibold text-amber-600 tracking-tight">
+                  ${finalPrice.toLocaleString()}
+                </p>
+                {valorDescuento && (
+                  <span className="bg-amber-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
+                    {(() => {
+                      const auto = tipoDescuento === 'porcentaje'
+                        ? `${valorDescuento}% OFF`
+                        : `$${valorDescuento} OFF`
+                      return textoBadge?.trim() ? `${textoBadge.trim()} · ${auto}` : auto
+                    })()}
+                  </span>
+                )}
+              </>
+            ) : (
+              <p className="text-2xl font-semibold text-gray-800 tracking-tight">
+                ${finalPrice.toLocaleString()}
+              </p>
             )}
-          </>
-        ) : (
-          <p className="text-2xl font-semibold text-gray-800 tracking-tight">
-            ${finalPrice.toLocaleString()}
-          </p>
-        )}
-      </div>
-      <p className="text-xs text-gray-400 mb-6 tracking-wide">IVA incluido</p>
+          </div>
+          <p className="text-xs text-gray-400 mb-6 tracking-wide">IVA incluido</p>
+        </>
+      )}
+
+      {!showPrice && <div className="mt-2 sm:mt-0 sm:mb-5" />}
 
       {/* Selector de complemento */}
       {tieneOpcion && (
@@ -117,13 +124,14 @@ export default function ProductBuyOptions({
       )}
 
       {/* Botones de compra */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:gap-3">
         <BuyNowButton
           id={id}
           slug={slug}
           title={finalTitle}
           price={finalPrice}
           imageUrl={imageUrl}
+          className="py-2.5 text-sm sm:py-3 sm:text-base"
         />
         <AddToCartButton
           id={id}
@@ -132,7 +140,7 @@ export default function ProductBuyOptions({
           price={finalPrice}
           imageUrl={imageUrl}
           variant="secondary"
-          className="flex-1"
+          className="flex-1 py-2.5 text-sm sm:py-3 sm:text-base"
         />
       </div>
     </>

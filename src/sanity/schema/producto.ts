@@ -1,9 +1,10 @@
 import { defineField, defineType } from 'sanity'
 import { descuentoVigente } from '@/lib/descuento'
+import { categoriaOptions, subcategoriaCeramicaOptions } from '@/lib/categorias'
 
 export default defineType({
   name: 'producto',
-  title: 'Producto',
+  title: 'Obra',
   type: 'document',
   fields: [
     defineField({
@@ -23,6 +24,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'artista',
+      title: 'Artista',
+      type: 'reference',
+      to: [{ type: 'artista' }],
+      description: 'Artista de esta obra',
+    }),
+    defineField({
       name: 'precio',
       title: 'Precio',
       type: 'number',
@@ -32,7 +40,7 @@ export default defineType({
       name: 'tieneDescuento',
       title: '¿Tiene descuento?',
       type: 'boolean',
-      description: 'Activar para mostrar este producto en la página de Promociones',
+      description: 'Activar para mostrar esta obra en la página de Promociones',
       initialValue: false,
     }),
     defineField({
@@ -81,8 +89,8 @@ export default defineType({
       name: 'textoBadge',
       title: 'Texto del badge (opcional)',
       type: 'string',
-      description: 'Personaliza el texto del badge de descuento. Ej: "Día de Mamá · 25% OFF". Si se deja vacío se muestra el descuento automáticamente.',
-      placeholder: 'Ej: Día de Mamá · 25% OFF',
+      description: 'Personaliza el texto del badge de descuento. Si se deja vacío se muestra el descuento automáticamente.',
+      placeholder: 'Ej: 25% OFF',
       hidden: ({ parent }) => !parent?.tieneDescuento,
       validation: (Rule) => Rule.max(40),
     }),
@@ -145,113 +153,64 @@ export default defineType({
       title: 'Categoría',
       type: 'string',
       options: {
-        list: [
-          { title: 'Anillos', value: 'anillos' },
-          { title: 'Collares', value: 'collares' },
-          { title: 'Aretes', value: 'aretes' },
-          { title: 'Pulseras', value: 'pulseras' },
-          { title: 'Dijes', value: 'dijes' },
-          { title: 'Cadenas', value: 'cadenas' },
-          { title: 'Juegos (Dijes y Aretes)', value: 'juegos' },
-        ],
+        list: categoriaOptions,
         layout: 'radio',
       },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'tieneOpcionExtra',
-      title: '¿Ofrece complemento opcional?',
-      type: 'boolean',
-      description: 'Activa esta opción para dijes (cadena), collares o juegos (pulsera adicional). Solo aplica para esas categorías.',
-      initialValue: false,
-      hidden: ({ parent }) =>
-        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
-    }),
-    defineField({
-      name: 'nombreOpcionExtra',
-      title: 'Nombre del complemento',
+      name: 'subcategoria',
+      title: 'Subcategoría (cerámica)',
       type: 'string',
-      description: 'Ej: "Cadena", "Pulsera adicional"',
-      initialValue: 'Cadena',
-      hidden: ({ parent }) =>
-        !parent?.tieneOpcionExtra ||
-        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
+      description: 'Solo aplica cuando la categoría es Cerámica',
+      options: {
+        list: subcategoriaCeramicaOptions,
+        layout: 'radio',
+      },
+      hidden: ({ parent }) => parent?.categoria !== 'ceramica',
       validation: (Rule) =>
         Rule.custom((valor, context) => {
-          const parent = context.parent as any
-          const categoriaValida = ['dijes', 'collares', 'juegos'].includes(parent?.categoria)
-          if (parent?.tieneOpcionExtra && categoriaValida && !valor?.trim()) {
-            return 'Ingresa el nombre del complemento'
+          const parent = context.parent as { categoria?: string }
+          if (parent?.categoria === 'ceramica' && !valor) {
+            return 'Selecciona alta o baja temperatura'
           }
           return true
         }),
     }),
     defineField({
-      name: 'precioOpcionExtra',
-      title: 'Precio adicional del complemento',
+      name: 'tecnica',
+      title: 'Técnica / material',
+      type: 'string',
+      description: 'Ej. Óleo sobre lienzo, bronce patinado, cerámica de alta temperatura',
+      validation: (Rule) => Rule.max(120),
+    }),
+    defineField({
+      name: 'dimensiones',
+      title: 'Dimensiones',
+      type: 'string',
+      description: 'Ej. 80 × 60 cm · 45 × 30 × 20 cm',
+      validation: (Rule) => Rule.max(80),
+    }),
+    defineField({
+      name: 'anio',
+      title: 'Año',
       type: 'number',
-      description: 'Cuánto se suma al precio si el cliente lo elige',
-      hidden: ({ parent }) =>
-        !parent?.tieneOpcionExtra ||
-        !['dijes', 'collares', 'juegos'].includes(parent?.categoria),
-      validation: (Rule) =>
-        Rule.custom((valor, context) => {
-          const parent = context.parent as any
-          const categoriaValida = ['dijes', 'collares', 'juegos'].includes(parent?.categoria)
-          if (parent?.tieneOpcionExtra && categoriaValida) {
-            if (valor === undefined || valor === null) {
-              return 'Ingresa el precio del complemento'
-            }
-            if (valor <= 0) return 'El precio debe ser mayor a 0'
-          }
-          return true
-        }),
+      validation: (Rule) => Rule.min(1800).max(new Date().getFullYear() + 1).integer(),
     }),
     defineField({
-      name: 'descripcion',
-      title: 'Descripción',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-          styles: [{ title: 'Normal', value: 'normal' }],
-          lists: [
-            { title: 'Lista con viñetas', value: 'bullet' },
-            { title: 'Lista numerada', value: 'number' },
-          ],
-          marks: {
-            decorators: [
-              { title: 'Negrita', value: 'strong' },
-              { title: 'Cursiva', value: 'em' },
-            ],
-          },
-        },
-      ],
-      validation: (Rule) => Rule.required(),
+      name: 'destacada',
+      title: 'Destacar en inicio',
+      type: 'boolean',
+      description: 'Muestra esta obra en la sección "Obras destacadas" del home',
+      initialValue: false,
     }),
     defineField({
       name: 'disponible',
       title: 'Disponible en tienda',
       type: 'boolean',
       description:
-        'Desactiva esta casilla si el producto ya se vendió o no quieres mostrarlo en la web. No aparecerá en catálogo, búsqueda ni promociones.',
+        'Desactiva esta casilla si la obra ya se vendió o no quieres mostrarla en la web.',
       initialValue: true,
-    }),
-    defineField({
-      name: 'stock',
-      title: 'Stock (unidades disponibles)',
-      type: 'number',
-      description: 'Cuántas unidades tienes en existencia. Deja en 1 si solo tienes una pieza.',
-      initialValue: 1,
-      validation: (Rule) => Rule.min(0).integer(),
-    }),
-    defineField({
-      name: 'ventas',
-      title: 'Cantidad de Ventas',
-      type: 'number',
-      description: 'Número de veces que se ha vendido este producto (para mostrar en "Lo Más Vendido")',
-      initialValue: 0,
-      validation: (Rule) => Rule.min(0).integer(),
     }),
   ],
   orderings: [
@@ -290,34 +249,44 @@ export default defineType({
       title: 'titulo',
       media: 'imagenPrincipal',
       categoria: 'categoria',
+      subcategoria: 'subcategoria',
+      artistaNombre: 'artista.nombre',
       disponible: 'disponible',
+      destacada: 'destacada',
       tieneDescuento: 'tieneDescuento',
       tipoDescuento: 'tipoDescuento',
       valorDescuento: 'valorDescuento',
       fechaInicioDescuento: 'fechaInicioDescuento',
       fechaFinDescuento: 'fechaFinDescuento',
-      stock: 'stock',
+      tecnica: 'tecnica',
     },
     prepare(selection) {
       const {
         title,
         categoria,
+        subcategoria,
+        artistaNombre,
         disponible,
+        destacada,
         tieneDescuento,
         tipoDescuento,
         valorDescuento,
         fechaInicioDescuento,
         fechaFinDescuento,
-        stock,
+        tecnica,
       } = selection
 
       const parts: string[] = []
 
+      if (artistaNombre) parts.push(artistaNombre)
+
       if (disponible === false) {
-        parts.push('🔴 No disponible')
+        parts.push('Vendida')
       } else {
-        parts.push('✅ Disponible')
+        parts.push('Disponible · Obra única')
       }
+
+      if (destacada) parts.push('Destacada')
 
       if (tieneDescuento && tipoDescuento && valorDescuento) {
         const descuentoText =
@@ -328,31 +297,24 @@ export default defineType({
         const ahora = new Date()
         let estadoExtra = ''
         if (fechaInicioDescuento && new Date(fechaInicioDescuento) > ahora) {
-          estadoExtra = ' ⏳ programado'
+          estadoExtra = ' (programado)'
         } else if (fechaFinDescuento && new Date(fechaFinDescuento) < ahora) {
-          estadoExtra = ' ⌛ expirado'
+          estadoExtra = ' (expirado)'
         } else if (!descuentoVigente(tieneDescuento, fechaInicioDescuento, fechaFinDescuento)) {
-          estadoExtra = ' ⏸️ inactivo'
+          estadoExtra = ' (inactivo)'
         }
 
-        parts.push(`🏷️ ${descuentoText}${estadoExtra}`)
-      } else if (tieneDescuento) {
-        parts.push('⚠️ Descuento incompleto')
-      } else {
-        parts.push('— Sin descuento')
+        parts.push(`${descuentoText}${estadoExtra}`)
       }
 
-      if (disponible !== false) {
-        const stockNum = stock ?? 1
-        if (stockNum === 0) {
-          parts.push('⚠️ Sin stock')
-        } else {
-          parts.push(`📦 ${stockNum} uds.`)
-        }
-      }
+      if (tecnica) parts.push(tecnica)
 
       if (categoria) {
-        parts.push(categoria.charAt(0).toUpperCase() + categoria.slice(1))
+        let cat = String(categoria)
+        if (categoria === 'ceramica' && subcategoria) {
+          cat = `${categoria} · ${subcategoria}`
+        }
+        parts.push(cat)
       }
 
       return {
@@ -363,4 +325,3 @@ export default defineType({
     },
   },
 })
-

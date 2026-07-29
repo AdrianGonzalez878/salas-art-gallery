@@ -16,21 +16,21 @@ export default defineType({
       name: 'titulo',
       title: 'Título',
       type: 'string',
-      initialValue: 'Nuestra Historia',
+      initialValue: 'Un espacio para encontrarse con el arte',
       validation: (Rule) => Rule.required().max(100),
     }),
     defineField({
       name: 'subtitulo',
       title: 'Subtítulo',
       type: 'string',
-      description: 'Texto corto debajo del título',
+      description: 'Una frase breve que presente la mirada de Salas Art Gallery',
       validation: (Rule) => Rule.max(150),
     }),
     defineField({
       name: 'imagenBanner',
       title: 'Imagen del banner (página Sobre nosotros)',
       type: 'image',
-      description: 'Imagen horizontal para el banner de la página "Sobre nosotros". Recomendado: 1920×600 px o similar en formato horizontal.',
+      description: 'Imagen del espacio, una exposición o una obra en contexto. Recomendado: formato horizontal de 1920×900 px.',
       options: { hotspot: true },
       fields: [
         {
@@ -42,16 +42,16 @@ export default defineType({
     }),
     defineField({
       name: 'historia',
-      title: 'Historia',
+      title: 'Texto sobre la galería',
       type: 'text',
-      description: 'La historia de Salas Art Gallery, cómo se fundó, etc.',
+      description: 'Describe la propuesta de Salas Art Gallery, su relación con los artistas y el arte contemporáneo.',
       validation: (Rule) => Rule.required().min(100).max(1000),
     }),
     defineField({
       name: 'galeria',
-      title: 'Galería de Fotos',
+      title: 'Imágenes del espacio',
       type: 'array',
-      description: 'Fotos de la dueña, el taller, las joyas, etc.',
+      description: 'Fotografías de la galería, exposiciones, artistas u obras en contexto.',
       of: [
         {
           type: 'image',
@@ -72,9 +72,9 @@ export default defineType({
     }),
     defineField({
       name: 'estadisticas',
-      title: 'Estadísticas Destacadas',
+      title: 'Hitos de la galería',
       type: 'array',
-      description: 'Números que resaltan el negocio (clientes satisfechos, productos vendidos, etc.)',
+      description: 'Datos opcionales sobre la galería, por ejemplo: exposiciones, artistas colaboradores o años de trayectoria.',
       of: [
         {
           type: 'object',
@@ -83,14 +83,14 @@ export default defineType({
               name: 'numero',
               type: 'string',
               title: 'Número',
-              description: 'Ej: "500+", "10", "1000+"',
+              description: 'Ej: "20+", "8", "2024"',
               validation: (Rule) => Rule.required(),
             },
             {
               name: 'etiqueta',
               type: 'string',
               title: 'Etiqueta',
-              description: 'Ej: "Clientes Satisfechos", "Años de Experiencia"',
+              description: 'Ej: "Artistas colaboradores", "Exposiciones realizadas"',
               validation: (Rule) => Rule.required(),
             },
           ],

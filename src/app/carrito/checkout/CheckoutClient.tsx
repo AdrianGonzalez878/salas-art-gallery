@@ -7,9 +7,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 import { urlFor } from '@/lib/sanity'
-import { computeShippingCost, montoFaltanteParaEnvioGratis, UMBRAL_ENVIO_GRATIS_MXN } from '@/lib/shipping'
 import { trackInitiateCheckout, trackPurchase } from '@/lib/marketingPixels'
-import type { Promocion } from '@/sanity/lib/types'
 
 /* Cargar PaymentBrick solo en el cliente (usa window.MercadoPago) */
 const PaymentBrick = dynamic(() => import('@/components/PaymentBrick'), { ssr: false })
@@ -21,26 +19,14 @@ export default function CheckoutClient() {
 
   const [step, setStep] = useState<1 | 2>(1)
   const [error, setError] = useState<string | null>(null)
-  const [promociones, setPromociones] = useState<Promocion[]>([])
-
-  useEffect(() => {
-    fetch('/api/promociones')
-      .then((r) => r.json())
-      .then((data: Promocion[]) => setPromociones(data))
-      .catch(() => {})
-  }, [])
-
-  const regaloActivo = promociones.find((p) => subtotal >= p.montoMinimo) ?? null
   const [couponInput, setCouponInput] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; descuento: number } | null>(null)
   const [couponError, setCouponError] = useState<string | null>(null)
   const [couponLoading, setCouponLoading] = useState(false)
 
-  const envio = computeShippingCost(subtotal)
-  const faltaParaEnvioGratis = montoFaltanteParaEnvioGratis(subtotal)
-  const subtotalConEnvio = subtotal + envio
+  const envio = 0
   const descuento = appliedCoupon?.descuento ?? 0
-  const total = Math.max(0, subtotalConEnvio - descuento)
+  const total = Math.max(0, subtotal - descuento)
 
   useEffect(() => {
     if (searchParams.get('error') === 'pago_cancelado') {
@@ -199,10 +185,6 @@ export default function CheckoutClient() {
         envio,
         descuento,
         total,
-        ...(regaloActivo && { regaloTitulo: regaloActivo.titulo }),
-        ...(regaloActivo?.imagenBanner?.asset && {
-          regaloImagenUrl: urlFor(regaloActivo.imagenBanner).width(192).quality(85).url(),
-        }),
         ...(appliedCoupon && { cupon: appliedCoupon.code }),
         ...(form.notas && { notas: form.notas }),
       }),
@@ -241,7 +223,7 @@ export default function CheckoutClient() {
       <div className="max-w-6xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link href="/" className="flex items-center h-full py-2" aria-label="Salas Art Gallery - Ir al inicio">
           <Image
-            src="/logo.jpg"
+            src="/logo.png"
             alt="Salas Art Gallery"
             width={240}
             height={75}
@@ -326,36 +308,10 @@ export default function CheckoutClient() {
                       </p>
                     </li>
                   ))}
-                  {regaloActivo && (
-                    <li className="flex gap-3 py-3">
-                      <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                        {regaloActivo.imagenBanner?.asset ? (
-                          <Image
-                            src={urlFor(regaloActivo.imagenBanner).width(96).quality(85).url()}
-                            alt={regaloActivo.titulo}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xl">🎁</div>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-green-800 line-clamp-2">{regaloActivo.titulo}</p>
-                        <p className="text-xs text-green-600">Regalo incluido</p>
-                      </div>
-                      <p className="text-sm font-semibold text-green-700 shrink-0">$0</p>
-                    </li>
-                  )}
                 </ul>
                 <div className="space-y-1.5 border-t border-gray-100 pt-4 text-sm">
                   <div className="flex justify-between text-gray-500">
                     <span>Subtotal</span><span>${subtotal.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-500">
-                    <span>Envío</span>
-                    <span>{envio === 0 ? 'Gratis' : `$${Number(envio).toLocaleString()}`}</span>
                   </div>
                   {appliedCoupon && (
                     <div className="flex justify-between text-green-700">
@@ -614,28 +570,6 @@ export default function CheckoutClient() {
                     </p>
                   </li>
                 ))}
-                {regaloActivo && (
-                  <li className="flex gap-3 py-3">
-                    <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                      {regaloActivo.imagenBanner?.asset ? (
-                        <Image
-                          src={urlFor(regaloActivo.imagenBanner).width(112).quality(85).url()}
-                          alt={regaloActivo.titulo}
-                          fill
-                          className="object-cover"
-                          sizes="56px"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xl">🎁</div>
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-green-800 line-clamp-2">{regaloActivo.titulo}</p>
-                      <p className="text-xs text-green-600">Regalo incluido</p>
-                    </div>
-                    <p className="text-sm font-semibold text-green-700 shrink-0">$0</p>
-                  </li>
-                )}
               </ul>
 
               {/* Cupón */}
@@ -689,16 +623,6 @@ export default function CheckoutClient() {
                 <div className="flex justify-between text-gray-600 text-sm">
                   <span>Subtotal</span><span>${subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-600 text-sm">
-                  <span>Envío</span>
-                  <span>{envio === 0 ? 'Gratis' : `$${Number(envio).toLocaleString()}`}</span>
-                </div>
-                {faltaParaEnvioGratis > 0 && (
-                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1.5">
-                    Te faltan <strong>${faltaParaEnvioGratis.toLocaleString()}</strong> para envío gratis
-                    (a partir de ${UMBRAL_ENVIO_GRATIS_MXN.toLocaleString()}).
-                  </p>
-                )}
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-700 text-sm">
                     <span>Descuento ({appliedCoupon.code})</span>

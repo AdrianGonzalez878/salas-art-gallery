@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
 import type { Producto } from '@/sanity/lib/types'
 import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
+import { labelCategoria, labelSubcategoria } from '@/lib/categorias'
 import { useTouchLikeDevice } from '@/hooks/useTouchLikeDevice'
 
 const INTERVAL = 1500
@@ -202,6 +203,11 @@ export default function ProductCard({ producto }: ProductCardProps) {
             {descuentoLabel}
           </div>
         )}
+        {producto.disponible && (
+          <div className="absolute top-2.5 right-2.5 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-violet-800 shadow-sm z-10">
+            Obra única
+          </div>
+        )}
 
         {/* Indicadores móvil (tap/swipe manual) */}
         {tieneVarias && isTouchLike && (
@@ -243,7 +249,15 @@ export default function ProductCard({ producto }: ProductCardProps) {
       </div>
 
       <div className="flex flex-col flex-1 p-3 sm:p-4">
-        <p className="text-[11px] text-gray-400 capitalize mb-1">{producto.categoria}</p>
+        <p className="text-[11px] text-gray-400 mb-0.5">
+          {labelCategoria(producto.categoria)}
+          {producto.categoria === 'ceramica' && producto.subcategoria
+            ? ` · ${labelSubcategoria(producto.subcategoria)}`
+            : ''}
+        </p>
+        {producto.artista?.nombre && (
+          <p className="text-[11px] text-amber-700/80 mb-1">{producto.artista.nombre}</p>
+        )}
         <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-auto line-clamp-2 group-hover:text-amber-700 transition-colors leading-snug">
           {producto.titulo}
         </h3>

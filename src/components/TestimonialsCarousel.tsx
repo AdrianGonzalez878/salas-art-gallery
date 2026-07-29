@@ -13,7 +13,7 @@ function StarRating({ count }: { count: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <svg
           key={i}
-          className={`w-4 h-4 ${i < count ? 'text-amber-400' : 'text-gray-200'}`}
+          className={`w-4 h-4 ${i < count ? 'text-violet-500' : 'text-gray-200'}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -66,8 +66,8 @@ export default function TestimonialsCarousel({ testimonios }: Props) {
                 key={t._id}
                 className={`rounded-2xl p-6 flex flex-col gap-4 transition-all duration-500 ${
                   isCenter
-                    ? 'bg-white border border-amber-200 shadow-md scale-[1.02]'
-                    : 'bg-gray-50 border border-gray-100 opacity-75'
+                    ? 'bg-white border border-violet-200 shadow-md scale-[1.02]'
+                    : 'bg-white/60 border border-gray-100 opacity-75'
                 }`}
               >
                 <StarRating count={t.estrellas} />
@@ -82,7 +82,7 @@ export default function TestimonialsCarousel({ testimonios }: Props) {
 
         {/* Mobile: 1 card */}
         <div className="sm:hidden">
-          <div className="bg-white border border-amber-200 shadow-md rounded-2xl p-6 flex flex-col gap-4 mx-4">
+          <div className="bg-white border border-violet-200 shadow-md rounded-2xl p-6 flex flex-col gap-4 mx-4">
             <StarRating count={testimonios[current].estrellas} />
             <p className="text-gray-600 text-sm leading-relaxed text-center">
               &ldquo;{testimonios[current].texto}&rdquo;
@@ -99,7 +99,7 @@ export default function TestimonialsCarousel({ testimonios }: Props) {
             <button
               onClick={prev}
               aria-label="Anterior"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 sm:-translate-x-5 w-9 h-9 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 sm:-translate-x-5 w-9 h-9 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-500 hover:text-violet-700 hover:border-violet-300 transition cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -108,7 +108,7 @@ export default function TestimonialsCarousel({ testimonios }: Props) {
             <button
               onClick={next}
               aria-label="Siguiente"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 sm:translate-x-5 w-9 h-9 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 sm:translate-x-5 w-9 h-9 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center text-gray-500 hover:text-violet-700 hover:border-violet-300 transition cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -127,7 +127,7 @@ export default function TestimonialsCarousel({ testimonios }: Props) {
               onClick={() => setCurrent(i)}
               aria-label={`Ir al testimonio ${i + 1}`}
               className={`rounded-full transition-all duration-300 cursor-pointer ${
-                i === current ? 'w-6 h-2 bg-amber-500' : 'w-2 h-2 bg-gray-300 hover:bg-amber-300'
+                i === current ? 'w-6 h-2 bg-violet-600' : 'w-2 h-2 bg-gray-300 hover:bg-violet-300'
               }`}
             />
           ))}

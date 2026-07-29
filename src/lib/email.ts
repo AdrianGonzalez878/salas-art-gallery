@@ -1,6 +1,8 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// La clave se valida en cada envío. El valor temporal permite compilar y
+// pre-renderizar el sitio antes de configurar Resend en cada entorno.
+const resend = new Resend(process.env.RESEND_API_KEY || 're_not_configured')
 
 const FROM = 'Salas Art Gallery <notificaciones@salasartgallery.com>'
 
@@ -118,7 +120,7 @@ export async function sendNuevoPedidoAdmin(data: NuevoPedidoData) {
   if (!adminEmail || !process.env.RESEND_API_KEY) return
 
   const { numeroPedido, cliente, direccionEnvio, productos, subtotal, envio, total } = data
-  const logoUrl = `${getAppUrl()}/logo.jpg`
+  const logoUrl = `${getAppUrl()}/logo.png`
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
@@ -183,7 +185,7 @@ export async function sendConfirmacionCliente(data: NuevoPedidoData) {
   if (!process.env.RESEND_API_KEY) return
 
   const { numeroPedido, cliente, productos, subtotal, envio, total } = data
-  const logoUrl = `${getAppUrl()}/logo.jpg`
+  const logoUrl = `${getAppUrl()}/logo.png`
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
@@ -248,7 +250,7 @@ export async function sendPedidoEnviado(opts: {
   if (!process.env.RESEND_API_KEY) return
 
   const { clienteEmail, clienteNombre, numeroPedido, guiaRastreo, paqueteria, productos } = opts
-  const logoUrl = `${getAppUrl()}/logo.jpg`
+  const logoUrl = `${getAppUrl()}/logo.png`
 
   const guiaSection = guiaRastreo
     ? `
@@ -332,7 +334,7 @@ export async function sendPagoConfirmado(
 ) {
   if (!process.env.RESEND_API_KEY) return
 
-  const logoUrl = `${getAppUrl()}/logo.jpg`
+  const logoUrl = `${getAppUrl()}/logo.png`
 
   const productosSection =
     productos && productos.length > 0
@@ -385,6 +387,116 @@ export async function sendPagoConfirmado(
     from: FROM,
     to: clienteEmail,
     subject: `✅ Pago confirmado — Pedido ${numeroPedido}`,
+    html,
+  })
+}
+
+export interface VisitaGaleriaData {
+  nombre: string
+  email: string
+  telefono: string
+  fechaPreferida: string
+  horarioPreferido: string
+  personas: number
+  mensaje?: string
+}
+
+function labelHorario(horario: string) {
+  if (horario === 'manana') return 'Mañana'
+  if (horario === 'tarde') return 'Tarde'
+  return 'Flexible'
+}
+
+function formatFechaISO(fecha: string) {
+  const parsed = new Date(`${fecha}T12:00:00`)
+  return parsed.toLocaleDateString('es-MX', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+export async function sendVisitaGaleriaAdmin(data: VisitaGaleriaData) {
+  const adminEmail = process.env.ADMIN_EMAIL
+  if (!adminEmail || !process.env.RESEND_API_KEY) return
+
+  const logoUrl = `${getAppUrl()}/logo.png`
+  const horario = labelHorario(data.horarioPreferido)
+  const fecha = formatFechaISO(data.fechaPreferida)
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+    ${emailHeader(logoUrl, 'Nueva solicitud de visita')}
+
+    <div style="padding:32px;">
+      <div style="background:#ede9fe;border-left:4px solid #7c3aed;padding:16px 20px;border-radius:4px;margin-bottom:28px;">
+        <p style="margin:0;font-size:12px;color:#5b21b6;text-transform:uppercase;letter-spacing:0.05em;">Visita a la galería</p>
+        <p style="margin:6px 0 0;font-size:18px;font-weight:bold;color:#4c1d95;">${fecha} · ${horario}</p>
+      </div>
+
+      <table style="width:100%;font-size:14px;margin-bottom:20px;">
+        <tr><td style="color:#6b7280;padding:4px 0;width:140px;">Nombre</td><td style="font-weight:600;">${data.nombre}</td></tr>
+        <tr><td style="color:#6b7280;padding:4px 0;">Email</td><td>${data.email}</td></tr>
+        <tr><td style="color:#6b7280;padding:4px 0;">Teléfono</td><td>${data.telefono}</td></tr>
+        <tr><td style="color:#6b7280;padding:4px 0;">Personas</td><td>${data.personas}</td></tr>
+      </table>
+
+      ${
+        data.mensaje
+          ? `<h2 style="font-size:15px;font-weight:600;margin:0 0 8px;color:#374151;text-transform:uppercase;letter-spacing:0.05em;">Comentarios</h2>
+             <p style="font-size:14px;margin:0;line-height:1.7;color:#374151;white-space:pre-line;">${data.mensaje}</p>`
+          : ''
+      }
+    </div>
+
+    ${emailFooter()}
+  </div>`
+
+  await resend.emails.send({
+    from: FROM,
+    to: adminEmail,
+    subject: `🏛️ Solicitud de visita — ${data.nombre}`,
+    html,
+  })
+}
+
+export async function sendVisitaGaleriaConfirmacion(data: VisitaGaleriaData) {
+  if (!process.env.RESEND_API_KEY) return
+
+  const logoUrl = `${getAppUrl()}/logo.png`
+  const horario = labelHorario(data.horarioPreferido)
+  const fecha = formatFechaISO(data.fechaPreferida)
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+    ${emailHeader(logoUrl, 'Solicitud recibida')}
+
+    <div style="padding:32px;">
+      <p style="font-size:16px;margin:0 0 16px;">Hola <strong>${data.nombre}</strong>,</p>
+      <p style="font-size:14px;line-height:1.7;color:#374151;margin:0 0 20px;">
+        Recibimos tu solicitud para visitar Salas Art Gallery. Revisaremos la agenda y te
+        contactaremos pronto para confirmar tu cita.
+      </p>
+
+      <table style="width:100%;font-size:14px;background:#f9fafb;border-radius:8px;padding:16px;">
+        <tr><td style="color:#6b7280;padding:4px 8px;">Fecha preferida</td><td style="padding:4px 8px;">${fecha}</td></tr>
+        <tr><td style="color:#6b7280;padding:4px 8px;">Horario</td><td style="padding:4px 8px;">${horario}</td></tr>
+        <tr><td style="color:#6b7280;padding:4px 8px;">Personas</td><td style="padding:4px 8px;">${data.personas}</td></tr>
+      </table>
+
+      <p style="font-size:13px;color:#6b7280;margin-top:24px;">
+        Este espacio atiende con cita previa. Si necesitas cambiar tu solicitud, responde a este correo.
+      </p>
+    </div>
+
+    ${emailFooter()}
+  </div>`
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.email,
+    subject: 'Recibimos tu solicitud de visita — Salas Art Gallery',
     html,
   })
 }

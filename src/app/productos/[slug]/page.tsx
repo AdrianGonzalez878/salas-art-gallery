@@ -3,21 +3,19 @@ import Image from 'next/image'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/lib/sanity'
-import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery, postsInstagramQuery } from '@/sanity/lib/queries'
+import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
 import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
-import type { Producto, PostInstagram } from '@/sanity/lib/types'
+import { labelCategoria, labelSubcategoria } from '@/lib/categorias'
+import type { Producto } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import ProductBuyOptions from '@/components/ProductBuyOptions'
-import ProductDescriptionCollapse from '@/components/ProductDescriptionCollapse'
-import ProductPurchaseInfo from '@/components/ProductPurchaseInfo'
-import ProductFlexiblePayments from '@/components/ProductFlexiblePayments'
+import ProductObraFicha from '@/components/ProductObraFicha'
 import ProductShareButtons from '@/components/ProductShareButtons'
 import MSIStaticBanner from '@/components/MSIStaticBanner'
 import MSITicker from '@/components/MSITicker'
 import TePodriaGustarSection from '@/components/TePodriaGustarSection'
 import AnimateInView from '@/components/AnimateInView'
-import InstagramSection from '@/components/InstagramSection'
 import TestimonialsSection from '@/components/TestimonialsSection'
 import ProductViewTracker from '@/components/ProductViewTracker'
 
@@ -25,12 +23,9 @@ interface ProductoPageProps {
   params: Promise<{ slug: string }>
 }
 
-function portableTextToPlain(blocks: Array<{ _type: string; children?: Array<{ text?: string }> }>): string {
-  return blocks
-    .filter((b) => b._type === 'block')
-    .map((b) => b.children?.map((c) => c.text ?? '').join('') ?? '')
-    .join(' ')
-    .trim()
+function metaDescription(titulo: string, artista?: string | null): string {
+  const base = artista ? `${titulo} — ${artista}` : titulo
+  return `${base} — obra disponible en Salas Art Gallery.`
 }
 
 export async function generateMetadata({ params }: ProductoPageProps): Promise<Metadata> {
@@ -38,13 +33,14 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
   const producto = await sanityFetch<{
     titulo: string
     categoria: string
+    subcategoria?: string
+    artista?: { nombre?: string; slug?: { current: string } } | null
     precio: number
     tieneDescuento?: boolean
     tipoDescuento?: string
     valorDescuento?: number
     fechaInicioDescuento?: string
     fechaFinDescuento?: string
-    descripcion?: Array<{ _type: string; children?: Array<{ text?: string }> }>
     imagenPrincipal?: { asset: { _ref: string }; alt?: string }
     slug: string
   } | null>(productoMetadataQuery, { slug })
@@ -60,38 +56,27 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
     producto.fechaFinDescuento,
   )
 
-  const descripcionPlain = producto.descripcion
-    ? portableTextToPlain(producto.descripcion).slice(0, 155)
-    : `${producto.titulo} — obra disponible en Salas Art Gallery.`
+  const descripcionPlain = metaDescription(producto.titulo, producto.artista?.nombre)
 
   const ogImage = producto.imagenPrincipal
     ? urlFor(producto.imagenPrincipal).width(1200).height(630).url()
-    : '/logo.jpg'
+    : '/logo.png'
 
-  const categoriaLabel: Record<string, string> = {
-    dijes: 'Obra',
-    collares: 'Obra',
-    aretes: 'Obra',
-    pulseras: 'Obra',
-    anillos: 'Obra',
-    juegos: 'Obra',
-    ambar: 'Obra',
-    marquesita: 'Obra',
-    filigrana: 'Obra',
-  }
-  const catLabel = categoriaLabel[producto.categoria] ?? 'Obra de arte'
+  const catLabel = labelCategoria(producto.categoria)
+  const subLabel = labelSubcategoria(producto.subcategoria)
 
   return {
-    title: `${producto.titulo} | ${catLabel}`,
+    title: `${producto.titulo}${producto.artista?.nombre ? ` — ${producto.artista.nombre}` : ''} | ${catLabel}`,
     description: descripcionPlain,
     keywords: [
       producto.titulo,
       catLabel,
+      subLabel,
+      producto.artista?.nombre,
       'Salas Art Gallery',
       'arte contemporáneo',
-      'galería de arte',
       'obra de arte',
-    ].filter(Boolean),
+    ].filter(Boolean) as string[],
     openGraph: {
       title: `${producto.titulo} — $${precioFinal.toLocaleString()} | Salas Art Gallery`,
       description: descripcionPlain,
@@ -119,17 +104,10 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
     notFound()
   }
 
-  const [relacionados, postsInstagram] = await Promise.all([
-    sanityFetch<Producto[]>(productosRelacionadosQuery, {
-      categoria: producto.categoria,
-      excludeId: producto._id,
-    }),
-    sanityFetch<PostInstagram[]>(postsInstagramQuery),
-  ])
-
-  const instagramImageUrls = postsInstagram.map((post) =>
-    urlFor(post.imagen).width(400).height(400).quality(90).url()
-  )
+  const relacionados = await sanityFetch<Producto[]>(productosRelacionadosQuery, {
+    categoria: producto.categoria,
+    excludeId: producto._id,
+  })
 
   const descuentoActivo = descuentoVigente(
     producto.tieneDescuento,
@@ -154,20 +132,15 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       urlFor(img).width(1200).quality(90).url()
     ) || []
 
-  const stock = producto.stock ?? 1
-  const disponibilidadSchema = !producto.disponible || stock === 0
-    ? 'https://schema.org/OutOfStock'
-    : 'https://schema.org/InStock'
+  const disponibilidadSchema = producto.disponible
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock'
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: producto.titulo,
-    description: producto.descripcion
-      ? portableTextToPlain(
-          producto.descripcion as Array<{ _type: string; children?: Array<{ text?: string }> }>
-        )
-      : `${producto.titulo} — obra disponible en Salas Art Gallery.`,
+    description: metaDescription(producto.titulo, producto.artista?.nombre),
     image: [imagenPrincipalUrl, ...imagenesGaleria],
     sku: producto.slug.current,
     brand: { '@type': 'Brand', name: 'Salas Art Gallery' },
@@ -195,9 +168,9 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       <div className="w-full">
         <MSIStaticBanner />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 p-0 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8 p-0 sm:p-6 lg:p-8">
             {/* Galería interactiva */}
             <AnimateInView y={20}>
               <ProductImageGallery
@@ -209,16 +182,13 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
             </AnimateInView>
 
             {/* Información del producto */}
-            <div className="flex flex-col justify-center px-4 py-4 sm:px-0 sm:py-0">
+            <div className="flex flex-col gap-2 px-3 pb-3 sm:gap-0 sm:px-0 sm:pb-0 sm:py-0">
               <AnimateInView delay={0.05} y={16}>
-                <div className="mb-4">
-                  <span className="inline-block text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full capitalize">
-                    {producto.categoria}
-                  </span>
-                </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  {producto.titulo}
-                </h1>
+                <ProductObraFicha
+                  producto={producto}
+                  precioFinal={precioFinal}
+                  descuentoActivo={descuentoActivo}
+                />
               </AnimateInView>
 
               <AnimateInView delay={0.1} y={16}>
@@ -233,61 +203,12 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
                   valorDescuento={producto.valorDescuento}
                   textoBadge={producto.textoBadge}
                   imageUrl={imagenPrincipalUrl}
-                  opcionExtra={
-                    producto.tieneOpcionExtra &&
-                    producto.nombreOpcionExtra &&
-                    producto.precioOpcionExtra &&
-                    ['dijes', 'collares', 'juegos'].includes(producto.categoria)
-                      ? {
-                          nombre: producto.nombreOpcionExtra,
-                          precio: producto.precioOpcionExtra,
-                        }
-                      : undefined
-                  }
+                  showPrice={false}
                 />
               </AnimateInView>
 
-              <AnimateInView delay={0.15} y={16}>
-                <ProductDescriptionCollapse descripcion={producto.descripcion} />
-              </AnimateInView>
-
-              <AnimateInView delay={0.2} y={16}>
-                <ProductPurchaseInfo />
-              </AnimateInView>
-
-              <AnimateInView delay={0.25} y={16}>
-                <ProductFlexiblePayments />
-              </AnimateInView>
-
-              <AnimateInView delay={0.3} y={16}>
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  {producto.disponible ? (
-                    (() => {
-                      const stock = producto.stock ?? 1
-                      if (stock === 0) {
-                        return (
-                          <p className="text-sm text-red-600 font-medium">Agotado</p>
-                        )
-                      }
-                      if (stock <= 3) {
-                        return (
-                          <p className="text-sm text-amber-600 font-medium">
-                            Últimas {stock} {stock === 1 ? 'unidad disponible' : 'unidades disponibles'}
-                          </p>
-                        )
-                      }
-                      return (
-                        <p className="text-sm text-green-600 font-medium">En stock · {stock} unidades</p>
-                      )
-                    })()
-                  ) : (
-                    <p className="text-sm text-red-600 font-medium">Agotado</p>
-                  )}
-                </div>
-              </AnimateInView>
-
               {productUrl ? (
-                <AnimateInView delay={0.35} y={16}>
+                <AnimateInView delay={0.2} y={16}>
                   <ProductShareButtons title={producto.titulo} url={productUrl} />
                 </AnimateInView>
               ) : null}
@@ -300,9 +221,6 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       </div>
       <TePodriaGustarSection productos={relacionados} />
       <TestimonialsSection />
-      {postsInstagram.length > 0 && (
-        <InstagramSection posts={postsInstagram} imageUrls={instagramImageUrls} />
-      )}
     </div>
   )
 }

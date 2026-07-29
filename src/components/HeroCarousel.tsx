@@ -11,9 +11,13 @@ interface ImagenCarrusel {
 
 interface HeroCarouselProps {
   imagenes: ImagenCarrusel[]
+  /** Desktop: ruta en /public, ej. /videos/hero.mp4 */
+  videoSrc?: string | null
+  /** Móvil: ruta en /public, ej. /videos/hero-vertical.mp4 */
+  videoSrcMobile?: string | null
 }
 
-export default function HeroCarousel({ imagenes }: HeroCarouselProps) {
+export default function HeroCarousel({ imagenes, videoSrc, videoSrcMobile }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
@@ -26,11 +30,62 @@ export default function HeroCarousel({ imagenes }: HeroCarouselProps) {
     return () => clearInterval(interval)
   }, [imagenes.length])
 
-  if (!imagenes || imagenes.length === 0) return null
+  const posterDesktop = imagenes?.[0]?.urlDesktop
+  const posterMobile = imagenes?.[0]?.urlMobile ?? posterDesktop
+  const desktopVideo = videoSrc?.trim() || null
+  const mobileVideo = videoSrcMobile?.trim() || desktopVideo
+  const hasVideo = Boolean(desktopVideo || mobileVideo)
+  const hasImages = imagenes && imagenes.length > 0
+  const [videoIntroDone, setVideoIntroDone] = useState(!hasVideo)
+
+  useEffect(() => {
+    if (!hasVideo) {
+      setVideoIntroDone(true)
+      return
+    }
+    setVideoIntroDone(false)
+    const timer = setTimeout(() => setVideoIntroDone(true), 2500)
+    return () => clearTimeout(timer)
+  }, [hasVideo, desktopVideo, mobileVideo])
+
+  if (!hasVideo && !hasImages) return null
 
   return (
     <div className="absolute inset-0 z-0">
-      {imagenes.map((imagen, index) => {
+      {hasVideo ? (
+        <>
+          {desktopVideo ? (
+            <video
+              className="absolute inset-0 hidden h-full w-full object-cover object-center md:block"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={posterDesktop}
+              aria-hidden
+            >
+              <source src={desktopVideo} type="video/mp4" />
+            </video>
+          ) : null}
+          {mobileVideo ? (
+            <video
+              className="absolute inset-0 h-full w-full object-cover object-center md:hidden"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={posterMobile}
+              aria-hidden
+            >
+              <source src={mobileVideo} type="video/mp4" />
+            </video>
+          ) : null}
+        </>
+      ) : null}
+
+      {!hasVideo && hasImages ? imagenes.map((imagen, index) => {
         const isActive = index === currentIndex
         
         return (
@@ -63,13 +118,19 @@ export default function HeroCarousel({ imagenes }: HeroCarouselProps) {
             />
           </div>
         )
-      })}
+      }) : null}
       
-      {/* Overlay oscuro para legibilidad con gradiente */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 z-10" />
+      {/* Overlay: más claro al inicio del video para que se vea el logo */}
+      <div
+        className={`absolute inset-0 z-10 transition-all duration-700 ${
+          hasVideo && !videoIntroDone
+            ? 'bg-black/10'
+            : 'bg-gradient-to-b from-black/40 via-black/30 to-black/50'
+        }`}
+      />
       
       {/* Indicadores de página (dots) */}
-      {imagenes.length > 1 && (
+      {!hasVideo && imagenes.length > 1 && (
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
           {imagenes.map((_, index) => (
             <button

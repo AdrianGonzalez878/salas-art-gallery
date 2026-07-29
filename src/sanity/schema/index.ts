@@ -3,21 +3,21 @@ import pedido from './pedido'
 import hero from './hero'
 import sobreNosotros from './sobreNosotros'
 import seccionDestacada from './seccionDestacada'
-import postInstagram from './postInstagram'
-import shopTheLook from './shopTheLook'
-import promocion from './promocion'
 import cupon from './cupon'
 import testimonio from './testimonio'
+import artista from './artista'
+import exposicion from './exposicion'
+import paginaArtistas from './paginaArtistas'
 
 export const schemaTypes = [
+  artista,
+  exposicion,
   producto,
   pedido,
   hero,
   sobreNosotros,
+  paginaArtistas,
   seccionDestacada,
-  postInstagram,
-  shopTheLook,
-  promocion,
   cupon,
   testimonio,
 ]

@@ -17,39 +17,66 @@ interface SearchPreviewItem {
 }
 
 const categorias = [
-  { nombre: 'Anillos', href: '/productos?categoria=anillos' },
-  { nombre: 'Collares', href: '/productos?categoria=collares' },
-  { nombre: 'Aretes', href: '/productos?categoria=aretes' },
-  { nombre: 'Pulseras', href: '/productos?categoria=pulseras' },
-  { nombre: 'Dijes', href: '/productos?categoria=dijes' },
-  { nombre: 'Cadenas', href: '/productos?categoria=cadenas' },
-  { nombre: 'Juegos', href: '/productos?categoria=juegos' },
+  { nombre: 'Litografía', href: '/productos?categoria=litografia' },
+  { nombre: 'Acrílicos', href: '/productos?categoria=acrilicos' },
+  { nombre: 'Arte objeto', href: '/productos?categoria=arte-objeto' },
+  { nombre: 'Óleos', href: '/productos?categoria=oleos' },
+  { nombre: 'Madera tallada', href: '/productos?categoria=madera-tallada' },
+  { nombre: 'Cerámica', href: '/productos?categoria=ceramica' },
+  { nombre: 'Bronce', href: '/productos?categoria=bronce' },
 ]
 
-/** Misma línea que el footer: ámbar al hover + transición (fondo claro → texto más oscuro) */
-const desktopNavLink =
-  'text-gray-700 hover:text-amber-600 font-medium transition-colors duration-200 underline-offset-[6px] decoration-amber-500/80 decoration-2 hover:underline'
-
-const desktopNavButton =
-  `${desktopNavLink} cursor-pointer bg-transparent border-0 p-0 inline-flex items-center`
+/** Desktop — estilo editorial galería (Salas) */
+function navLinkClass(active: boolean) {
+  return [
+    'relative px-3 py-2 font-display text-[13px] uppercase tracking-[0.16em] transition-colors duration-200',
+    active
+      ? 'text-neutral-900 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-px after:bg-gradient-to-r after:from-fuchsia-500 after:via-violet-500 after:to-sky-400'
+      : 'text-neutral-600 hover:text-neutral-900',
+  ].join(' ')
+}
 
 const desktopDropdownLink =
-  'block px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors duration-200'
+  'block w-full text-left px-4 py-2.5 text-sm text-neutral-700 hover:bg-violet-50 hover:text-violet-900 transition-colors duration-150'
 
 const desktopDropdownLinkStrong =
-  'block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-amber-50 hover:text-amber-900 transition-colors duration-200 border-b border-gray-100'
+  'block w-full text-left px-4 py-2.5 text-sm font-semibold text-neutral-900 hover:bg-violet-50 hover:text-violet-900 transition-colors duration-150'
 
-/** Menú móvil (fondo amarillo): hover tipo footer pero legible sobre amarillo */
+const desktopDropdownLabel =
+  'block w-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 bg-neutral-50/80'
+
+function desktopDropdownPanelClass(open: boolean) {
+  return [
+    'absolute left-0 top-[calc(100%-2px)] z-[60] w-56 transition-[opacity,transform] duration-200 ease-out',
+    open
+      ? 'opacity-100 visible pointer-events-auto translate-y-0'
+      : 'opacity-0 invisible pointer-events-none -translate-y-1',
+  ].join(' ')
+}
+
+const desktopDropdownList =
+  'rounded-lg border border-neutral-200 bg-white shadow-lg shadow-neutral-900/10 overflow-hidden list-none m-0 p-0'
+
+/** Menú móvil — estilo galería Salas */
 const mobileNavItem =
-  'transition-colors duration-200 text-black hover:text-amber-950 hover:bg-black/[0.08] rounded-lg -mx-2 px-2'
+  'block font-display text-[15px] uppercase tracking-[0.14em] text-neutral-800 py-3.5 border-b border-neutral-100 transition-colors active:bg-violet-50/60'
+
+const mobileNavItemActive = 'text-violet-800'
 
 const mobileNavButton =
   `${mobileNavItem} flex w-full items-center justify-between text-left cursor-pointer`
 
+const mobileSubBack =
+  'flex items-center gap-2 text-left text-[11px] font-semibold text-violet-700 uppercase tracking-[0.2em] mb-5 py-1'
+
+const mobileSafeBottom = 'max(1rem, calc(1rem + env(safe-area-inset-bottom, 0px)))'
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isProductosOpen, setIsProductosOpen] = useState(false)
-  const [isDesktopProductosOpen, setIsDesktopProductosOpen] = useState(false)
+  const [isExploraOpen, setIsExploraOpen] = useState(false)
+  const [isTiendaOpen, setIsTiendaOpen] = useState(false)
+  const [isDesktopExploraOpen, setIsDesktopExploraOpen] = useState(false)
+  const [isDesktopTiendaOpen, setIsDesktopTiendaOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchPreviewItem[]>([])
@@ -60,15 +87,18 @@ export default function Navbar() {
   const [canHoverNav, setCanHoverNav] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const desktopSearchInputRef = useRef<HTMLInputElement>(null)
-  const productosMenuRef = useRef<HTMLDivElement>(null)
+  const exploraMenuRef = useRef<HTMLDivElement>(null)
+  const tiendaMenuRef = useRef<HTMLDivElement>(null)
   const { totalItems } = useCart()
   const router = useRouter()
   const pathname = usePathname()
 
   useEffect(() => {
-    setIsDesktopProductosOpen(false)
+    setIsDesktopExploraOpen(false)
+    setIsDesktopTiendaOpen(false)
     setIsMenuOpen(false)
-    setIsProductosOpen(false)
+    setIsExploraOpen(false)
+    setIsTiendaOpen(false)
     setIsSearchOpen(false)
   }, [pathname])
 
@@ -108,10 +138,16 @@ export default function Navbar() {
         }
       }
       if (
-        productosMenuRef.current &&
-        !productosMenuRef.current.contains(e.target as Node)
+        exploraMenuRef.current &&
+        !exploraMenuRef.current.contains(e.target as Node)
       ) {
-        setIsDesktopProductosOpen(false)
+        setIsDesktopExploraOpen(false)
+      }
+      if (
+        tiendaMenuRef.current &&
+        !tiendaMenuRef.current.contains(e.target as Node)
+      ) {
+        setIsDesktopTiendaOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -121,7 +157,8 @@ export default function Navbar() {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsDesktopProductosOpen(false)
+        setIsDesktopExploraOpen(false)
+        setIsDesktopTiendaOpen(false)
       }
     }
     document.addEventListener('keydown', handleEscape)
@@ -142,306 +179,403 @@ export default function Navbar() {
     setDesktopSearchExpanded(false)
   }
 
+  const isHome = pathname === '/'
+  const isTienda = pathname === '/productos' || pathname.startsWith('/productos/')
+  const isExplora =
+    pathname === '/artistas' ||
+    pathname.startsWith('/artistas/') ||
+    pathname === '/exposiciones' ||
+    pathname.startsWith('/exposiciones/')
+  const isPromociones = pathname === '/promociones'
+  const isGaleria = pathname === '/galeria'
+  const isSobre = pathname === '/sobre-nosotros'
+
   return (
     <>
-      {/* Desktop Navbar - Parte superior */}
-      <nav className="hidden lg:block sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20 lg:h-24">
-            {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center space-x-2 rounded-lg transition-opacity duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
-            >
-              <Image
-                src="/logo.jpg"
-                alt="Salas Art Gallery Logo"
-                width={320}
-                height={100}
-                className="h-16 lg:h-20 w-auto object-contain"
-                quality={100}
-                priority
-              />
-            </Link>
-
-            {/* Desktop Navigation: Inicio → Productos → Promociones → Sobre Salas Art Gallery */}
-            <div className="flex items-center space-x-6 lg:space-x-8 flex-1 justify-center min-w-0">
-              <Link href="/" className={`${desktopNavLink} shrink-0`}>
-                Inicio
+      {/* Desktop Navbar — editorial galería */}
+      <nav className="hidden lg:block sticky top-0 z-50">
+        <div className="bg-white/92 backdrop-blur-md border-b border-neutral-200/70 shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-visible">
+          <div className="max-w-7xl mx-auto px-6 xl:px-8 overflow-visible">
+            <div className="flex items-center justify-between gap-6 h-[4.75rem] overflow-visible">
+              {/* Logo + marca */}
+              <Link
+                href="/"
+                className="group flex items-center gap-4 shrink-0 min-w-0 rounded-sm transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-500"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="Salas Art Gallery"
+                  width={280}
+                  height={80}
+                  className="h-14 xl:h-[3.75rem] w-auto object-contain"
+                  quality={100}
+                  priority
+                />
+                <span className="hidden xl:flex flex-col border-l border-neutral-200 pl-4">
+                  <span className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400">
+                    Casa de arte
+                  </span>
+                  <span className="font-display text-sm italic text-neutral-700 -mt-0.5">
+                    Salas Art Gallery
+                  </span>
+                </span>
               </Link>
 
-              {/* Productos con dropdown de categorías */}
-              <div
-                ref={productosMenuRef}
-                className="relative shrink-0"
-                onMouseEnter={() => {
-                  if (canHoverNav) setIsDesktopProductosOpen(true)
-                }}
-                onMouseLeave={() => {
-                  if (canHoverNav) setIsDesktopProductosOpen(false)
-                }}
-              >
-                <button
-                  type="button"
-                  className={`${desktopNavButton} shrink-0`}
-                  aria-expanded={isDesktopProductosOpen}
-                  aria-haspopup="true"
-                  onClick={() => setIsDesktopProductosOpen((open) => !open)}
+              {/* Navegación central */}
+              <div className="flex items-center justify-center gap-0.5 flex-1 min-w-0 overflow-visible">
+                <Link href="/" className={navLinkClass(isHome)}>
+                  Inicio
+                </Link>
+
+                <span className="mx-1 h-4 w-px bg-neutral-200 shrink-0" aria-hidden />
+
+                {/* Tienda — obras y categorías */}
+                <div
+                  ref={tiendaMenuRef}
+                  className="relative shrink-0"
+                  onMouseEnter={() => {
+                    if (canHoverNav) {
+                      setIsDesktopTiendaOpen(true)
+                      setIsDesktopExploraOpen(false)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (canHoverNav) setIsDesktopTiendaOpen(false)
+                  }}
                 >
-                  Productos
+                  <button
+                    type="button"
+                    className={`${navLinkClass(isTienda)} cursor-pointer bg-transparent border-0 inline-flex items-center gap-1`}
+                    aria-expanded={isDesktopTiendaOpen}
+                    aria-haspopup="true"
+                    onClick={() => {
+                      setIsDesktopExploraOpen(false)
+                      setIsDesktopTiendaOpen((open) => !open)
+                    }}
+                  >
+                    Tienda
+                    <svg
+                      className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 ${
+                        isDesktopTiendaOpen ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden
+                    >
+                      <path d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  <div className={desktopDropdownPanelClass(isDesktopTiendaOpen)}>
+                    <ul className={desktopDropdownList} role="menu" aria-label="Tienda">
+                      <li role="none" className="border-b border-neutral-100">
+                        <Link
+                          href="/productos"
+                          className={desktopDropdownLinkStrong}
+                          onClick={() => setIsDesktopTiendaOpen(false)}
+                          role="menuitem"
+                        >
+                          Ver todas las obras
+                        </Link>
+                      </li>
+                      <li role="none">
+                        <span className={desktopDropdownLabel}>Categorías</span>
+                      </li>
+                      {categorias.map((categoria, index) => (
+                        <li
+                          key={categoria.href}
+                          role="none"
+                          className={index < categorias.length - 1 ? 'border-b border-neutral-100' : undefined}
+                        >
+                          <Link
+                            href={categoria.href}
+                            className={desktopDropdownLink}
+                            onClick={() => setIsDesktopTiendaOpen(false)}
+                            role="menuitem"
+                          >
+                            {categoria.nombre}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <span className="mx-1 h-4 w-px bg-neutral-200 shrink-0" aria-hidden />
+
+                {/* Explora — artistas y exposiciones */}
+                <div
+                  ref={exploraMenuRef}
+                  className="relative shrink-0"
+                  onMouseEnter={() => {
+                    if (canHoverNav) {
+                      setIsDesktopExploraOpen(true)
+                      setIsDesktopTiendaOpen(false)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (canHoverNav) setIsDesktopExploraOpen(false)
+                  }}
+                >
+                  <button
+                    type="button"
+                    className={`${navLinkClass(isExplora)} cursor-pointer bg-transparent border-0 inline-flex items-center gap-1`}
+                    aria-expanded={isDesktopExploraOpen}
+                    aria-haspopup="true"
+                    onClick={() => {
+                      setIsDesktopTiendaOpen(false)
+                      setIsDesktopExploraOpen((open) => !open)
+                    }}
+                  >
+                    Explora
+                    <svg
+                      className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 ${
+                        isDesktopExploraOpen ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden
+                    >
+                      <path d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  <div className={desktopDropdownPanelClass(isDesktopExploraOpen)}>
+                    <ul className={desktopDropdownList} role="menu" aria-label="Explora">
+                      <li role="none" className="border-b border-neutral-100">
+                        <Link
+                          href="/artistas"
+                          className={desktopDropdownLink}
+                          onClick={() => setIsDesktopExploraOpen(false)}
+                          role="menuitem"
+                        >
+                          Artistas
+                        </Link>
+                      </li>
+                      <li role="none">
+                        <Link
+                          href="/exposiciones"
+                          className={desktopDropdownLink}
+                          onClick={() => setIsDesktopExploraOpen(false)}
+                          role="menuitem"
+                        >
+                          Exposiciones
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <span className="mx-1 h-4 w-px bg-neutral-200 shrink-0" aria-hidden />
+
+                <Link href="/promociones" className={navLinkClass(isPromociones)}>
+                  Promociones
+                </Link>
+
+                <span className="mx-1 h-4 w-px bg-neutral-200 shrink-0" aria-hidden />
+
+                <Link href="/galeria" className={navLinkClass(isGaleria)}>
+                  Galería
+                </Link>
+
+                <span className="mx-1 h-4 w-px bg-neutral-200 shrink-0" aria-hidden />
+
+                <Link href="/sobre-nosotros" className={navLinkClass(isSobre)}>
+                  Nosotros
+                </Link>
+              </div>
+
+              {/* Acciones */}
+              <div className="flex items-center gap-2 shrink-0">
+                <div
+                  ref={searchRef}
+                  className={`relative transition-[width] duration-200 ease-out ${
+                    desktopSearchExpanded ? 'w-48 xl:w-56' : 'w-10'
+                  }`}
+                >
+                  {!desktopSearchExpanded ? (
+                    <button
+                      type="button"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:text-violet-700 hover:border-violet-200 hover:bg-violet-50/50 transition-all duration-200"
+                      aria-label="Buscar obras"
+                      aria-expanded={false}
+                      onClick={() => {
+                        setDesktopSearchExpanded(true)
+                        queueMicrotask(() => desktopSearchInputRef.current?.focus())
+                      }}
+                    >
+                      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <form onSubmit={handleSearch}>
+                      <label htmlFor="nav-search" className="sr-only">Buscar obras</label>
+                      <div className="relative min-w-0">
+                        <input
+                          ref={desktopSearchInputRef}
+                          id="nav-search"
+                          type="search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onFocus={() => searchQuery.trim().length >= 2 && setSearchOpen(true)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setSearchOpen(false)
+                              if (searchQuery.trim() === '') {
+                                setDesktopSearchExpanded(false)
+                                ;(e.target as HTMLInputElement).blur()
+                              }
+                            }
+                          }}
+                          placeholder="Buscar obras..."
+                          className="w-full min-w-0 rounded-full border border-neutral-200 bg-white py-2 pl-4 pr-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-300/50"
+                          aria-label="Buscar obras"
+                          autoComplete="off"
+                        />
+                        <button
+                          type="submit"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-violet-600 transition-colors rounded-full"
+                          aria-label="Buscar"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                  {searchOpen && searchQuery.trim().length >= 2 && (
+                    <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border border-neutral-200/80 bg-white shadow-xl z-50 max-h-[min(80vh,400px)] overflow-y-auto">
+                      {searchLoading ? (
+                        <div className="p-4 text-center text-sm text-neutral-500">Buscando...</div>
+                      ) : searchResults.length === 0 ? (
+                        <div className="p-4 text-center text-sm text-neutral-500">No hay resultados</div>
+                      ) : (
+                        <>
+                          <ul className="py-1">
+                            {searchResults.map((item) => (
+                              <li key={item._id}>
+                                <Link
+                                  href={`/productos/${item.slug}`}
+                                  onClick={() => {
+                                    setSearchOpen(false)
+                                    setSearchQuery('')
+                                    setDesktopSearchExpanded(false)
+                                  }}
+                                  className="flex gap-3 px-3 py-2.5 hover:bg-violet-50/80 transition-colors duration-200"
+                                >
+                                  <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
+                                    {item.imagenUrl ? (
+                                      <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
+                                    )}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
+                                    <p className="text-sm text-neutral-600">
+                                      {item.tieneDescuento ? (
+                                        <>
+                                          <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
+                                          {' '}
+                                          <span className="font-semibold text-neutral-900">${item.precioFinal.toLocaleString()}</span>
+                                        </>
+                                      ) : (
+                                        <span className="font-semibold text-neutral-900">${item.precio.toLocaleString()}</span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                          <Link
+                            href={`/productos?q=${encodeURIComponent(searchQuery.trim())}`}
+                            onClick={() => {
+                              setSearchOpen(false)
+                              setSearchQuery('')
+                              setDesktopSearchExpanded(false)
+                            }}
+                            className="block border-t border-neutral-100 px-3 py-3 text-center text-sm font-medium text-violet-800 hover:bg-violet-50 transition-colors duration-200"
+                          >
+                            Ver todos los resultados
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <Link
+                  href="/carrito"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-50/80 text-neutral-700 hover:text-violet-700 hover:border-violet-200 hover:bg-violet-50/50 transition-all duration-200"
+                  aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} obra${totalItems !== 1 ? 's' : ''})` : ''}`}
+                >
                   <svg
-                    className={`ml-1 h-4 w-4 transition-transform duration-200 ${
-                      isDesktopProductosOpen ? 'rotate-180' : ''
-                    }`}
+                    className="h-[18px] w-[18px]"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="2"
+                    strokeWidth="1.75"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    aria-hidden
                   >
-                    <path d="M19 9l-7 7-7-7" />
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                </button>
-                <div
-                  className={`absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg transition-all duration-200 border border-gray-100 z-50 ${
-                    isDesktopProductosOpen
-                      ? 'opacity-100 visible pointer-events-auto'
-                      : 'opacity-0 invisible pointer-events-none'
-                  }`}
-                >
-                  <div className="py-1">
-                    <Link
-                      href="/productos"
-                      className={desktopDropdownLinkStrong}
-                      onClick={() => setIsDesktopProductosOpen(false)}
-                    >
-                      Todos los productos
-                    </Link>
-                    {categorias.map((categoria) => (
-                      <Link
-                        key={categoria.href}
-                        href={categoria.href}
-                        className={desktopDropdownLink}
-                        onClick={() => setIsDesktopProductosOpen(false)}
-                      >
-                        {categoria.nombre}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                  {totalItems > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white ring-2 ring-white">
+                      {totalItems > 99 ? '99+' : totalItems}
+                    </span>
+                  )}
+                </Link>
               </div>
-
-              <Link href="/promociones" className={`${desktopNavLink} shrink-0`}>
-                Promociones
-              </Link>
-              <Link
-                href="/sobre-nosotros"
-                className={`${desktopNavLink} shrink-0 text-sm lg:text-base whitespace-nowrap`}
-              >
-                Sobre nosotros
-              </Link>
-            </div>
-
-            {/* Right side — Buscar, Carrito (admin no se muestra en público) */}
-            <div className="flex items-center space-x-3 lg:space-x-4 shrink-0">
-              <div
-                ref={searchRef}
-                className={`hidden lg:block relative shrink-0 transition-[width] duration-200 ease-out ${
-                  desktopSearchExpanded ? 'w-44 lg:w-56' : 'w-10'
-                }`}
-              >
-                {!desktopSearchExpanded ? (
-                  <button
-                    type="button"
-                    className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 hover:text-amber-600 hover:border-amber-300/80 transition-all duration-200 shadow-sm"
-                    aria-label="Abrir búsqueda de productos"
-                    aria-expanded={false}
-                    onClick={() => {
-                      setDesktopSearchExpanded(true)
-                      queueMicrotask(() => desktopSearchInputRef.current?.focus())
-                    }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
-                ) : (
-                <form onSubmit={handleSearch}>
-                  <label htmlFor="nav-search" className="sr-only">Buscar productos</label>
-                  <div className="relative min-w-0">
-                    <input
-                      ref={desktopSearchInputRef}
-                      id="nav-search"
-                      type="search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onFocus={() => searchQuery.trim().length >= 2 && setSearchOpen(true)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setSearchOpen(false)
-                          if (searchQuery.trim() === '') {
-                            setDesktopSearchExpanded(false)
-                            ;(e.target as HTMLInputElement).blur()
-                          }
-                        }
-                      }}
-                      placeholder="Buscar..."
-                      title="Buscar productos"
-                      className="w-full min-w-0 rounded-lg border border-gray-200 py-2 pl-3 pr-9 text-sm text-gray-900 placeholder-gray-500 focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                      aria-label="Buscar productos"
-                      autoComplete="off"
-                    />
-                    <button
-                      type="submit"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer p-1 text-gray-400 hover:text-amber-600 transition-colors duration-200 rounded-md"
-                      aria-label="Buscar"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </form>
-                )}
-                {searchOpen && searchQuery.trim().length >= 2 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-[min(80vh,400px)] overflow-y-auto">
-                    {searchLoading ? (
-                      <div className="p-4 text-center text-sm text-gray-500">Buscando...</div>
-                    ) : searchResults.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-gray-500">No hay resultados</div>
-                    ) : (
-                      <>
-                        <ul className="py-1">
-                          {searchResults.map((item) => (
-                            <li key={item._id}>
-                              <Link
-                                href={`/productos/${item.slug}`}
-                                onClick={() => {
-                                  setSearchOpen(false)
-                                  setSearchQuery('')
-                                  setDesktopSearchExpanded(false)
-                                }}
-                                className="flex gap-3 px-3 py-2 hover:bg-amber-50/90 transition-colors duration-200"
-                              >
-                                <div className="relative w-12 h-12 shrink-0 rounded overflow-hidden bg-gray-100">
-                                  {item.imagenUrl ? (
-                                    <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">—</div>
-                                  )}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-sm font-medium text-gray-900 line-clamp-2">{item.titulo}</p>
-                                  <p className="text-sm text-gray-600">
-                                    {item.tieneDescuento ? (
-                                      <>
-                                        <span className="line-through text-gray-400">${item.precio.toLocaleString()}</span>
-                                        {' '}
-                                        <span className="font-semibold text-gray-900">${item.precioFinal.toLocaleString()}</span>
-                                      </>
-                                    ) : (
-                                      <span className="font-semibold text-gray-900">${item.precio.toLocaleString()}</span>
-                                    )}
-                                  </p>
-                                </div>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                        <Link
-                          href={`/productos?q=${encodeURIComponent(searchQuery.trim())}`}
-                          onClick={() => {
-                            setSearchOpen(false)
-                            setSearchQuery('')
-                            setDesktopSearchExpanded(false)
-                          }}
-                          className="block border-t border-gray-100 px-3 py-2.5 text-center text-sm font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors duration-200"
-                        >
-                          Ver todos los resultados
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-              <Link
-                href="/carrito"
-                className="relative p-2 rounded-lg text-gray-700 hover:text-amber-600 transition-colors duration-200 hover:bg-amber-50/80"
-                aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} producto${totalItems !== 1 ? 's' : ''})` : ''}`}
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {totalItems > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-bold text-gray-900 ring-2 ring-white">
-                    {totalItems > 99 ? '99+' : totalItems}
-                  </span>
-                )}
-              </Link>
             </div>
           </div>
         </div>
+        <div className="h-[2px] bg-salas-gradient" aria-hidden />
       </nav>
 
-      {/* Mobile Navbar - Parte inferior flotante */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50">
-        {/* Barra inferior: cuando el menú está cerrado, solo la barra flotante */}
+      {/* Mobile Navbar — dock inferior estilo galería */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+        {/* Dock cerrado */}
         {!isMenuOpen && (
           <div
-            className="fixed left-1/2 -translate-x-1/2 flex items-center bg-yellow-400 shadow-2xl z-50 w-[320px] rounded-full px-2 py-3 box-border"
-            style={{
-              bottom: 'max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom, 0px)))',
-              paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))',
-            }}
+            className="pointer-events-auto fixed inset-x-4 flex items-center gap-2 rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(88,28,135,0.12)] overflow-hidden"
+            style={{ bottom: mobileSafeBottom }}
           >
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-salas-gradient" aria-hidden />
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="flex flex-1 items-center justify-center gap-3 text-black py-3 hover:bg-yellow-500/80 hover:text-amber-950 transition-all duration-200 min-h-[52px] rounded-full"
-              aria-label="Abrir menú de navegación"
+              className="flex flex-1 items-center justify-center gap-2.5 py-3.5 min-h-[52px] text-neutral-800 active:bg-violet-50/50 transition-colors"
+              aria-label="Abrir menú"
               aria-expanded={false}
             >
-              <svg
-                className="w-7 h-7 shrink-0"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
               </svg>
-              <span className="font-bold uppercase text-base tracking-wide">Navegación</span>
+              <span className="font-display text-[13px] uppercase tracking-[0.18em]">Menú</span>
             </button>
+            <div className="w-px h-8 bg-neutral-200 shrink-0" aria-hidden />
             <Link
               href="/carrito"
-              className="relative flex items-center justify-center text-black pl-5 pr-6 py-3 hover:bg-yellow-500/80 hover:text-amber-950 transition-all duration-200 border-l border-black/10 min-h-[52px] rounded-r-full shrink-0"
-              aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} producto${totalItems !== 1 ? 's' : ''})` : ''}`}
+              className="relative flex items-center justify-center w-14 min-h-[52px] shrink-0 text-neutral-700 active:bg-violet-50/50 transition-colors"
+              aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} obra${totalItems !== 1 ? 's' : ''})` : ''}`}
             >
-              <svg
-                className="w-6 h-6 shrink-0"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               {totalItems > 0 && (
-                <span className="absolute top-1.5 right-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-bold text-gray-900 ring-2 ring-yellow-400">
+                <span className="absolute top-2 right-2 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white ring-2 ring-white">
                   {totalItems > 99 ? '99+' : totalItems}
                 </span>
               )}
@@ -449,121 +583,136 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Menú abierto: un solo bloque = navbar (barra con X + Carrito) + contenido de navegación encima */}
+        {/* Panel del menú */}
         {isMenuOpen && (
           <>
             <div
-              className="fixed inset-0 bg-black/50 z-40"
+              className="pointer-events-auto fixed inset-0 bg-neutral-900/40 backdrop-blur-[2px] z-40"
               onClick={() => setIsMenuOpen(false)}
               aria-hidden
             />
             <div
-              className="fixed left-1/2 -translate-x-1/2 flex flex-col w-[320px] max-w-[100vw] max-h-[85vh] z-50 rounded-3xl shadow-2xl overflow-hidden bg-yellow-400 animate-slide-up"
+              className="pointer-events-auto fixed inset-x-3 flex flex-col max-h-[min(88vh,640px)] z-50 rounded-2xl border border-neutral-200/80 bg-white shadow-2xl shadow-violet-500/10 overflow-hidden animate-slide-up"
               style={{
-                bottom: 'max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom, 0px)))',
-                boxShadow: '0 -4px 20px rgba(0,0,0,0.15)',
+                bottom: mobileSafeBottom,
               }}
               role="dialog"
               aria-label="Menú de navegación"
             >
-              {/* Contenido de navegación (scroll) — menú principal, productos o búsqueda */}
-              <div className="relative flex-1 min-h-0 overflow-hidden flex">
-                {!isProductosOpen && !isSearchOpen ? (
-                  <div className="overflow-y-auto flex-1 min-h-0 p-6 pb-4 w-full">
-                    <div className="mb-6 flex justify-center">
-                      <Link href="/" onClick={() => setIsMenuOpen(false)}>
+              <div className="h-[2px] bg-salas-gradient shrink-0" aria-hidden />
+
+              <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
+                {!isExploraOpen && !isTiendaOpen && !isSearchOpen ? (
+                  <div className="overflow-y-auto flex-1 min-h-0 px-5 pt-5 pb-3">
+                    <div className="mb-5 flex flex-col items-center text-center">
+                      <Link href="/" onClick={() => setIsMenuOpen(false)} className="mb-2">
                         <Image
-                          src="/logo.jpg"
-                          alt="Salas Art Gallery Logo"
-                          width={200}
-                          height={70}
-                          className="h-16 w-auto object-contain"
+                          src="/logo.png"
+                          alt="Salas Art Gallery"
+                          width={180}
+                          height={64}
+                          className="h-14 w-auto object-contain"
                           quality={100}
                         />
                       </Link>
+                      <p className="font-display text-[10px] uppercase tracking-[0.28em] text-neutral-400">
+                        Casa de arte
+                      </p>
                     </div>
 
-                    <div className="space-y-0 mb-6">
+                    <nav className="space-y-0">
                       <Link
                         href="/"
-                        className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
+                        className={`${mobileNavItem} ${isHome ? mobileNavItemActive : ''}`}
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Inicio
                       </Link>
                       <button
                         type="button"
-                        onClick={() => { setIsProductosOpen(true); setIsSearchOpen(false) }}
-                        className={`${mobileNavButton} text-lg font-medium py-3 border-b border-black/20`}
+                        onClick={() => { setIsTiendaOpen(true); setIsExploraOpen(false); setIsSearchOpen(false) }}
+                        className={`${mobileNavButton} ${isTienda ? mobileNavItemActive : ''}`}
                         aria-expanded={false}
                       >
-                        Productos
-                        <svg
-                          className="w-5 h-5 shrink-0"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path d="M9 5l7 7-7 7" />
+                        Tienda
+                        <svg className="w-4 h-4 shrink-0 opacity-50" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setIsExploraOpen(true); setIsTiendaOpen(false); setIsSearchOpen(false) }}
+                        className={`${mobileNavButton} ${isExplora ? mobileNavItemActive : ''}`}
+                        aria-expanded={false}
+                      >
+                        Explora
+                        <svg className="w-4 h-4 shrink-0 opacity-50" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
                       <Link
                         href="/promociones"
-                        className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
+                        className={`${mobileNavItem} ${isPromociones ? mobileNavItemActive : ''}`}
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Promociones
                       </Link>
                       <Link
-                        href="/sobre-nosotros"
-                        className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
+                        href="/galeria"
+                        className={`${mobileNavItem} ${isGaleria ? mobileNavItemActive : ''}`}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Sobre nosotros
+                        Galería
+                      </Link>
+                      <Link
+                        href="/sobre-nosotros"
+                        className={`${mobileNavItem} ${isSobre ? mobileNavItemActive : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Nosotros
                       </Link>
                       <button
                         type="button"
-                        onClick={() => { setIsSearchOpen(true); setIsProductosOpen(false) }}
-                        className={`${mobileNavButton} text-lg font-medium py-3 border-b border-black/20`}
+                        onClick={() => { setIsSearchOpen(true); setIsExploraOpen(false); setIsTiendaOpen(false) }}
+                        className={mobileNavButton}
                         aria-expanded={false}
                       >
                         Buscar
-                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <svg className="w-4 h-4 shrink-0 opacity-50" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                       </button>
-                    </div>
+                    </nav>
                   </div>
                 ) : null}
-                {isProductosOpen ? (
-                  <div className="overflow-y-auto flex-1 min-h-0 p-6 pb-4 w-full">
+
+                {isTiendaOpen ? (
+                  <div className="overflow-y-auto flex-1 min-h-0 px-5 pt-5 pb-3">
                     <button
                       type="button"
-                      onClick={() => setIsProductosOpen(false)}
-                      className="flex items-center gap-3 text-left text-sm font-semibold text-black/70 uppercase tracking-wider mb-6 rounded-lg px-2 -ml-2 py-1 hover:text-amber-950 hover:bg-black/[0.08] transition-colors duration-200 cursor-pointer"
+                      onClick={() => setIsTiendaOpen(false)}
+                      className={mobileSubBack}
                       aria-label="Volver al menú"
                     >
-                      <svg className="w-5 h-5 shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M15 19l-7-7 7-7" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                       </svg>
-                      Productos
+                      Menú
                     </button>
-                    <div className="space-y-1">
+                    <p className="font-display text-lg uppercase tracking-[0.12em] text-neutral-900 mb-4">Tienda</p>
+                    <div className="space-y-0">
                       <Link
                         href="/productos"
-                        className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
+                        className={`${mobileNavItem} font-semibold text-violet-900 bg-violet-50/50 border-violet-100`}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Todos los productos
+                        Todas las obras
                       </Link>
                       {categorias.map((categoria) => (
                         <Link
                           key={categoria.href}
                           href={categoria.href}
-                          className={`block text-lg font-medium py-3 border-b border-black/20 ${mobileNavItem}`}
+                          className={mobileNavItem}
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {categoria.nombre}
@@ -572,39 +721,72 @@ export default function Navbar() {
                     </div>
                   </div>
                 ) : null}
-                {/* Vista búsqueda móvil — mismo patrón que Productos (sin absolute para que no colapse el layout) */}
+
+                {isExploraOpen ? (
+                  <div className="overflow-y-auto flex-1 min-h-0 px-5 pt-5 pb-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsExploraOpen(false)}
+                      className={mobileSubBack}
+                      aria-label="Volver al menú"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                      Menú
+                    </button>
+                    <p className="font-display text-lg uppercase tracking-[0.12em] text-neutral-900 mb-4">Explora</p>
+                    <div className="space-y-0">
+                      <Link
+                        href="/artistas"
+                        className={mobileNavItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Artistas
+                      </Link>
+                      <Link
+                        href="/exposiciones"
+                        className={mobileNavItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Exposiciones
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
+
                 {isSearchOpen ? (
-                  <div className="overflow-y-auto flex-1 min-h-0 p-6 pb-4 w-full flex flex-col lg:hidden">
+                  <div className="overflow-y-auto flex-1 min-h-0 px-5 pt-5 pb-3 flex flex-col">
                     <button
                       type="button"
                       onClick={() => { setIsSearchOpen(false); setSearchQuery('') }}
-                      className="flex items-center gap-3 text-left text-sm font-semibold text-black/70 uppercase tracking-wider mb-6 rounded-lg px-2 -ml-2 py-1 hover:text-amber-950 hover:bg-black/[0.08] transition-colors duration-200 cursor-pointer shrink-0"
+                      className={`${mobileSubBack} shrink-0`}
                       aria-label="Volver al menú"
                     >
-                      <svg className="w-5 h-5 shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M15 19l-7-7 7-7" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                       </svg>
                       Buscar
                     </button>
                     <form onSubmit={handleSearch} className="shrink-0">
-                      <label htmlFor="nav-search-mobile" className="sr-only">Buscar productos</label>
+                      <label htmlFor="nav-search-mobile" className="sr-only">Buscar obras</label>
                       <div className="relative">
                         <input
                           id="nav-search-mobile"
                           type="search"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Buscar productos..."
-                          className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-12 text-base text-gray-900 placeholder-gray-500 focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                          aria-label="Buscar productos"
+                          placeholder="Buscar obras..."
+                          className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-3 pl-4 pr-12 text-base text-neutral-900 placeholder-neutral-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-300/50 focus:bg-white"
+                          aria-label="Buscar obras"
                           autoComplete="off"
                         />
                         <button
                           type="submit"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-amber-700 transition-colors duration-200 rounded-md"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-500 active:text-violet-700"
                           aria-label="Buscar"
                         >
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                           </svg>
                         </button>
@@ -612,11 +794,11 @@ export default function Navbar() {
                     </form>
                     <div className="flex-1 min-h-0 overflow-y-auto mt-4">
                       {searchQuery.trim().length >= 2 ? (
-                        <div className="rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                        <div className="rounded-xl border border-neutral-200 bg-white overflow-hidden">
                           {searchLoading ? (
-                            <div className="p-4 text-center text-sm text-gray-500">Buscando...</div>
+                            <div className="p-4 text-center text-sm text-neutral-500">Buscando...</div>
                           ) : searchResults.length === 0 ? (
-                            <div className="p-4 text-center text-sm text-gray-500">No hay resultados</div>
+                            <div className="p-4 text-center text-sm text-neutral-500">No hay resultados</div>
                           ) : (
                             <>
                               <ul className="py-1">
@@ -625,26 +807,26 @@ export default function Navbar() {
                                     <Link
                                       href={`/productos/${item.slug}`}
                                       onClick={() => { setSearchOpen(false); setSearchQuery(''); setIsSearchOpen(false); setIsMenuOpen(false) }}
-                                      className="flex gap-3 px-4 py-3 hover:bg-amber-50/90 transition-colors duration-200 border-b border-gray-100 last:border-0"
+                                      className="flex gap-3 px-3 py-3 active:bg-violet-50/80 transition-colors border-b border-neutral-100 last:border-0"
                                     >
-                                      <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                      <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
                                         {item.imagenUrl ? (
-                                          <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="56px" />
+                                          <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
                                         ) : (
-                                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">—</div>
+                                          <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
                                         )}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-gray-900 line-clamp-2">{item.titulo}</p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
+                                        <p className="text-sm text-neutral-600">
                                           {item.tieneDescuento ? (
                                             <>
-                                              <span className="line-through text-gray-400">${item.precio.toLocaleString()}</span>
+                                              <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
                                               {' '}
-                                              <span className="font-semibold text-gray-900">${item.precioFinal.toLocaleString()}</span>
+                                              <span className="font-semibold">${item.precioFinal.toLocaleString()}</span>
                                             </>
                                           ) : (
-                                            <span className="font-semibold text-gray-900">${item.precio.toLocaleString()}</span>
+                                            <span className="font-semibold">${item.precio.toLocaleString()}</span>
                                           )}
                                         </p>
                                       </div>
@@ -655,7 +837,7 @@ export default function Navbar() {
                               <Link
                                 href={`/productos?q=${encodeURIComponent(searchQuery.trim())}`}
                                 onClick={() => { setSearchOpen(false); setSearchQuery(''); setIsSearchOpen(false); setIsMenuOpen(false) }}
-                                className="block border-t border-gray-100 px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors duration-200"
+                                className="block border-t border-neutral-100 px-4 py-3 text-center text-sm font-medium text-violet-800 active:bg-violet-50"
                               >
                                 Ver todos los resultados
                               </Link>
@@ -663,51 +845,42 @@ export default function Navbar() {
                           )}
                         </div>
                       ) : (
-                        <p className="text-sm text-black/60 text-center py-4">Escribe al menos 2 caracteres para buscar</p>
+                        <p className="text-sm text-neutral-400 text-center py-6">Escribe al menos 2 caracteres</p>
                       )}
                     </div>
                   </div>
                 ) : null}
               </div>
 
-              {/* Navbar (barra con X y Carrito) — abajo, misma pieza */}
+              {/* Barra inferior del panel */}
               <div
-                className="flex items-center bg-yellow-400 border-t border-black/10 px-2 py-3 shrink-0 rounded-b-3xl"
-                style={{
-                  paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))',
-                }}
+                className="flex items-center border-t border-neutral-100 bg-neutral-50/80 shrink-0"
+                style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}
               >
                 <button
                   type="button"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex flex-1 items-center justify-center gap-3 text-black py-3 hover:bg-yellow-500/80 hover:text-amber-950 transition-all duration-200 min-h-[52px] rounded-full"
+                  className="flex flex-1 items-center justify-center gap-2 py-3.5 min-h-[48px] text-neutral-700 active:bg-violet-50/60 transition-colors"
                   aria-label="Cerrar menú"
                   aria-expanded={true}
                 >
-                  <svg className="w-7 h-7 shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M6 18L18 6M6 6l12 12" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  <span className="font-bold uppercase text-base tracking-wide">Cerrar</span>
+                  <span className="font-display text-[13px] uppercase tracking-[0.18em]">Cerrar</span>
                 </button>
+                <div className="w-px h-8 bg-neutral-200" aria-hidden />
                 <Link
                   href="/carrito"
                   onClick={() => setIsMenuOpen(false)}
-                  className="relative flex items-center justify-center text-black pl-5 pr-6 py-3 hover:bg-yellow-500/80 hover:text-amber-950 transition-all duration-200 border-l border-black/10 min-h-[52px] rounded-r-full shrink-0"
-                  aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} producto${totalItems !== 1 ? 's' : ''})` : ''}`}
+                  className="relative flex items-center justify-center w-14 min-h-[48px] text-neutral-700 active:bg-violet-50/60"
+                  aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} obra${totalItems !== 1 ? 's' : ''})` : ''}`}
                 >
-                  <svg
-                    className="w-6 h-6 shrink-0"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   {totalItems > 0 && (
-                    <span className="absolute top-1.5 right-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-bold text-gray-900 ring-2 ring-yellow-400">
+                    <span className="absolute top-1.5 right-2 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white ring-2 ring-white">
                       {totalItems > 99 ? '99+' : totalItems}
                     </span>
                   )}

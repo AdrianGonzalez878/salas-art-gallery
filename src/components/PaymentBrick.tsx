@@ -81,13 +81,13 @@ function loadMercadoPagoScript(): Promise<void> {
 
 /**
  * Variables visuales del Brick (lista oficial MP).
- * Amarillo alineado con el CTA "Continuar al pago" (Tailwind yellow-400 / yellow-500).
+ * Violeta alineado con CTAs de Salas Art Gallery (logo colibrí).
  * Evitamos box-shadow con rgba, formPadding muy bajo y textTransform 'none'.
  */
 const brickCustomVariables: Record<string, string> = {
-  baseColor: '#facc15',
-  baseColorFirstVariant: '#fde047',
-  baseColorSecondVariant: '#eab308',
+  baseColor: '#8b5cf6',
+  baseColorFirstVariant: '#a78bfa',
+  baseColorSecondVariant: '#7c3aed',
   textPrimaryColor: '#111827',
   textSecondaryColor: '#6b7280',
   inputBackgroundColor: '#ffffff',
@@ -95,7 +95,7 @@ const brickCustomVariables: Record<string, string> = {
   outlineSecondaryColor: '#d1d5db',
   errorColor: '#dc2626',
   successColor: '#16a34a',
-  buttonTextColor: '#000000',
+  buttonTextColor: '#ffffff',
   borderRadiusSmall: '8px',
   borderRadiusMedium: '12px',
   borderRadiusLarge: '14px',

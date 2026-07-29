@@ -1,7 +1,7 @@
 'use client'
 
 const iconWrapClass =
-  'bg-gradient-to-br from-yellow-100 to-amber-200 text-amber-900 ring-2 ring-amber-200/60'
+  'bg-gradient-to-br from-fuchsia-100 via-violet-100 to-sky-100 text-violet-900 ring-2 ring-violet-200/60'
 
 const items = [
   {

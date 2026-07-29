@@ -6,7 +6,6 @@ import type { SobreNosotros } from '@/sanity/lib/types'
 import type { Metadata } from 'next'
 import GaleriaCarousel from '@/components/GaleriaCarousel'
 import AnimateInView from '@/components/AnimateInView'
-import TestimonialsSection from '@/components/TestimonialsSection'
 
 export const metadata: Metadata = {
   title: 'Nuestra Historia | Salas Art Gallery',
@@ -47,15 +46,15 @@ export default async function SobreNosotrosPage() {
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700" />
               )}
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 via-violet-950/40 to-transparent" />
 
               {/* Hero text */}
               <div className="absolute inset-0 flex flex-col justify-end px-6 sm:px-10 md:px-14 lg:px-20 pb-10 sm:pb-14 md:pb-18 lg:pb-20">
                 <div className="max-w-3xl">
-                  {/* Decorative line */}
-                  <div className="w-10 h-0.5 bg-amber-400 mb-4 sm:mb-5" />
-                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-3 sm:mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-200 mb-4">
+                    Casa de arte en Oaxaca
+                  </p>
+                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[0.95] mb-3 sm:mb-4">
                     {data?.titulo || 'Salas Art Gallery'}
                   </h1>
                   {data?.subtitulo && (
@@ -70,17 +69,17 @@ export default async function SobreNosotrosPage() {
         </div>
       </section>
 
-      {/* ── Estadísticas ─────────────────────────────────────── */}
+      {/* ── Hitos de la galería ───────────────────────────────── */}
       {data?.estadisticas && data.estadisticas.length > 0 && (
         <AnimateInView as="section" className="border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
               {data.estadisticas.map((stat, idx) => (
                 <div key={idx} className="py-8 px-6 text-center">
-                  <p className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+                  <p className="font-display text-3xl sm:text-4xl font-light text-violet-950 mb-1">
                     {stat.numero}
                   </p>
-                  <p className="text-sm text-gray-500 font-medium">{stat.etiqueta}</p>
+                  <p className="text-sm text-gray-500">{stat.etiqueta}</p>
                 </div>
               ))}
             </div>
@@ -97,9 +96,9 @@ export default async function SobreNosotrosPage() {
               {/* Historia */}
               <div className="order-1">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-0.5 bg-amber-400" />
-                  <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
-                    Nuestra historia
+                  <div className="w-8 h-px bg-violet-500" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700">
+                    El espacio
                   </span>
                 </div>
 
@@ -125,14 +124,14 @@ export default async function SobreNosotrosPage() {
         /* Sin contenido en Sanity */
         <AnimateInView as="section" className="py-24">
           <div className="max-w-2xl mx-auto px-4 text-center">
-            <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
-            <h2 className="font-display text-3xl font-bold text-gray-900 mb-4">Salas Art Gallery</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-5">Casa de arte</p>
+            <h2 className="font-display text-3xl font-light text-gray-900 mb-4">Salas Art Gallery</h2>
             <p className="text-gray-600 leading-relaxed mb-10">
               Galería de arte contemporáneo. Pronto podrás conocer más de nuestra historia aquí.
             </p>
             <Link
               href="/productos"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-violet-700 text-white text-sm font-semibold hover:bg-violet-800 transition-colors"
             >
               Ver obras
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
@@ -143,23 +142,21 @@ export default async function SobreNosotrosPage() {
         </AnimateInView>
       )}
 
-      <TestimonialsSection />
-
       {/* ── CTA ──────────────────────────────────────────────── */}
-      <AnimateInView as="section" className="py-14 bg-gray-900">
+      <AnimateInView as="section" className="py-16 bg-violet-950">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <div className="w-10 h-0.5 bg-amber-400 mx-auto mb-6" />
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
-            Encuentra tu próxima obra
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300 mb-5">Visita con cita previa</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-light text-white mb-3">
+            Conoce el lugar donde el arte sucede
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base mb-8 max-w-xl mx-auto">
-            Explora el catálogo de Salas Art Gallery y descubre piezas únicas de arte contemporáneo.
+          <p className="text-violet-100/70 text-sm sm:text-base mb-8 max-w-xl mx-auto">
+            Agenda una visita para recorrer la galería y descubrir las obras en persona.
           </p>
           <Link
-            href="/productos"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-amber-400 text-gray-900 font-bold rounded-xl hover:bg-amber-300 transition-colors text-sm sm:text-base"
+            href="/galeria"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-violet-950 font-semibold rounded-full hover:bg-violet-100 transition-colors text-sm sm:text-base"
           >
-            Ver toda la colección
+            Agendar una visita
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -167,19 +164,19 @@ export default async function SobreNosotrosPage() {
         </div>
       </AnimateInView>
 
-      {/* ── Valores / cierre ─────────────────────────────────── */}
+      {/* ── Forma de trabajar ─────────────────────────────────── */}
       <AnimateInView as="section" className="py-16 md:py-20 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-0.5 bg-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
-                Por qué elegirnos
+              <div className="w-8 h-px bg-violet-500" />
+              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700">
+                Nuestra mirada
               </span>
-              <div className="w-8 h-0.5 bg-amber-400" />
+              <div className="w-8 h-px bg-violet-500" />
             </div>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">
-              Nuestra promesa contigo
+            <h2 className="font-display text-2xl sm:text-3xl font-light text-gray-900">
+              Un lugar para encontrarse con el arte
             </h2>
           </div>
 
@@ -191,8 +188,8 @@ export default async function SobreNosotrosPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 ),
-                title: 'Artistas seleccionados',
-                desc: 'Trabajamos con artistas contemporáneos y obras curadas con criterio y cuidado.',
+                title: 'Artistas colaboradores',
+                desc: 'Construimos relaciones cercanas con artistas contemporáneos y sus procesos.',
               },
               {
                 icon: (
@@ -200,8 +197,8 @@ export default async function SobreNosotrosPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 ),
-                title: 'Piezas únicas',
-                desc: 'Cada obra tiene su propia historia, técnica y presencia en el espacio.',
+                title: 'Obras con presencia',
+                desc: 'Reunimos piezas que invitan a mirar con calma, dialogar y habitar el espacio.',
               },
               {
                 icon: (
@@ -209,12 +206,12 @@ export default async function SobreNosotrosPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V11" />
                   </svg>
                 ),
-                title: 'Envío seguro',
-                desc: 'Tu pedido llega protegido y con seguimiento. Embalaje especial para obras de arte.',
+                title: 'Acompañamiento personal',
+                desc: 'Te orientamos para que descubras una obra que conecte con tu mirada y tu espacio.',
               },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center text-violet-700 mb-4">
                   {item.icon}
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>

@@ -19,6 +19,21 @@ export default function ProductImageGallery({
   const todas = [imagenPrincipalUrl, ...imagenesGaleria]
   const [activa, setActiva] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [zoomActive, setZoomActive] = useState(false)
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 })
+  const zoomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setZoomActive(false)
+  }, [activa])
+
+  const handleZoomMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = zoomRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100))
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100))
+    setZoomPos({ x, y })
+  }
 
   /* ── Swipe en móvil ── */
   const touchStartX = useRef<number | null>(null)
@@ -84,7 +99,7 @@ export default function ProductImageGallery({
       ════════════════════════════════ */}
       <div className="sm:hidden min-w-0">
         <div
-          className="relative aspect-[3/4] overflow-hidden bg-gray-100 w-full touch-pan-y select-none"
+          className="relative aspect-[4/5] max-h-[50vh] overflow-hidden bg-gray-100 w-full touch-pan-y select-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -112,7 +127,7 @@ export default function ProductImageGallery({
 
         {/* Dots de posición */}
         {todas.length > 1 && (
-          <div className="flex justify-center gap-1.5 mt-3">
+          <div className="flex justify-center gap-1.5 mt-2">
             {todas.map((_, index) => (
               <button
                 key={index}
@@ -163,17 +178,27 @@ export default function ProductImageGallery({
           </div>
         )}
 
-        {/* Imagen principal */}
-        <div className="relative flex-1 min-w-0 aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
+        <div
+          ref={zoomRef}
+          className="relative flex-1 min-w-0 aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 cursor-zoom-in"
+          onMouseEnter={() => setZoomActive(true)}
+          onMouseLeave={() => setZoomActive(false)}
+          onMouseMove={handleZoomMove}
+        >
           <Image
             src={todas[activa]}
             alt={activa === 0 ? imagenPrincipalAlt || titulo : `${titulo} - Imagen ${activa + 1}`}
             fill
-            className="object-contain transition-opacity duration-200"
+            className="object-contain transition-transform duration-100 ease-out will-change-transform"
+            style={{
+              transform: zoomActive ? 'scale(2)' : 'scale(1)',
+              transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+            }}
             priority={activa === 0}
             sizes="50vw"
+            draggable={false}
           />
-          <LupaButton />
+
         </div>
       </div>
 

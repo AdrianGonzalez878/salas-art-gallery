@@ -17,8 +17,6 @@ export function urlFor(source: SanityImageSource) {
 
 /**
  * Fetch sin caché: siempre trae datos frescos de Sanity.
- * Cuando "Lo más vendido" no se actualice automáticamente, el admin
- * puede forzar la actualización con un redeploy manual desde Vercel.
  */
 export function sanityFetch<T>(
   query: string,

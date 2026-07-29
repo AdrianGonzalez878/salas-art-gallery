@@ -10,14 +10,14 @@ export default defineType({
       title: 'Título Principal',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      initialValue: 'Joyería Excepcional',
+      initialValue: 'Salas Art Gallery',
     }),
     defineField({
       name: 'subtitulo',
       title: 'Subtítulo',
       type: 'text',
       rows: 3,
-      initialValue: 'Descubre nuestra colección única de anillos, collares, aretes y más. Cada pieza está diseñada con pasión y atención al detalle.',
+      initialValue: 'Casa de arte. Descubre obras de artistas seleccionados en litografía, óleos, cerámica, bronce y más.',
     }),
     defineField({
       name: 'imagenesCarrusel',
@@ -79,7 +79,7 @@ export default defineType({
       name: 'textoBotonPrincipal',
       title: 'Texto Botón Principal',
       type: 'string',
-      initialValue: 'Ver Productos',
+      initialValue: 'Ver obras',
     }),
     defineField({
       name: 'hrefBotonPrincipal',
@@ -91,13 +91,13 @@ export default defineType({
       name: 'textoBotonSecundario',
       title: 'Texto Botón Secundario',
       type: 'string',
-      initialValue: 'Explorar Categorías',
+      initialValue: 'Agendar una visita',
     }),
     defineField({
       name: 'hrefBotonSecundario',
       title: 'Enlace Botón Secundario',
       type: 'string',
-      initialValue: '/productos?categoria=anillos',
+      initialValue: '/galeria',
     }),
     defineField({
       name: 'activo',

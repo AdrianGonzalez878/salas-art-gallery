@@ -24,6 +24,62 @@ export interface PortableTextBlock {
   children: { _key: string; _type: 'span'; marks?: string[]; text: string }[]
 }
 
+export interface Artista {
+  _id: string
+  nombre: string
+  slug: {
+    current: string
+  }
+  foto?: SanityImage
+  resumen?: string
+  biografia?: PortableTextBlock[]
+  activo?: boolean
+}
+
+export interface PaginaArtistas {
+  imagenCierre?: SanityImage
+  textoCierre?: string
+  textoCierreSecundario?: string
+}
+
+export interface UbicacionExposicion {
+  nombre?: string
+  ciudad?: string
+  direccion?: string
+  enlaceMapa?: string
+}
+
+export interface Exposicion {
+  _id: string
+  titulo: string
+  slug: {
+    current: string
+  }
+  resumen?: string
+  descripcion?: PortableTextBlock[]
+  imagenPrincipal: SanityImage
+  galeria?: SanityImage[]
+  fechaInicio: string
+  fechaFin: string
+  ubicacion?: UbicacionExposicion
+  artistas?: Artista[]
+  enlaceExterno?: string
+  destacada?: boolean
+  orden?: number
+  activo?: boolean
+}
+
+export type CategoriaProducto =
+  | 'litografia'
+  | 'acrilicos'
+  | 'arte-objeto'
+  | 'oleos'
+  | 'madera-tallada'
+  | 'ceramica'
+  | 'bronce'
+
+export type SubcategoriaCeramica = 'alta-temperatura' | 'baja-temperatura'
+
 export interface Producto {
   _id: string
   titulo: string
@@ -39,14 +95,14 @@ export interface Producto {
   fechaFinDescuento?: string
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
-  categoria: 'anillos' | 'collares' | 'aretes' | 'pulseras' | 'dijes' | 'cadenas' | 'juegos'
-  tieneOpcionExtra?: boolean
-  nombreOpcionExtra?: string
-  precioOpcionExtra?: number
-  descripcion: PortableTextBlock[]
+  categoria: CategoriaProducto
+  subcategoria?: SubcategoriaCeramica
+  artista?: Pick<Artista, '_id' | 'nombre' | 'slug' | 'foto' | 'resumen'> | null
   disponible: boolean
-  stock?: number
-  ventas?: number
+  tecnica?: string
+  dimensiones?: string
+  anio?: number
+  destacada?: boolean
 }
 
 export interface Cliente {
@@ -139,46 +195,11 @@ export interface Estadistica {
   orden: number
   titulo: string
   descripcion?: string
-  categoria: 'anillo' | 'collar' | 'aretes' | 'pulsera' | 'tobillera' | 'broche' | 'reloj' | 'otro'
+  categoria: CategoriaProducto
   imagenBanner: SanityImage
   textoBanner?: string
   posicionTextoBanner?: 'left' | 'center' | 'right'
   mostrarBoton?: boolean
-}
-
-export interface PostInstagram {
-  _id: string
-  imagen: SanityImage
-  descripcion?: string
-  likes?: number
-  enlace?: string
-  orden: number
-  activo: boolean
-}
-
-export interface ShopTheLook {
-  _id: string
-  titulo: string
-  descripcion?: string
-  imagenModelo: SanityImage
-  productos: {
-    producto: Producto
-    posicionX: number
-    posicionY: number
-  }[]
-  activo: boolean
-}
-
-export interface Promocion {
-  _id: string
-  titulo: string
-  descripcion?: string
-  imagenBanner: SanityImage
-  montoMinimo: number
-  fechaInicio?: string
-  fechaFin?: string
-  orden: number
-  activo: boolean
 }
 
 export interface Cupon {

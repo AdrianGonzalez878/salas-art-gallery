@@ -1,76 +1,63 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-// TODO: reemplazar con Instagram / WhatsApp / teléfono reales de Salas Art Gallery
-const INSTAGRAM_URL = 'https://www.instagram.com/salasartgallery'
-const WHATSAPP_URL = 'https://wa.me/520000000000'
-const EMAIL = 'contacto@salasartgallery.com'
-const PHONE_DISPLAY = '+52 000 000 0000'
-const PHONE_TEL = '+520000000000'
+const INSTAGRAM_URL = 'https://www.instagram.com/salasartgalleryoaxaca'
+const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586724924822'
+const WHATSAPP_URL = 'https://wa.me/529515471306'
+const EMAIL = 'salasartgallery.casadearte@gmail.com'
+const PHONE_DISPLAY = '+52 951 547 1306'
+const PHONE_TEL = '+529515471306'
 
-const linkClass = 'text-gray-400 hover:text-amber-300 transition-colors'
-const headingClass = 'text-white font-semibold mb-4 text-sm uppercase tracking-wide text-amber-400/90'
+const linkClass = 'text-violet-200/70 hover:text-white transition-colors'
+const headingClass = 'text-white font-medium mb-4 text-xs uppercase tracking-[0.2em] text-violet-300'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 border-t-4 border-amber-500">
+    <footer className="bg-violet-950 text-violet-100 border-t border-violet-800">
       {/* Espacio extra en móvil: navbar flotante (Navegación + carrito) + safe-area iPhone */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-[calc(8.75rem+env(safe-area-inset-bottom,0px))] lg:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-          {/* Marca + confianza */}
-          <div className="sm:col-span-2 lg:col-span-4">
-            <div className="mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8">
+          {/* Marca */}
+          <div className="sm:col-span-2 lg:col-span-5">
+            <div className="mb-6">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Salas Art Gallery"
                 width={200}
                 height={70}
                 className="h-16 w-auto object-contain"
                 quality={100}
+                unoptimized
               />
             </div>
-            <p className="text-gray-400 mb-5 max-w-md text-sm leading-relaxed">
-              Galería de arte contemporáneo. Obras únicas de artistas seleccionados, con envíos seguros y atención personalizada.
+            <p className="font-display text-2xl sm:text-3xl font-light leading-tight text-white max-w-md">
+              Un espacio para descubrir, dialogar y convivir con el arte contemporáneo.
             </p>
-            <ul className="space-y-2.5 text-sm text-gray-400">
-              <li className="flex gap-2">
-                <span className="text-amber-400 shrink-0" aria-hidden>
-                  ✓
-                </span>
-                <span>Envío gratis a partir de $999 · $99 en pedidos inferiores</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-amber-400 shrink-0" aria-hidden>
-                  ✓
-                </span>
-                <span>Envío personal en Oaxaca capital</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-amber-400 shrink-0" aria-hidden>
-                  ✓
-                </span>
-                <span>Hasta 3 MSI con Mercado Pago en compras desde $5,000</span>
-              </li>
-            </ul>
+            <Link
+              href="/galeria"
+              className="inline-flex mt-7 items-center gap-2 border-b border-violet-300 pb-1 text-sm font-medium text-white hover:text-violet-200 hover:border-violet-200 transition-colors"
+            >
+              Programa una visita <span aria-hidden>→</span>
+            </Link>
           </div>
 
-          {/* Tienda */}
-          <div className="lg:col-span-2">
-            <h4 className={headingClass}>Tienda</h4>
+          {/* Explora */}
+          <div className="hidden md:block lg:col-span-2">
+            <h4 className={headingClass}>Explora</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/" className={linkClass}>
-                  Inicio
+                <Link href="/artistas" className={linkClass}>
+                  Artistas
                 </Link>
               </li>
               <li>
-                <Link href="/productos" className={linkClass}>
-                  Productos
+                <Link href="/exposiciones" className={linkClass}>
+                  Exposiciones
                 </Link>
               </li>
               <li>
-                <Link href="/promociones" className={linkClass}>
-                  Promociones
+                <Link href="/galeria" className={linkClass}>
+                  Visita la galería
                 </Link>
               </li>
               <li>
@@ -78,26 +65,21 @@ export default function Footer() {
                   Sobre nosotros
                 </Link>
               </li>
-              <li>
-                <Link href="/carrito" className={linkClass}>
-                  Carrito
-                </Link>
-              </li>
             </ul>
           </div>
 
           {/* Categorías */}
           <div className="lg:col-span-2">
-            <h4 className={headingClass}>Categorías</h4>
+            <h4 className={headingClass}>Obras</h4>
             <ul className="space-y-2.5 text-sm">
               {[
-                ['Anillos', '/productos?categoria=anillos'],
-                ['Collares', '/productos?categoria=collares'],
-                ['Aretes', '/productos?categoria=aretes'],
-                ['Pulseras', '/productos?categoria=pulseras'],
-                ['Dijes', '/productos?categoria=dijes'],
-                ['Cadenas', '/productos?categoria=cadenas'],
-                ['Juegos', '/productos?categoria=juegos'],
+                ['Litografía', '/productos?categoria=litografia'],
+                ['Acrílicos', '/productos?categoria=acrilicos'],
+                ['Arte objeto', '/productos?categoria=arte-objeto'],
+                ['Óleos', '/productos?categoria=oleos'],
+                ['Madera tallada', '/productos?categoria=madera-tallada'],
+                ['Cerámica', '/productos?categoria=ceramica'],
+                ['Bronce', '/productos?categoria=bronce'],
               ].map(([label, href]) => (
                 <li key={href}>
                   <Link href={href} className={linkClass}>
@@ -109,34 +91,34 @@ export default function Footer() {
           </div>
 
           {/* Contacto */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <h4 className={headingClass}>Contacto</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <ul className="space-y-3 text-sm text-violet-100/80">
               <li className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-amber-500/80 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-violet-300 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <a href={`mailto:${EMAIL}`} className="hover:text-amber-300 transition-colors break-all">
+                <a href={`mailto:${EMAIL}`} className="hover:text-white transition-colors break-all">
                   {EMAIL}
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-amber-500/80 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-violet-300 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <a href={`tel:${PHONE_TEL}`} className="hover:text-amber-300 transition-colors">
+                <a href={`tel:${PHONE_TEL}`} className="hover:text-white transition-colors">
                   {PHONE_DISPLAY}
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-amber-500/80 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-violet-300 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                 </svg>
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-amber-300 transition-colors font-medium text-white/90"
+                  className="hover:text-white transition-colors font-medium text-white"
                 >
                   Escríbenos por WhatsApp
                 </a>
@@ -150,7 +132,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex rounded-[22%] shadow-md ring-1 ring-white/15 transition-all hover:scale-105 hover:brightness-110 hover:ring-white/25"
-                aria-label="Instagram @salasartgallery"
+                aria-label="Instagram @salasartgalleryoaxaca"
               >
                 <svg className="w-11 h-11" viewBox="0 0 24 24" aria-hidden>
                   <defs>
@@ -168,16 +150,27 @@ export default function Footer() {
                   />
                 </svg>
               </a>
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-[22%] bg-[#1877F2] text-white shadow-md transition-all hover:scale-105 hover:brightness-110"
+                aria-label="Facebook de Salas Art Gallery"
+              >
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M13.6 21v-8.2h2.75l.41-3.2H13.6V7.56c0-.93.26-1.56 1.59-1.56h1.7V3.14c-.29-.04-1.3-.14-2.48-.14-2.45 0-4.13 1.49-4.13 4.23V9.6H7.5v3.2h2.78V21h3.32Z" />
+                </svg>
+              </a>
             </div>
-            <p className="text-xs text-gray-500 mt-3">@salasartgallery</p>
+            <p className="text-xs text-violet-200/60 mt-3">@salasartgalleryoaxaca</p>
           </div>
         </div>
 
         {/* Métodos de pago */}
-        <div className="border-t border-gray-800/80 mt-10 pt-10">
+        <div className="hidden sm:block border-t border-violet-800/80 mt-12 pt-9">
           <div className="text-center md:text-left">
-            <h5 className="text-white font-semibold mb-1 text-amber-400/90">Métodos de pago aceptados</h5>
-            <p className="text-gray-500 text-xs mb-4 max-w-xl">
+            <h5 className="text-white font-medium mb-1 text-xs uppercase tracking-[0.18em] text-violet-300">Métodos de pago</h5>
+            <p className="text-violet-200/55 text-xs mb-4 max-w-xl">
               Mismos medios disponibles en el checkout con Mercado Pago (México).
             </p>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
@@ -226,28 +219,28 @@ export default function Footer() {
         </div>
 
         {/* Legal + copyright */}
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-2 text-xs text-gray-500">
-            <Link href="/aviso-de-privacidad" className="hover:text-amber-400 transition-colors">
+        <div className="border-t border-violet-800 mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-2 text-xs text-violet-200/55">
+            <Link href="/aviso-de-privacidad" className="hover:text-white transition-colors">
               Aviso de privacidad
             </Link>
-            <span className="hidden sm:inline text-gray-700" aria-hidden>|</span>
-            <Link href="/terminos" className="hover:text-amber-400 transition-colors">
+            <span className="hidden sm:inline text-violet-700" aria-hidden>|</span>
+            <Link href="/terminos" className="hover:text-white transition-colors">
               Términos y condiciones
             </Link>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-violet-200/55">
               &copy; {new Date().getFullYear()} Salas Art Gallery. Todos los derechos reservados.
             </p>
-            <span className="hidden sm:inline text-gray-700 text-xs" aria-hidden>·</span>
-            <p className="text-xs text-gray-600">
+            <span className="hidden sm:inline text-violet-700 text-xs" aria-hidden>·</span>
+            <p className="text-xs text-violet-200/45">
               Desarrollado por{' '}
               <a
                 href="https://argaweb.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-amber-400 transition-colors duration-200 underline underline-offset-2 decoration-gray-600 hover:decoration-amber-400"
+                className="text-violet-200/70 hover:text-white transition-colors duration-200 underline underline-offset-2 decoration-violet-700 hover:decoration-white"
               >
                 argaweb.com
               </a>

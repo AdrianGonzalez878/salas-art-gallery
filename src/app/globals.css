@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
+/*
+  Salas Art Gallery — paleta del logo (colibrí):
+  magenta / violeta / lavanda / azul cornflower + blanco/negro
+  Remapeamos amber/yellow (acentos viejos de Conchita) a esta marca.
+*/
 :root {
-  --background: #ffffff;
+  --background: #faf9fc;
   --foreground: #171717;
+  --salas-magenta: #c026a8;
+  --salas-fuchsia: #e879f9;
+  --salas-violet: #8b5cf6;
+  --salas-lavender: #a78bfa;
+  --salas-blue: #60a5fa;
 }
 
 @theme inline {
@@ -10,6 +20,44 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+
+  /* Antes amber (joyería) → magenta / fuchsia del logo */
+  --color-amber-50: #fdf4ff;
+  --color-amber-100: #fae8ff;
+  --color-amber-200: #f5d0fe;
+  --color-amber-300: #f0abfc;
+  --color-amber-400: #e879f9;
+  --color-amber-500: #d946ef;
+  --color-amber-600: #c026d3;
+  --color-amber-700: #a21caf;
+  --color-amber-800: #86198f;
+  --color-amber-900: #701a75;
+  --color-amber-950: #4a044e;
+
+  /* Antes yellow (CTAs) → violeta / lavanda del logo */
+  --color-yellow-50: #f5f3ff;
+  --color-yellow-100: #ede9fe;
+  --color-yellow-200: #ddd6fe;
+  --color-yellow-300: #c4b5fd;
+  --color-yellow-400: #a78bfa;
+  --color-yellow-500: #8b5cf6;
+  --color-yellow-600: #7c3aed;
+  --color-yellow-700: #6d28d9;
+  --color-yellow-800: #5b21b6;
+  --color-yellow-900: #4c1d95;
+  --color-yellow-950: #2e1065;
+
+  /* Antes orange → azul del cola del colibrí */
+  --color-orange-50: #eff6ff;
+  --color-orange-100: #dbeafe;
+  --color-orange-200: #bfdbfe;
+  --color-orange-300: #93c5fd;
+  --color-orange-400: #60a5fa;
+  --color-orange-500: #3b82f6;
+  --color-orange-600: #2563eb;
+  --color-orange-700: #1d4ed8;
+  --color-orange-800: #1e40af;
+  --color-orange-900: #1e3a8a;
 }
 
 /* Tema claro fijo para la tienda (evita rectángulo negro en móvil con dark mode) */
@@ -96,6 +144,23 @@ h1, h2, h3, h4, h5, h6 {
   animation: fadeInUp 1s ease-out;
 }
 
+/* Hero con video: texto entra tras el logo del clip (~2.5s) */
+@keyframes heroContentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-content-delayed {
+  opacity: 0;
+  animation: heroContentReveal 1s ease-out 2.5s forwards;
+}
+
 /* Fade In Down - Aparecer desde arriba */
 @keyframes fadeInDown {
   from {
@@ -138,4 +203,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-marquee-half {
   animation: marquee-half 30s linear infinite;
+}
+
+/* Acento de marca Salas (colibrí: magenta → violeta → azul) */
+.bg-salas-gradient {
+  background-image: linear-gradient(135deg, #e879f9 0%, #8b5cf6 50%, #60a5fa 100%);
+}
+
+.text-salas-gradient {
+  background-image: linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

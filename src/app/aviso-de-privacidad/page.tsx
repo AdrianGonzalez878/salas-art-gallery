@@ -9,30 +9,35 @@ export default function AvisoPrivacidadPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="text-sm text-amber-700 hover:text-amber-800 font-medium mb-8 inline-block">
+        <Link href="/" className="text-sm text-violet-700 hover:text-violet-900 font-medium mb-8 inline-block">
           ← Volver al inicio
         </Link>
         <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-6">Aviso de privacidad</h1>
         <div className="prose prose-gray max-w-none text-gray-700 space-y-4 text-sm sm:text-base leading-relaxed">
+          <p><strong>Última actualización: 28 de julio de 2026.</strong></p>
           <p>
-            <strong>Salas Art Gallery</strong> se compromete a proteger la privacidad de los datos personales que nos
-            proporcionas al usar nuestro sitio web o realizar una compra.
+            <strong>Salas Art Gallery</strong> es responsable del uso y protección de los datos personales que nos
+            proporcionas al navegar en este sitio, solicitar una visita o adquirir una obra.
           </p>
           <p>
-            Los datos que recabamos (nombre, correo electrónico, teléfono, dirección de envío) se utilizan únicamente
-            para procesar pedidos, contactarte respecto a tu compra y mejorar tu experiencia como cliente.
+            Podemos recabar nombre, correo electrónico, teléfono, dirección de envío y datos relacionados con tu
+            solicitud de visita o compra. Los utilizamos para atenderte, procesar pedidos, coordinar envíos,
+            confirmar visitas y dar seguimiento a tu solicitud.
           </p>
           <p>
-            No vendemos ni compartimos tu información con terceros con fines comerciales ajenos al servicio, salvo
-            cuando sea necesario para el envío o el procesamiento del pago (por ejemplo, paquetería o Mercado Pago),
-            conforme a sus propias políticas.
+            No vendemos tus datos ni los compartimos para fines comerciales ajenos a Salas Art Gallery. Solo podrán
+            compartirse cuando sea indispensable para procesar un pago o envío, con proveedores como Mercado Pago o
+            empresas de paquetería, quienes aplican sus propias políticas de privacidad.
           </p>
           <p>
-            Puedes solicitar acceso, rectificación o eliminación de tus datos escribiendo a{' '}
-            <a href="mailto:contacto@salasartgallery.com" className="text-amber-700 hover:underline">
-              contacto@salasartgallery.com
+            Puedes solicitar acceso, rectificación, cancelación u oposición al tratamiento de tus datos escribiendo a{' '}
+            <a href="mailto:salasartgallery.casadearte@gmail.com" className="text-violet-700 hover:underline">
+              salasartgallery.casadearte@gmail.com
             </a>
-            .
+            {' '}o por WhatsApp al{' '}
+            <a href="https://wa.me/529515471306" className="text-violet-700 hover:underline">
+              +52 951 547 1306
+            </a>.
           </p>
           <p className="text-gray-500 text-xs pt-4">
             Este aviso puede actualizarse. Te recomendamos revisarlo periódicamente.

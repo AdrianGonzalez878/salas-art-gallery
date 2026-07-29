@@ -2,7 +2,7 @@ import type { Producto } from '@/sanity/lib/types'
 import AnimateInView from '@/components/AnimateInView'
 import ProductCarousel from './ProductCarousel'
 
-const MAX_PRODUCTOS = 8
+const MAX_PRODUCTOS = 4
 
 interface TePodriaGustarSectionProps {
   productos: Producto[]
@@ -13,13 +13,16 @@ export default function TePodriaGustarSection({ productos }: TePodriaGustarSecti
   if (list.length === 0) return null
 
   return (
-    <AnimateInView as="section" className="py-10 md:py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 md:mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">
-          Te podría gustar
-        </h2>
-      </div>
-      <div className="px-4 sm:px-6 lg:px-8">
+    <AnimateInView as="section" className="py-12 sm:py-16 bg-[#f7f6f8] border-y border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-7 sm:mb-9">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-2">
+            Sigue explorando
+          </p>
+          <h2 className="font-display text-2xl sm:text-3xl font-light text-gray-900">
+            Obras que podrían interesarte
+          </h2>
+        </div>
         <ProductCarousel productos={list} />
       </div>
     </AnimateInView>
