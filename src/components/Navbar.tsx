@@ -549,33 +549,57 @@ export default function Navbar() {
         {/* Dock cerrado */}
         {!isMenuOpen && (
           <div
-            className="pointer-events-auto fixed inset-x-4 flex items-center gap-2 rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(88,28,135,0.12)] overflow-hidden"
+            className="pointer-events-auto fixed inset-x-3 grid min-h-16 grid-cols-4 rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-md shadow-[0_8px_32px_rgba(88,28,135,0.12)] overflow-hidden"
             style={{ bottom: mobileSafeBottom }}
           >
             <div className="absolute inset-x-0 top-0 h-[2px] bg-salas-gradient" aria-hidden />
+            <Link
+              href="/"
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] font-medium uppercase tracking-[0.12em] transition-colors ${
+                isHome ? 'text-violet-800' : 'text-neutral-600 active:bg-violet-50/50'
+              }`}
+              aria-label="Inicio"
+            >
+              <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z" />
+              </svg>
+              <span>Inicio</span>
+            </Link>
+            <Link
+              href="/productos"
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 border-l border-neutral-100 text-[10px] font-medium uppercase tracking-[0.12em] transition-colors ${
+                isTienda ? 'text-violet-800' : 'text-neutral-600 active:bg-violet-50/50'
+              }`}
+              aria-label="Ver obras"
+            >
+              <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11ZM8 8h8M8 12h8M8 16h5" />
+              </svg>
+              <span>Obras</span>
+            </Link>
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="flex flex-1 items-center justify-center gap-2.5 py-3.5 min-h-[52px] text-neutral-800 active:bg-violet-50/50 transition-colors"
+              className="flex min-h-16 flex-col items-center justify-center gap-1 border-l border-neutral-100 text-[10px] font-medium uppercase tracking-[0.12em] text-neutral-800 active:bg-violet-50/50 transition-colors"
               aria-label="Abrir menú"
               aria-expanded={false}
             >
-              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
               </svg>
-              <span className="font-display text-[13px] uppercase tracking-[0.18em]">Menú</span>
+              <span>Menú</span>
             </button>
-            <div className="w-px h-8 bg-neutral-200 shrink-0" aria-hidden />
             <Link
               href="/carrito"
-              className="relative flex items-center justify-center w-14 min-h-[52px] shrink-0 text-neutral-700 active:bg-violet-50/50 transition-colors"
+              className="relative flex min-h-16 flex-col items-center justify-center gap-1 border-l border-neutral-100 text-[10px] font-medium uppercase tracking-[0.12em] text-neutral-700 active:bg-violet-50/50 transition-colors"
               aria-label={`Carrito${totalItems > 0 ? ` (${totalItems} obra${totalItems !== 1 ? 's' : ''})` : ''}`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
+              <span>Carrito</span>
               {totalItems > 0 && (
-                <span className="absolute top-2 right-2 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white ring-2 ring-white">
+                <span className="absolute top-2 right-[calc(50%-1.5rem)] flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white ring-2 ring-white">
                   {totalItems > 99 ? '99+' : totalItems}
                 </span>
               )}
