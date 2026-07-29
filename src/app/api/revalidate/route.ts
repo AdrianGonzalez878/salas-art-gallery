@@ -62,10 +62,9 @@ export async function POST(request: NextRequest) {
       revalidatePath('/', 'page')
     }
 
-    // Revalidar tag genérico de Sanity (usado por fetch con next.tags)
-    // revalidateTag requiere que los fetch usen { next: { tags: ['sanity'] } }
-    // Se deja como referencia para futuras implementaciones
-    // revalidateTag('sanity')
+    // Invalida todas las consultas cacheadas de Sanity. Esto también actualiza
+    // cualquier página que dependa de datos compartidos, como testimonios.
+    revalidateTag('sanity', 'max')
 
     return NextResponse.json({
       revalidated: true,

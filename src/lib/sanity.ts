@@ -16,14 +16,16 @@ export function urlFor(source: SanityImageSource) {
 }
 
 /**
- * Fetch sin caché: siempre trae datos frescos de Sanity.
+ * Cachea las consultas de Sanity en Vercel. El webhook de Sanity invalida
+ * la etiqueta `sanity` para publicar los cambios inmediatamente.
  */
 export function sanityFetch<T>(
   query: string,
   params?: Record<string, unknown>,
 ): Promise<T> {
   return client.fetch<T>(query, params ?? {}, {
-    cache: 'no-store',
+    cache: 'force-cache',
+    next: { tags: ['sanity'] },
   })
 }
 
