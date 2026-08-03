@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sanityFetch, urlFor } from '@/lib/sanity'
-import { productosDestacadosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorEtiquetaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
+import { productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorEtiquetaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
 import type { Producto, Hero, SobreNosotros, SeccionDestacada, Exposicion, Artista } from '@/sanity/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import AboutSection from '@/components/AboutSection'
@@ -23,9 +23,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  // Obtener obras destacadas, más nuevas, hero, artistas, sobre nosotros, secciones destacadas y exposiciones
-  const [productosDestacados, productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, exposiciones, artistas] = await Promise.all([
-    sanityFetch<Producto[]>(productosDestacadosQuery),
+  // Obtener obras más nuevas, hero, artistas, sobre nosotros, secciones destacadas y exposiciones
+  const [productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, exposiciones, artistas] = await Promise.all([
     sanityFetch<Producto[]>(productosMasNuevosQuery),
     sanityFetch<Hero | null>(heroQuery),
     sanityFetch<SobreNosotros | null>(sobreNosotrosQuery),
@@ -45,8 +44,6 @@ export default async function Home() {
     })
   )
   
-  // Tomar los primeros 8 de cada categoría
-  const productosDestacadosList = productosDestacados.slice(0, 5)
   const productosMasNuevosList = productosMasNuevos.slice(0, 8)
 
   // Valores por defecto si no hay hero activo
@@ -141,41 +138,6 @@ export default async function Home() {
 
         {/* ── Artistas colaboradores ────────────────────────────── */}
         <ArtistasHomeSection artistas={artistas} />
-
-        {/* ── Obras destacadas ─────────────────────────────────── */}
-        {productosDestacadosList.length > 0 && (
-          <AnimateInView as="section" className="relative isolate py-14 sm:py-20">
-            <div
-              className="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-violet-950"
-              aria-hidden
-            />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end mb-8 sm:mb-10">
-                <div className="lg:col-span-7">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300 mb-3">
-                    Selección de la galería
-                  </p>
-                  <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-light text-white leading-[0.95]">
-                    Obras destacadas
-                  </h2>
-                </div>
-                <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col gap-4 lg:items-start">
-                  <p className="max-w-sm text-sm sm:text-base text-violet-100/75 leading-relaxed">
-                    Piezas únicas elegidas por su presencia, técnica y diálogo con la colección.
-                  </p>
-                  <Link
-                    href="/productos"
-                    className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-white hover:text-violet-200 transition-colors"
-                  >
-                    Ver selección completa
-                    <span aria-hidden>→</span>
-                  </Link>
-                </div>
-              </div>
-              <ProductCarousel productos={productosDestacadosList} />
-            </div>
-          </AnimateInView>
-        )}
 
         {/* ── Lo Más Nuevo ─────────────────────────────────────── */}
         {productosMasNuevosList.length > 0 && (
