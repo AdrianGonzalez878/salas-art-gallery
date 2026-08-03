@@ -16,16 +16,22 @@ export function urlFor(source: SanityImageSource) {
 }
 
 /**
- * Cachea las consultas de Sanity en Vercel. El webhook de Sanity invalida
- * la etiqueta `sanity` para publicar los cambios inmediatamente.
+ * En desarrollo no cachea, para ver cambios de Sanity al instante.
+ * En producción cachea y el webhook invalida la etiqueta `sanity`
+ * (con respaldo de revalidación cada 60s).
  */
 export function sanityFetch<T>(
   query: string,
   params?: Record<string, unknown>,
 ): Promise<T> {
-  return client.fetch<T>(query, params ?? {}, {
-    cache: 'force-cache',
-    next: { tags: ['sanity'] },
-  })
+  const isDev = process.env.NODE_ENV === 'development'
+
+  return client.fetch<T>(
+    query,
+    params ?? {},
+    isDev
+      ? { cache: 'no-store' }
+      : { cache: 'force-cache', next: { tags: ['sanity'], revalidate: 60 } },
+  )
 }
 
