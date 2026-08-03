@@ -2,77 +2,35 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { sanityFetch, urlFor } from '@/lib/sanity'
 import {
-  productoImagenPorTerminoQuery,
-  productosPorCategoriaQuery,
+  etiquetasDisponiblesQuery,
+  productosPorEtiquetaQuery,
 } from '@/sanity/lib/queries'
-import type { Producto, SanityImage } from '@/sanity/lib/types'
+import type { Producto } from '@/sanity/lib/types'
 import AnimateInView from '@/components/AnimateInView'
-
-interface ShortcutConfig {
-  label: string
-  href: string
-  subtitle?: string
-  patterns?: string[]
-  categoria?: string
-}
-
-const SHORTCUTS: ShortcutConfig[] = [
-  {
-    label: 'Cerámica',
-    href: '/productos?categoria=ceramica',
-    subtitle: 'Alta y baja temperatura',
-    categoria: 'ceramica',
-  },
-  {
-    label: 'Óleos',
-    href: '/productos?categoria=oleos',
-    subtitle: 'Pintura al óleo',
-    categoria: 'oleos',
-  },
-  {
-    label: 'Litografía',
-    href: '/productos?categoria=litografia',
-    subtitle: 'Obra gráfica',
-    categoria: 'litografia',
-  },
-]
-
-async function fetchImageByPatterns(patterns: string[]): Promise<SanityImage | null> {
-  for (const pattern of patterns) {
-    const producto = await sanityFetch<{ imagenPrincipal?: SanityImage | null } | null>(
-      productoImagenPorTerminoQuery,
-      { pattern },
-    )
-    if (producto?.imagenPrincipal?.asset) {
-      return producto.imagenPrincipal
-    }
-  }
-  return null
-}
-
-async function fetchImageByCategoria(categoria: string): Promise<SanityImage | null> {
-  const productos = await sanityFetch<Producto[]>(productosPorCategoriaQuery, { categoria })
-  return productos.find((p) => p.imagenPrincipal?.asset)?.imagenPrincipal ?? null
-}
+import { etiquetaHref, uniqueEtiquetas } from '@/lib/etiquetas'
 
 export default async function StarCategoryShortcuts() {
-  const shortcuts = await Promise.all(
-    SHORTCUTS.map(async (item) => {
-      let imagen: SanityImage | null = null
-      if (item.categoria) {
-        imagen = await fetchImageByCategoria(item.categoria)
-      } else if (item.patterns) {
-        imagen = await fetchImageByPatterns(item.patterns)
-      }
+  const etiquetasRaw = await sanityFetch<string[]>(etiquetasDisponiblesQuery)
+  const etiquetas = uniqueEtiquetas(etiquetasRaw).slice(0, 3)
 
+  if (etiquetas.length === 0) return null
+
+  const shortcuts = await Promise.all(
+    etiquetas.map(async (tag) => {
+      const productos = await sanityFetch<Producto[]>(productosPorEtiquetaQuery, {
+        etiqueta: tag,
+      })
+      const imagen = productos.find((p) => p.imagenPrincipal?.asset)?.imagenPrincipal ?? null
       const imagenUrl = imagen?.asset
         ? urlFor(imagen).width(500).height(625).quality(90).url()
         : null
 
       return {
-        ...item,
+        label: tag,
+        href: etiquetaHref(tag),
+        count: productos.length,
         imagenUrl,
-        imagenAlt: imagen?.alt || item.label,
+        imagenAlt: imagen?.alt || tag,
       }
     }),
   )
@@ -86,11 +44,11 @@ export default async function StarCategoryShortcuts() {
               Explora
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 leading-tight">
-              Encuentra la técnica que habla contigo
+              Descubre por palabras clave
             </h2>
           </div>
           <p className="lg:col-span-4 text-sm sm:text-base text-gray-600 leading-relaxed lg:pb-1">
-            Descubre una selección de obras únicas, organizadas por material y proceso creativo.
+            Filtra la colección por temas y materiales que definen cada obra.
           </p>
         </div>
 
@@ -126,16 +84,28 @@ export default async function StarCategoryShortcuts() {
 
                 <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
                   <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-white/75 mb-1.5">
-                    Técnica
+                    Palabra clave
                   </p>
                   <h3 className="font-display text-2xl sm:text-3xl font-semibold text-white leading-tight">
                     {item.label}
                   </h3>
-                  {item.subtitle && <p className="text-sm text-white/80 mt-1">{item.subtitle}</p>}
+                  <p className="text-sm text-white/80 mt-1">
+                    {item.count} obra{item.count !== 1 ? 's' : ''}
+                  </p>
                 </div>
               </Link>
             </AnimateInView>
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/productos"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-800 hover:text-violet-950 transition-colors"
+          >
+            Ver todas las palabras clave
+            <span aria-hidden>→</span>
+          </Link>
         </div>
       </div>
     </AnimateInView>

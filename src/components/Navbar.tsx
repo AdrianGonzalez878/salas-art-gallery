@@ -16,16 +16,6 @@ interface SearchPreviewItem {
   imagenUrl: string | null
 }
 
-const categorias = [
-  { nombre: 'Litografía', href: '/productos?categoria=litografia' },
-  { nombre: 'Acrílicos', href: '/productos?categoria=acrilicos' },
-  { nombre: 'Arte objeto', href: '/productos?categoria=arte-objeto' },
-  { nombre: 'Óleos', href: '/productos?categoria=oleos' },
-  { nombre: 'Madera tallada', href: '/productos?categoria=madera-tallada' },
-  { nombre: 'Cerámica', href: '/productos?categoria=ceramica' },
-  { nombre: 'Bronce', href: '/productos?categoria=bronce' },
-]
-
 /** Desktop — estilo editorial galería (Salas) */
 function navLinkClass(active: boolean) {
   return [
@@ -41,9 +31,6 @@ const desktopDropdownLink =
 
 const desktopDropdownLinkStrong =
   'block w-full text-left px-4 py-2.5 text-sm font-semibold text-neutral-900 hover:bg-violet-50 hover:text-violet-900 transition-colors duration-150'
-
-const desktopDropdownLabel =
-  'block w-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 bg-neutral-50/80'
 
 function desktopDropdownPanelClass(open: boolean) {
   return [
@@ -272,7 +259,7 @@ export default function Navbar() {
 
                   <div className={desktopDropdownPanelClass(isDesktopTiendaOpen)}>
                     <ul className={desktopDropdownList} role="menu" aria-label="Tienda">
-                      <li role="none" className="border-b border-neutral-100">
+                      <li role="none">
                         <Link
                           href="/productos"
                           className={desktopDropdownLinkStrong}
@@ -282,25 +269,16 @@ export default function Navbar() {
                           Ver todas las obras
                         </Link>
                       </li>
-                      <li role="none">
-                        <span className={desktopDropdownLabel}>Categorías</span>
-                      </li>
-                      {categorias.map((categoria, index) => (
-                        <li
-                          key={categoria.href}
-                          role="none"
-                          className={index < categorias.length - 1 ? 'border-b border-neutral-100' : undefined}
+                      <li role="none" className="border-t border-neutral-100">
+                        <Link
+                          href="/promociones"
+                          className={desktopDropdownLink}
+                          onClick={() => setIsDesktopTiendaOpen(false)}
+                          role="menuitem"
                         >
-                          <Link
-                            href={categoria.href}
-                            className={desktopDropdownLink}
-                            onClick={() => setIsDesktopTiendaOpen(false)}
-                            role="menuitem"
-                          >
-                            {categoria.nombre}
-                          </Link>
-                        </li>
-                      ))}
+                          Promociones
+                        </Link>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -732,16 +710,13 @@ export default function Navbar() {
                       >
                         Todas las obras
                       </Link>
-                      {categorias.map((categoria) => (
-                        <Link
-                          key={categoria.href}
-                          href={categoria.href}
-                          className={mobileNavItem}
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          {categoria.nombre}
-                        </Link>
-                      ))}
+                      <Link
+                        href="/promociones"
+                        className={mobileNavItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Promociones
+                      </Link>
                     </div>
                   </div>
                 ) : null}

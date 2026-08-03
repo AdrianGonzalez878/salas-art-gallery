@@ -1,12 +1,10 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/lib/sanity'
 import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
 import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
-import { labelCategoria, labelSubcategoria } from '@/lib/categorias'
 import type { Producto } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import ProductBuyOptions from '@/components/ProductBuyOptions'
@@ -32,8 +30,7 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
   const { slug } = await params
   const producto = await sanityFetch<{
     titulo: string
-    categoria: string
-    subcategoria?: string
+    etiquetas?: string[]
     artista?: { nombre?: string; slug?: { current: string } } | null
     precio: number
     tieneDescuento?: boolean
@@ -62,16 +59,14 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
     ? urlFor(producto.imagenPrincipal).width(1200).height(630).url()
     : '/logo.png'
 
-  const catLabel = labelCategoria(producto.categoria)
-  const subLabel = labelSubcategoria(producto.subcategoria)
+  const etiquetas = (producto.etiquetas ?? []).filter(Boolean)
 
   return {
-    title: `${producto.titulo}${producto.artista?.nombre ? ` — ${producto.artista.nombre}` : ''} | ${catLabel}`,
+    title: `${producto.titulo}${producto.artista?.nombre ? ` — ${producto.artista.nombre}` : ''} | Salas Art Gallery`,
     description: descripcionPlain,
     keywords: [
       producto.titulo,
-      catLabel,
-      subLabel,
+      ...etiquetas,
       producto.artista?.nombre,
       'Salas Art Gallery',
       'arte contemporáneo',
@@ -105,7 +100,7 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
   }
 
   const relacionados = await sanityFetch<Producto[]>(productosRelacionadosQuery, {
-    categoria: producto.categoria,
+    etiquetas: producto.etiquetas ?? [],
     excludeId: producto._id,
   })
 

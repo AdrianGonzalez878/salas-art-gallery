@@ -1,6 +1,5 @@
 import { defineField, defineType } from 'sanity'
 import { descuentoVigente } from '@/lib/descuento'
-import { categoriaOptions, subcategoriaCeramicaOptions } from '@/lib/categorias'
 
 export default defineType({
   name: 'producto',
@@ -149,33 +148,16 @@ export default defineType({
       ],
     }),
     defineField({
-      name: 'categoria',
-      title: 'Categoría',
-      type: 'string',
+      name: 'etiquetas',
+      title: 'Palabras clave',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description:
+        'Palabras clave libres para filtrar en la tienda. Ej: Óleo, Paisaje, Abstracto, Pequeño formato',
       options: {
-        list: categoriaOptions,
-        layout: 'radio',
+        layout: 'tags',
       },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'subcategoria',
-      title: 'Subcategoría (cerámica)',
-      type: 'string',
-      description: 'Solo aplica cuando la categoría es Cerámica',
-      options: {
-        list: subcategoriaCeramicaOptions,
-        layout: 'radio',
-      },
-      hidden: ({ parent }) => parent?.categoria !== 'ceramica',
-      validation: (Rule) =>
-        Rule.custom((valor, context) => {
-          const parent = context.parent as { categoria?: string }
-          if (parent?.categoria === 'ceramica' && !valor) {
-            return 'Selecciona alta o baja temperatura'
-          }
-          return true
-        }),
+      validation: (Rule) => Rule.max(12),
     }),
     defineField({
       name: 'tecnica',
@@ -248,8 +230,7 @@ export default defineType({
     select: {
       title: 'titulo',
       media: 'imagenPrincipal',
-      categoria: 'categoria',
-      subcategoria: 'subcategoria',
+      etiquetas: 'etiquetas',
       artistaNombre: 'artista.nombre',
       disponible: 'disponible',
       destacada: 'destacada',
@@ -263,8 +244,7 @@ export default defineType({
     prepare(selection) {
       const {
         title,
-        categoria,
-        subcategoria,
+        etiquetas,
         artistaNombre,
         disponible,
         destacada,
@@ -309,12 +289,8 @@ export default defineType({
 
       if (tecnica) parts.push(tecnica)
 
-      if (categoria) {
-        let cat = String(categoria)
-        if (categoria === 'ceramica' && subcategoria) {
-          cat = `${categoria} · ${subcategoria}`
-        }
-        parts.push(cat)
+      if (Array.isArray(etiquetas) && etiquetas.length > 0) {
+        parts.push(etiquetas.slice(0, 3).join(', '))
       }
 
       return {

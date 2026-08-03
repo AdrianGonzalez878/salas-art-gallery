@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
 import type { Producto } from '@/sanity/lib/types'
 import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
-import { labelCategoria, labelSubcategoria } from '@/lib/categorias'
 import { useTouchLikeDevice } from '@/hooks/useTouchLikeDevice'
 
 const INTERVAL = 1500
@@ -249,12 +248,15 @@ export default function ProductCard({ producto }: ProductCardProps) {
       </div>
 
       <div className="flex flex-col flex-1 p-3 sm:p-4">
-        <p className="text-[11px] text-gray-400 mb-0.5">
-          {labelCategoria(producto.categoria)}
-          {producto.categoria === 'ceramica' && producto.subcategoria
-            ? ` · ${labelSubcategoria(producto.subcategoria)}`
-            : ''}
-        </p>
+        {producto.etiquetas && producto.etiquetas.length > 0 ? (
+          <p className="text-[11px] text-gray-400 mb-0.5 line-clamp-1">
+            {producto.etiquetas.slice(0, 3).join(' · ')}
+          </p>
+        ) : producto.tecnica?.trim() ? (
+          <p className="text-[11px] text-gray-400 mb-0.5 line-clamp-1">
+            {producto.tecnica.trim()}
+          </p>
+        ) : null}
         {producto.artista?.nombre && (
           <p className="text-[11px] text-amber-700/80 mb-1">{producto.artista.nombre}</p>
         )}

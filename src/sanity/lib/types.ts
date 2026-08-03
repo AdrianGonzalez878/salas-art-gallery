@@ -69,17 +69,6 @@ export interface Exposicion {
   activo?: boolean
 }
 
-export type CategoriaProducto =
-  | 'litografia'
-  | 'acrilicos'
-  | 'arte-objeto'
-  | 'oleos'
-  | 'madera-tallada'
-  | 'ceramica'
-  | 'bronce'
-
-export type SubcategoriaCeramica = 'alta-temperatura' | 'baja-temperatura'
-
 export interface Producto {
   _id: string
   titulo: string
@@ -95,8 +84,7 @@ export interface Producto {
   fechaFinDescuento?: string
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
-  categoria: CategoriaProducto
-  subcategoria?: SubcategoriaCeramica
+  etiquetas?: string[]
   artista?: Pick<Artista, '_id' | 'nombre' | 'slug' | 'foto' | 'resumen'> | null
   disponible: boolean
   tecnica?: string
@@ -195,7 +183,7 @@ export interface Estadistica {
   orden: number
   titulo: string
   descripcion?: string
-  categoria: CategoriaProducto
+  etiqueta: string
   imagenBanner: SanityImage
   textoBanner?: string
   posicionTextoBanner?: 'left' | 'center' | 'right'

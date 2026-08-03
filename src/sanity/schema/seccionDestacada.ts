@@ -35,23 +35,12 @@ export default defineType({
       validation: (Rule) => Rule.max(200),
     }),
     defineField({
-      name: 'categoria',
-      title: 'Categoría a Mostrar',
+      name: 'etiqueta',
+      title: 'Palabra clave a mostrar',
       type: 'string',
-      description: 'Se mostrarán las obras de esta categoría',
-      options: {
-        list: [
-          { title: 'Litografía', value: 'litografia' },
-          { title: 'Acrílicos', value: 'acrilicos' },
-          { title: 'Arte objeto', value: 'arte-objeto' },
-          { title: 'Óleos', value: 'oleos' },
-          { title: 'Madera tallada', value: 'madera-tallada' },
-          { title: 'Cerámica', value: 'ceramica' },
-          { title: 'Bronce', value: 'bronce' },
-        ],
-        layout: 'dropdown',
-      },
-      validation: (Rule) => Rule.required(),
+      description:
+        'Debe coincidir con una palabra clave de las obras (ej: Óleo, Cerámica, Paisaje)',
+      validation: (Rule) => Rule.required().max(60),
     }),
     defineField({
       name: 'imagenBanner',
@@ -103,15 +92,15 @@ export default defineType({
   preview: {
     select: {
       titulo: 'titulo',
-      categoria: 'categoria',
+      etiqueta: 'etiqueta',
       activo: 'activo',
       orden: 'orden',
       media: 'imagenBanner',
     },
-    prepare({ titulo, categoria, activo, orden, media }) {
+    prepare({ titulo, etiqueta, activo, orden, media }) {
       return {
         title: titulo || 'Sección Destacada',
-        subtitle: `${activo ? '✅' : '❌'} | Orden: ${orden} | Categoría: ${categoria || 'N/A'}`,
+        subtitle: `${activo ? '✅' : '❌'} | Orden: ${orden} | Etiqueta: ${etiqueta || 'N/A'}`,
         media,
       }
     },

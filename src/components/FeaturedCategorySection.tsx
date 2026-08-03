@@ -79,7 +79,7 @@ export default function FeaturedCategorySection({
                   isDark ? 'text-violet-300' : 'text-violet-700'
                 }`}
               >
-                Categoría
+                Selección
               </span>
               <div className={`w-8 h-0.5 ${isDark ? 'bg-violet-400' : 'bg-violet-500'}`} />
             </div>
@@ -110,7 +110,7 @@ export default function FeaturedCategorySection({
             {seccion.mostrarBoton && (
               <div className="flex justify-center mt-8">
                 <Link
-                  href={`/productos?categoria=${seccion.categoria}`}
+                  href={`/productos?etiqueta=${encodeURIComponent(seccion.etiqueta)}`}
                   className={`inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold rounded-full transition-colors ${
                     isDark
                       ? 'bg-white text-violet-950 hover:bg-violet-100'

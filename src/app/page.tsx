@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sanityFetch, urlFor } from '@/lib/sanity'
-import { productosDestacadosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorCategoriaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
+import { productosDestacadosQuery, productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorEtiquetaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
 import type { Producto, Hero, SobreNosotros, SeccionDestacada, Exposicion, Artista } from '@/sanity/lib/types'
 import ProductCarousel from '@/components/ProductCarousel'
 import AboutSection from '@/components/AboutSection'
@@ -38,8 +38,8 @@ export default async function Home() {
   const seccionesConProductos = await Promise.all(
     seccionesDestacadas.map(async (seccion) => {
       const productos = await sanityFetch<Producto[]>(
-        productosPorCategoriaQuery,
-        { categoria: seccion.categoria }
+        productosPorEtiquetaQuery,
+        { etiqueta: seccion.etiqueta }
       )
       return { seccion, productos: productos.slice(0, 8) }
     })
@@ -52,7 +52,7 @@ export default async function Home() {
   // Valores por defecto si no hay hero activo
   const heroData = hero || {
     titulo: 'Salas Art Gallery',
-    subtitulo: 'Casa de arte. Descubre obras de artistas seleccionados en litografía, óleos, cerámica, bronce y más.',
+    subtitulo: 'Casa de arte. Descubre obras de artistas seleccionados.',
     imagenesCarrusel: [],
     textoBotonPrincipal: 'Ver obras',
     hrefBotonPrincipal: '/productos',

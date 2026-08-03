@@ -68,18 +68,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Categorías */}
+          {/* Explorar */}
           <div className="lg:col-span-2">
-            <h4 className={headingClass}>Obras</h4>
+            <h4 className={headingClass}>Explorar</h4>
             <ul className="space-y-2.5 text-sm">
               {[
-                ['Litografía', '/productos?categoria=litografia'],
-                ['Acrílicos', '/productos?categoria=acrilicos'],
-                ['Arte objeto', '/productos?categoria=arte-objeto'],
-                ['Óleos', '/productos?categoria=oleos'],
-                ['Madera tallada', '/productos?categoria=madera-tallada'],
-                ['Cerámica', '/productos?categoria=ceramica'],
-                ['Bronce', '/productos?categoria=bronce'],
+                ['Todas las obras', '/productos'],
+                ['Promociones', '/promociones'],
+                ['Artistas', '/artistas'],
+                ['Exposiciones', '/exposiciones'],
               ].map(([label, href]) => (
                 <li key={href}>
                   <Link href={href} className={linkClass}>

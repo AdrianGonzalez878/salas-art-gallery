@@ -5,8 +5,7 @@ import Link from 'next/link'
 interface PaginationProps {
   paginaActual: number
   totalPaginas: number
-  categoria?: string
-  subcategoria?: string
+  etiqueta?: string
   orden?: string
   q?: string
   /** Si se indica, los enlaces usan esta ruta (ej: /promociones) en lugar de /productos */
@@ -16,8 +15,7 @@ interface PaginationProps {
 export default function Pagination({
   paginaActual,
   totalPaginas,
-  categoria,
-  subcategoria,
+  etiqueta,
   orden,
   q,
   basePath = '/productos',
@@ -27,8 +25,7 @@ export default function Pagination({
   const buildHref = (page: number) => {
     const params = new URLSearchParams()
     if (q) params.set('q', q)
-    if (categoria) params.set('categoria', categoria)
-    if (subcategoria) params.set('subcategoria', subcategoria)
+    if (etiqueta) params.set('etiqueta', etiqueta)
     if (orden && orden !== 'recientes') params.set('orden', orden)
     params.set('page', String(page))
     return `${basePath}?${params.toString()}`

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { labelCategoria, labelSubcategoria } from '@/lib/categorias'
 import type { Producto } from '@/sanity/lib/types'
+import { etiquetaHref } from '@/lib/etiquetas'
 
 interface ProductObraFichaProps {
   producto: Producto
@@ -16,14 +16,6 @@ function formatPrecioMXN(amount: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
-}
-
-function getTecnica(producto: Producto): string | null {
-  if (producto.tecnica?.trim()) return producto.tecnica.trim()
-  if (producto.categoria === 'ceramica' && producto.subcategoria) {
-    return `Cerámica de ${labelSubcategoria(producto.subcategoria).toLowerCase()}`
-  }
-  return null
 }
 
 function FichaRow({
@@ -46,7 +38,8 @@ export default function ProductObraFicha({
   precioFinal,
   descuentoActivo,
 }: ProductObraFichaProps) {
-  const tecnica = getTecnica(producto)
+  const tecnica = producto.tecnica?.trim() || null
+  const etiquetas = (producto.etiquetas ?? []).map((t) => t.trim()).filter(Boolean)
 
   return (
     <div className="sm:rounded-xl sm:border sm:border-gray-100 sm:bg-[var(--background)] sm:px-6 sm:py-6">
@@ -68,7 +61,21 @@ export default function ProductObraFicha({
           </FichaRow>
         )}
 
-        <FichaRow label="Categoría">{labelCategoria(producto.categoria)}</FichaRow>
+        {etiquetas.length > 0 && (
+          <FichaRow label="Claves">
+            <span className="flex flex-wrap gap-1.5">
+              {etiquetas.map((tag) => (
+                <Link
+                  key={tag}
+                  href={etiquetaHref(tag)}
+                  className="inline-flex rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-800 hover:bg-violet-100 transition-colors"
+                >
+                  {tag}
+                </Link>
+              ))}
+            </span>
+          </FichaRow>
+        )}
 
         {tecnica && <FichaRow label="Técnica">{tecnica}</FichaRow>}
 
