@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type Ref } from 'react'
 import { useTouchLikeDevice } from '@/hooks/useTouchLikeDevice'
 
 type AnimateTag = 'div' | 'section' | 'article'
@@ -19,6 +19,15 @@ function isElementInViewport(el: HTMLElement): boolean {
   return rect.top < window.innerHeight * 0.92 && rect.bottom > 0
 }
 
+/** false en SSR y en el primer paint del cliente; evita mismatches de hidratación */
+function useHasMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+}
+
 export default function AnimateInView({
   as = 'div',
   delay = 0,
@@ -26,18 +35,17 @@ export default function AnimateInView({
   className,
   children,
 }: AnimateInViewProps) {
+  const hasMounted = useHasMounted()
   const prefersReducedMotion = useReducedMotion()
   const isTouchLike = useTouchLikeDevice()
   const ref = useRef<HTMLElement>(null)
 
-  // 1ª opción: whileInView (comportamiento original)
   const isInView = useInView(ref, {
     once: true,
     amount: 0.12,
     margin: '0px 0px -80px 0px',
   })
 
-  // 2ª opción (solo móvil/tablet táctil): si Safari no dispara la animación
   const [safariFallback, setSafariFallback] = useState(false)
 
   useEffect(() => {
@@ -69,12 +77,15 @@ export default function AnimateInView({
 
   const StaticTag = as
 
-  if (prefersReducedMotion) {
+  // Mismo markup en servidor y primer paint del cliente.
+  // Solo después de montar activamos motion / reduced-motion.
+  if (!hasMounted || prefersReducedMotion) {
     return <StaticTag className={className}>{children}</StaticTag>
   }
 
   const MotionTag = motion[as]
   const useFallback = safariFallback
+  const alreadyVisible = isInView || useFallback
 
   const transition = {
     duration: 0.55,
@@ -86,7 +97,7 @@ export default function AnimateInView({
     <MotionTag
       ref={ref as Ref<HTMLDivElement>}
       className={className}
-      initial={{ opacity: 0, y }}
+      initial={alreadyVisible ? false : { opacity: 0, y }}
       whileInView={useFallback ? undefined : { opacity: 1, y: 0, transition }}
       animate={useFallback ? { opacity: 1, y: 0, transition } : undefined}
       viewport={{ once: true, margin: '-80px' }}
