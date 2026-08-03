@@ -473,6 +473,21 @@ export const heroQuery = groq`
   *[_type == "hero" && activo == true][0] {
     titulo,
     subtitulo,
+    tipoMedia,
+    "videoDesktopUrl": videoDesktop.asset->url,
+    "videoMobileUrl": videoMobile.asset->url,
+    posterDesktop {
+      asset,
+      hotspot,
+      crop,
+      alt
+    },
+    posterMobile {
+      asset,
+      hotspot,
+      crop,
+      alt
+    },
     imagenesCarrusel[] {
       imagenDesktop {
         asset,

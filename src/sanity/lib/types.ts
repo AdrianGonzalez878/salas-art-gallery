@@ -154,7 +154,12 @@ export interface Estadisticas {
 export interface Hero {
   titulo: string
   subtitulo?: string
-  imagenesCarrusel: {
+  tipoMedia?: 'video' | 'imagenes'
+  videoDesktopUrl?: string | null
+  videoMobileUrl?: string | null
+  posterDesktop?: SanityImage | null
+  posterMobile?: SanityImage | null
+  imagenesCarrusel?: {
     imagenDesktop: SanityImage
     imagenMobile: SanityImage
     alt: string

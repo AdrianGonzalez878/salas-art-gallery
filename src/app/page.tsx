@@ -50,6 +50,7 @@ export default async function Home() {
   const heroData = hero || {
     titulo: 'Salas Art Gallery',
     subtitulo: 'Casa de arte. Descubre obras de artistas seleccionados.',
+    tipoMedia: 'imagenes' as const,
     imagenesCarrusel: [],
     textoBotonPrincipal: 'Ver obras',
     hrefBotonPrincipal: '/productos',
@@ -58,31 +59,60 @@ export default async function Home() {
     mostrarBadge: false,
   }
 
-  // Generar URLs de las imágenes del carrusel en el servidor
-  /** Preview de video local: copia tus MP4 a public/videos/ y activa en .env.local */
-  const heroVideoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO?.trim() || null
-  const heroVideoSrcMobile = process.env.NEXT_PUBLIC_HERO_VIDEO_MOBILE?.trim() || null
+  const tipoMedia = heroData.tipoMedia === 'video' ? 'video' : 'imagenes'
+
+  const heroVideoSrc =
+    tipoMedia === 'video' ? heroData.videoDesktopUrl?.trim() || null : null
+  const heroVideoSrcMobile =
+    tipoMedia === 'video'
+      ? heroData.videoMobileUrl?.trim() || heroVideoSrc
+      : null
   const hasHeroVideo = Boolean(heroVideoSrc || heroVideoSrcMobile)
 
-  const imagenesCarrusel = heroData.imagenesCarrusel
-    ?.filter((slide) => slide?.imagenDesktop && slide?.imagenMobile) // Solo slides con ambas imágenes
-    .map((slide) => ({
-      urlDesktop: urlFor(slide.imagenDesktop).width(1920).quality(95).url(),
-      urlMobile: urlFor(slide.imagenMobile).width(1080).quality(95).url(),
-      alt: slide.alt || 'Hero image',
-    })) || []
+  const posterFromSanity = (() => {
+    if (!hasHeroVideo) return [] as { urlDesktop: string; urlMobile: string; alt: string }[]
+    const desktop = heroData.posterDesktop?.asset
+      ? urlFor(heroData.posterDesktop).width(1920).quality(90).url()
+      : null
+    const mobile = heroData.posterMobile?.asset
+      ? urlFor(heroData.posterMobile).width(1080).quality(90).url()
+      : desktop
+    if (!desktop) return []
+    return [
+      {
+        urlDesktop: desktop,
+        urlMobile: mobile || desktop,
+        alt: heroData.posterDesktop?.alt || heroData.titulo || 'Hero',
+      },
+    ]
+  })()
+
+  const imagenesCarrusel =
+    tipoMedia === 'imagenes'
+      ? heroData.imagenesCarrusel
+          ?.filter((slide) => slide?.imagenDesktop && slide?.imagenMobile)
+          .map((slide) => ({
+            urlDesktop: urlFor(slide.imagenDesktop).width(1920).quality(95).url(),
+            urlMobile: urlFor(slide.imagenMobile).width(1080).quality(95).url(),
+            alt: slide.alt || 'Hero image',
+          })) || []
+      : posterFromSanity
+
+  const hasHeroMedia = imagenesCarrusel.length > 0 || hasHeroVideo
 
   return (
     <div className="min-h-screen bg-white">
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden h-[78svh]">
-        {(imagenesCarrusel.length > 0 || hasHeroVideo) && (
+      <section className="relative overflow-hidden h-[78svh] bg-neutral-900">
+        {hasHeroMedia ? (
           <HeroCarousel
             imagenes={imagenesCarrusel}
             videoSrc={heroVideoSrc}
             videoSrcMobile={heroVideoSrcMobile}
           />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-neutral-900 to-black" aria-hidden />
         )}
         <div className="relative z-30 h-full flex flex-col items-center justify-end md:justify-center px-4 sm:px-6 lg:px-8 pb-10 md:pb-0 text-center">
           <div

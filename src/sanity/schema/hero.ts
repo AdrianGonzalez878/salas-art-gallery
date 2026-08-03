@@ -17,14 +17,90 @@ export default defineType({
       title: 'Subtítulo',
       type: 'text',
       rows: 3,
-      initialValue: 'Casa de arte. Descubre obras de artistas seleccionados en litografía, óleos, cerámica, bronce y más.',
+      initialValue:
+        'Casa de arte. Descubre obras de artistas seleccionados en litografía, óleos, cerámica, bronce y más.',
+    }),
+    defineField({
+      name: 'tipoMedia',
+      title: 'Tipo de fondo',
+      type: 'string',
+      description: 'Elige si el hero usa video o un carrusel de imágenes',
+      options: {
+        list: [
+          { title: 'Video', value: 'video' },
+          { title: 'Carrusel de imágenes', value: 'imagenes' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'imagenes',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'videoDesktop',
+      title: 'Video desktop',
+      type: 'file',
+      description:
+        'MP4 horizontal (recomendado ≤ 15–20 MB). Se muestra en tablet y escritorio.',
+      options: {
+        accept: 'video/mp4,video/webm',
+      },
+      hidden: ({ parent }) => parent?.tipoMedia !== 'video',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as { tipoMedia?: string }
+          if (parent?.tipoMedia === 'video' && !value) {
+            return 'Sube un video para desktop'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'videoMobile',
+      title: 'Video móvil (opcional)',
+      type: 'file',
+      description:
+        'MP4 vertical u horizontal para móvil. Si lo dejas vacío, se usa el video desktop.',
+      options: {
+        accept: 'video/mp4,video/webm',
+      },
+      hidden: ({ parent }) => parent?.tipoMedia !== 'video',
+    }),
+    defineField({
+      name: 'posterDesktop',
+      title: 'Poster desktop (opcional)',
+      type: 'image',
+      description: 'Imagen que se muestra mientras carga el video en desktop',
+      options: { hotspot: true },
+      hidden: ({ parent }) => parent?.tipoMedia !== 'video',
+    }),
+    defineField({
+      name: 'posterMobile',
+      title: 'Poster móvil (opcional)',
+      type: 'image',
+      description: 'Imagen que se muestra mientras carga el video en móvil',
+      options: { hotspot: true },
+      hidden: ({ parent }) => parent?.tipoMedia !== 'video',
     }),
     defineField({
       name: 'imagenesCarrusel',
       title: 'Imágenes del Carrusel',
       type: 'array',
-      description: 'Agrega de 1 a 5 slides. Cada slide tiene una imagen para desktop (16:9) y otra para móvil (1:1 o 4:5)',
-      validation: (Rule) => Rule.required().min(1).max(5),
+      description:
+        'Agrega de 1 a 5 slides. Cada slide tiene una imagen para desktop (16:9) y otra para móvil (1:1 o 4:5)',
+      hidden: ({ parent }) => parent?.tipoMedia !== 'imagenes',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as { tipoMedia?: string }
+          if (parent?.tipoMedia === 'imagenes') {
+            if (!value || value.length < 1) {
+              return 'Agrega al menos una imagen al carrusel'
+            }
+            if (value.length > 5) {
+              return 'Máximo 5 slides'
+            }
+          }
+          return true
+        }),
       of: [
         {
           type: 'object',
@@ -44,7 +120,8 @@ export default defineType({
               name: 'imagenMobile',
               title: 'Imagen Móvil (1:1 o 4:5)',
               type: 'image',
-              description: 'Imagen cuadrada o vertical para móvil (1080x1080px o 1080x1350px recomendado)',
+              description:
+                'Imagen cuadrada o vertical para móvil (1080x1080px o 1080x1350px recomendado)',
               options: {
                 hotspot: true,
               },
@@ -67,7 +144,7 @@ export default defineType({
             prepare({ mediaDesktop, mediaMobile, alt }) {
               return {
                 title: alt || 'Slide del carrusel',
-                subtitle: '🖥️ Desktop + 📱 Móvil',
+                subtitle: 'Desktop + Móvil',
                 media: mediaDesktop || mediaMobile,
               }
             },
@@ -110,16 +187,17 @@ export default defineType({
   preview: {
     select: {
       title: 'titulo',
-      media: 'imagenesCarrusel.0',
+      media: 'imagenesCarrusel.0.imagenDesktop',
+      tipoMedia: 'tipoMedia',
       activo: 'activo',
     },
-    prepare(selection) {
-      const { activo } = selection
+    prepare({ title, media, tipoMedia, activo }) {
+      const tipo = tipoMedia === 'video' ? 'Video' : 'Imágenes'
       return {
-        ...selection,
-        subtitle: activo ? 'Activo' : 'Inactivo',
+        title: title || 'Hero',
+        subtitle: `${activo ? 'Activo' : 'Inactivo'} · ${tipo}`,
+        media,
       }
     },
   },
 })
-

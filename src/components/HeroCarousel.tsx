@@ -11,9 +11,9 @@ interface ImagenCarrusel {
 
 interface HeroCarouselProps {
   imagenes: ImagenCarrusel[]
-  /** Desktop: ruta en /public, ej. /videos/hero.mp4 */
+  /** URL pública del video desktop (Sanity CDN u otra) */
   videoSrc?: string | null
-  /** Móvil: ruta en /public, ej. /videos/hero-vertical.mp4 */
+  /** URL pública del video móvil; si falta, se reutiliza desktop */
   videoSrcMobile?: string | null
 }
 
