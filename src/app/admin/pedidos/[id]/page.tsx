@@ -69,6 +69,37 @@ export default async function PedidoDetailPage({ params }: PedidoDetailPageProps
           </div>
         </div>
 
+        {pedido.codigoColaboracion && (
+          <div className="bg-violet-50 rounded-xl border border-violet-200 shadow-sm p-5">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-violet-900 uppercase tracking-wide mb-3">
+              <div className="w-6 h-6 bg-violet-100 rounded-md flex items-center justify-center text-violet-700">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              Colaboración / quién vendió
+            </h2>
+            <dl className="space-y-2 text-sm">
+              <div className="flex gap-2">
+                <dt className="w-28 text-violet-500 flex-shrink-0">Código</dt>
+                <dd className="font-mono font-semibold text-violet-950">{pedido.codigoColaboracion}</dd>
+              </div>
+              {pedido.colaboracionNombre && (
+                <div className="flex gap-2">
+                  <dt className="w-28 text-violet-500 flex-shrink-0">Colaborador</dt>
+                  <dd className="font-medium text-violet-950">{pedido.colaboracionNombre}</dd>
+                </div>
+              )}
+              {pedido.exposicionColaboracionTitulo && (
+                <div className="flex gap-2">
+                  <dt className="w-28 text-violet-500 flex-shrink-0">Exposición</dt>
+                  <dd className="text-violet-900">{pedido.exposicionColaboracionTitulo}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        )}
+
         {/* Grid: cliente + dirección */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Cliente */}
@@ -184,6 +215,12 @@ export default async function PedidoDetailPage({ params }: PedidoDetailPageProps
               <span>Envío</span>
               <span>{pedido.envio === 0 ? 'Gratis' : `$${pedido.envio.toLocaleString('es-MX')}`}</span>
             </div>
+            {pedido.descuentoCupon != null && pedido.descuentoCupon > 0 && (
+              <div className="flex justify-between text-green-700">
+                <span>Descuento{pedido.cuponCodigo ? ` (${pedido.cuponCodigo})` : ''}</span>
+                <span>−${pedido.descuentoCupon.toLocaleString('es-MX')}</span>
+              </div>
+            )}
             <div className="flex justify-between font-bold text-gray-900 text-base pt-2 border-t border-gray-200 mt-2">
               <span>Total</span>
               <span>${pedido.total.toLocaleString('es-MX')}</span>

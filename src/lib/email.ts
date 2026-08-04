@@ -37,6 +37,10 @@ interface NuevoPedidoData {
   subtotal: number
   envio: number
   total: number
+  /** Código de colaboración usado en checkout (atribución de venta) */
+  codigoColaboracion?: string
+  colaboracionNombre?: string
+  exposicionColaboracionTitulo?: string
 }
 
 function formatMXN(amount: number) {
@@ -119,8 +123,37 @@ export async function sendNuevoPedidoAdmin(data: NuevoPedidoData) {
   const adminEmail = process.env.ADMIN_EMAIL
   if (!adminEmail || !process.env.RESEND_API_KEY) return
 
-  const { numeroPedido, cliente, direccionEnvio, productos, subtotal, envio, total } = data
+  const {
+    numeroPedido,
+    cliente,
+    direccionEnvio,
+    productos,
+    subtotal,
+    envio,
+    total,
+    codigoColaboracion,
+    colaboracionNombre,
+    exposicionColaboracionTitulo,
+  } = data
   const logoUrl = `${getAppUrl()}/logo.png`
+
+  const colaboracionBlock = codigoColaboracion
+    ? `
+      <div style="background:#f5f3ff;border-left:4px solid #7c3aed;padding:16px 20px;border-radius:4px;margin-bottom:28px;">
+        <p style="margin:0;font-size:12px;color:#5b21b6;text-transform:uppercase;letter-spacing:0.05em;">Colaboración / quién vendió</p>
+        <p style="margin:8px 0 0;font-size:18px;font-weight:bold;font-family:monospace;color:#4c1d95;">${codigoColaboracion}</p>
+        ${
+          colaboracionNombre
+            ? `<p style="margin:6px 0 0;font-size:14px;color:#5b21b6;"><strong>${colaboracionNombre}</strong></p>`
+            : ''
+        }
+        ${
+          exposicionColaboracionTitulo
+            ? `<p style="margin:4px 0 0;font-size:13px;color:#6d28d9;">Exposición: ${exposicionColaboracionTitulo}</p>`
+            : ''
+        }
+      </div>`
+    : ''
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
@@ -131,6 +164,8 @@ export async function sendNuevoPedidoAdmin(data: NuevoPedidoData) {
         <p style="margin:0;font-size:12px;color:#92400e;text-transform:uppercase;letter-spacing:0.05em;">Número de pedido</p>
         <p style="margin:6px 0 0;font-size:22px;font-weight:bold;font-family:monospace;color:#78350f;">${numeroPedido}</p>
       </div>
+
+      ${colaboracionBlock}
 
       <h2 style="font-size:15px;font-weight:600;margin:0 0 12px;color:#374151;text-transform:uppercase;letter-spacing:0.05em;">Cliente</h2>
       <table style="width:100%;font-size:14px;margin-bottom:28px;">
@@ -172,10 +207,12 @@ export async function sendNuevoPedidoAdmin(data: NuevoPedidoData) {
     ${emailFooter()}
   </div>`
 
+  const subjectColab = codigoColaboracion ? ` · Colab. ${codigoColaboracion}` : ''
+
   await resend.emails.send({
     from: FROM,
     to: adminEmail,
-    subject: `🛍️ Nuevo pedido ${numeroPedido} — ${cliente.nombre}`,
+    subject: `Nuevo pedido ${numeroPedido} — ${cliente.nombre}${subjectColab}`,
     html,
   })
 }

@@ -7,6 +7,8 @@ import ProductCard from './ProductCard'
 
 interface ProductGridProps {
   productos: Producto[]
+  /** En móvil/tablet (< lg) solo muestra los primeros N; en desktop muestra todos */
+  mobileLimit?: number
 }
 
 function useGridColumns() {
@@ -23,7 +25,7 @@ function useGridColumns() {
   return cols
 }
 
-export default function ProductGrid({ productos }: ProductGridProps) {
+export default function ProductGrid({ productos, mobileLimit }: ProductGridProps) {
   const cols = useGridColumns()
 
   if (productos.length === 0) {
@@ -47,6 +49,9 @@ export default function ProductGrid({ productos }: ProductGridProps) {
           key={producto._id}
           delay={(index % cols) * 0.06}
           y={16}
+          className={
+            mobileLimit != null && index >= mobileLimit ? 'hidden lg:block' : undefined
+          }
         >
           <ProductCard producto={producto} />
         </AnimateInView>

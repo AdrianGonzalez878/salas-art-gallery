@@ -29,7 +29,7 @@ function ExposicionGrid({
       <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         {titulo}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
         {exposiciones.map((exposicion, index) => {
           const imagenUrl = exposicion.imagenPrincipal?.asset
             ? urlFor(exposicion.imagenPrincipal).width(900).height(675).quality(90).url()

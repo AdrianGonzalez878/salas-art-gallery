@@ -8,6 +8,8 @@ import testimonio from './testimonio'
 import artista from './artista'
 import exposicion from './exposicion'
 import paginaArtistas from './paginaArtistas'
+import configuracionSitio from './configuracionSitio'
+import codigoColaboracion from './codigoColaboracion'
 
 export const schemaTypes = [
   artista,
@@ -19,6 +21,8 @@ export const schemaTypes = [
   paginaArtistas,
   seccionDestacada,
   cupon,
+  codigoColaboracion,
   testimonio,
+  configuracionSitio,
 ]
 

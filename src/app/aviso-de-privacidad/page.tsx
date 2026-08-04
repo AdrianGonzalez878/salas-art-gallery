@@ -1,11 +1,19 @@
 import Link from 'next/link'
+import { sanityFetch } from '@/lib/sanity'
+import { configuracionSitioQuery } from '@/sanity/lib/queries'
+import type { ConfiguracionSitio } from '@/sanity/lib/types'
+import { formatWhatsAppDisplay, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata = {
   title: 'Aviso de privacidad | Salas Art Gallery',
   description: 'Aviso de privacidad y protección de datos personales.',
 }
 
-export default function AvisoPrivacidadPage() {
+export default async function AvisoPrivacidadPage() {
+  const config = await sanityFetch<ConfiguracionSitio | null>(configuracionSitioQuery)
+  const contactWhatsappUrl = whatsappUrl(config?.numeroWhatsApp)
+  const contactWhatsappDisplay = formatWhatsAppDisplay(config?.numeroWhatsApp)
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -35,8 +43,8 @@ export default function AvisoPrivacidadPage() {
               salasartgallery.casadearte@gmail.com
             </a>
             {' '}o por WhatsApp al{' '}
-            <a href="https://wa.me/529515471306" className="text-violet-700 hover:underline">
-              +52 951 547 1306
+            <a href={contactWhatsappUrl} className="text-violet-700 hover:underline">
+              {contactWhatsappDisplay}
             </a>.
           </p>
           <p className="text-gray-500 text-xs pt-4">

@@ -37,8 +37,9 @@ export interface Artista {
 }
 
 export interface PaginaArtistas {
+  album?: SanityImage[]
+  /** @deprecated usar album */
   imagenCierre?: SanityImage
-  textoCierre?: string
   textoCierreSecundario?: string
 }
 
@@ -59,6 +60,7 @@ export interface Exposicion {
   descripcion?: PortableTextBlock[]
   imagenPrincipal: SanityImage
   galeria?: SanityImage[]
+  videoUrl?: string
   fechaInicio: string
   fechaFin: string
   ubicacion?: UbicacionExposicion
@@ -129,6 +131,11 @@ export interface Pedido {
   productos: ProductoPedido[]
   subtotal: number
   envio: number
+  descuentoCupon?: number
+  cuponCodigo?: string
+  codigoColaboracion?: string
+  colaboracionNombre?: string
+  exposicionColaboracionTitulo?: string
   total: number
   estado: 'pendiente_pago' | 'pendiente' | 'procesando' | 'enviado' | 'entregado' | 'cancelado'
   metodoPago?: 'efectivo' | 'tarjeta' | 'transferencia' | 'paypal' | 'otro'
@@ -175,14 +182,22 @@ export interface Hero {
 export interface Estadistica {
   numero: string
   etiqueta: string
-}export interface SobreNosotros {
+}
+
+export interface SobreNosotros {
   titulo: string
   subtitulo?: string
   imagenBanner?: SanityImage
   historia: string
   galeria: SanityImage[]
   estadisticas?: Estadistica[]
-}export interface SeccionDestacada {
+}
+
+export interface ConfiguracionSitio {
+  numeroWhatsApp?: string
+}
+
+export interface SeccionDestacada {
   _id: string
   activo: boolean
   orden: number
@@ -204,4 +219,17 @@ export interface Cupon {
   montoMinimo?: number | null
   fechaInicio?: string | null
   fechaFin?: string | null
+}
+
+export interface CodigoColaboracion {
+  _id: string
+  codigo: string
+  nombre: string
+  activo: boolean
+  notas?: string
+  exposicion?: {
+    _id: string
+    titulo: string
+    slug?: { current: string }
+  } | null
 }

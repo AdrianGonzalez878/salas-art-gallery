@@ -79,6 +79,15 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'video',
+      title: 'Video de la exposición',
+      type: 'file',
+      options: {
+        accept: 'video/mp4,video/webm',
+      },
+      description: 'Video que se mostrará al abrir la página de la exposición.',
+    }),
+    defineField({
       name: 'fechaInicio',
       title: 'Fecha de inicio',
       type: 'datetime',

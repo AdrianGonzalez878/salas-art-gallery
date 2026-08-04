@@ -3,7 +3,17 @@
 import { usePathname } from 'next/navigation'
 import Footer from './Footer'
 
-export default function ConditionalFooter() {
+interface ConditionalFooterProps {
+  whatsappUrl: string
+  whatsappDisplay: string
+  phoneTelUrl: string
+}
+
+export default function ConditionalFooter({
+  whatsappUrl,
+  whatsappDisplay,
+  phoneTelUrl,
+}: ConditionalFooterProps) {
   const pathname = usePathname()
 
   // No mostrar Footer en el studio ni en checkout
@@ -11,5 +21,11 @@ export default function ConditionalFooter() {
     return null
   }
 
-  return <Footer />
+  return (
+    <Footer
+      whatsappUrl={whatsappUrl}
+      whatsappDisplay={whatsappDisplay}
+      phoneTelUrl={phoneTelUrl}
+    />
+  )
 }

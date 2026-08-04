@@ -3,6 +3,7 @@ import { serverClient } from '@/lib/sanity-server'
 import { sendNuevoPedidoAdmin, sendConfirmacionCliente } from '@/lib/email'
 import { computeShippingCost } from '@/lib/shipping'
 import { resolverDescuentoCuponEnServidor } from '@/lib/cupones-sanity'
+import { resolverCodigoColaboracionEnServidor } from '@/lib/codigos-colaboracion-sanity'
 
 interface CheckoutBody {
   cliente: { nombre: string; email: string; telefono: string }
@@ -20,6 +21,7 @@ interface CheckoutBody {
   total: number
   descuento?: number
   cupon?: string
+  codigoColaboracion?: string
   metodoPago?: string
   notas?: string
 }
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
     total,
     descuento = 0,
     cupon: cuponRaw,
+    codigoColaboracion: codigoColaboracionRaw,
     metodoPago,
     notas,
   } = body
@@ -125,6 +128,11 @@ export async function POST(request: Request) {
   }
   const { descuentoCalculado, codigoCupon } = resCupon
 
+  const resColab = await resolverCodigoColaboracionEnServidor(codigoColaboracionRaw)
+  if (!resColab.ok) {
+    return NextResponse.json({ error: resColab.error }, { status: 400 })
+  }
+
   const totalCalculado = Math.max(
     0,
     Math.round((subtotalCalculado + envioCalculado - descuentoCalculado) * 100) / 100
@@ -167,6 +175,15 @@ export async function POST(request: Request) {
     envio: envioCalculado,
     descuentoCupon: descuentoCalculado,
     ...(codigoCupon ? { cuponCodigo: codigoCupon } : {}),
+    ...(resColab.codigoColaboracion
+      ? {
+          codigoColaboracion: resColab.codigoColaboracion,
+          colaboracionNombre: resColab.colaboracionNombre,
+          ...(resColab.exposicionColaboracionTitulo
+            ? { exposicionColaboracionTitulo: resColab.exposicionColaboracionTitulo }
+            : {}),
+        }
+      : {}),
     total: totalCalculado,
     estado: 'pendiente_pago',
     metodoPago: 'mercadopago',
@@ -193,6 +210,13 @@ export async function POST(request: Request) {
     subtotal: subtotalCalculado,
     envio: envioCalculado,
     total: totalCalculado,
+    ...(resColab.codigoColaboracion
+      ? {
+          codigoColaboracion: resColab.codigoColaboracion,
+          colaboracionNombre: resColab.colaboracionNombre,
+          exposicionColaboracionTitulo: resColab.exposicionColaboracionTitulo,
+        }
+      : {}),
   }
   Promise.allSettled([
     sendNuevoPedidoAdmin(emailData),

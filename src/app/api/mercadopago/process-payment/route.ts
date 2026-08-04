@@ -4,6 +4,7 @@ import { sendNuevoPedidoAdmin, sendConfirmacionCliente, sendPagoConfirmado } fro
 import { marcarProductosAgotados } from '@/lib/inventory'
 import { computeShippingCost } from '@/lib/shipping'
 import { resolverDescuentoCuponEnServidor } from '@/lib/cupones-sanity'
+import { resolverCodigoColaboracionEnServidor } from '@/lib/codigos-colaboracion-sanity'
 
 function getBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_APP_URL) {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
     total: number
     descuento?: number
     cupon?: string
+    codigoColaboracion?: string
     notas?: string
     regaloTitulo?: string
     regaloImagenUrl?: string
@@ -71,6 +73,7 @@ export async function POST(request: Request) {
     total,
     descuento: descuentoBody,
     cupon: cuponRaw,
+    codigoColaboracion: codigoColaboracionRaw,
     notas,
     regaloTitulo,
     regaloImagenUrl,
@@ -128,6 +131,11 @@ export async function POST(request: Request) {
   }
   const { descuentoCalculado, codigoCupon } = resCupon
 
+  const resColab = await resolverCodigoColaboracionEnServidor(codigoColaboracionRaw)
+  if (!resColab.ok) {
+    return NextResponse.json({ error: resColab.error }, { status: 400 })
+  }
+
   const totalCalculado = Math.max(
     0,
     Math.round((subtotalCalculado + envioCalculado - descuentoCalculado) * 100) / 100
@@ -171,6 +179,15 @@ export async function POST(request: Request) {
     envio: envioCalculado,
     descuentoCupon: descuentoCalculado,
     ...(codigoCupon ? { cuponCodigo: codigoCupon } : {}),
+    ...(resColab.codigoColaboracion
+      ? {
+          codigoColaboracion: resColab.codigoColaboracion,
+          colaboracionNombre: resColab.colaboracionNombre,
+          ...(resColab.exposicionColaboracionTitulo
+            ? { exposicionColaboracionTitulo: resColab.exposicionColaboracionTitulo }
+            : {}),
+        }
+      : {}),
     total: totalCalculado,
     estado: 'pendiente_pago',
     metodoPago: 'mercadopago',
@@ -256,6 +273,13 @@ export async function POST(request: Request) {
     subtotal: subtotalCalculado,
     envio: envioCalculado,
     total: totalCalculado,
+    ...(resColab.codigoColaboracion
+      ? {
+          codigoColaboracion: resColab.codigoColaboracion,
+          colaboracionNombre: resColab.colaboracionNombre,
+          exposicionColaboracionTitulo: resColab.exposicionColaboracionTitulo,
+        }
+      : {}),
   }
 
   /* 3 — Actualizar el pedido según el resultado */

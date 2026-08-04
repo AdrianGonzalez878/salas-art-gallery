@@ -17,6 +17,12 @@ export async function GET(request: Request) {
     pattern,
     skip: 0,
     end: PREVIEW_LIMIT,
+    etiqueta: '',
+    artistaSlug: '',
+    precioMin: 0,
+    precioMax: 0,
+    disponibilidad: 'disponibles',
+    soloDestacadas: false,
   })
 
   const results = productos.map((p) => {

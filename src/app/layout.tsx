@@ -8,6 +8,10 @@ import { CartProvider } from "@/context/CartContext";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getSiteUrl } from "@/lib/site";
+import { sanityFetch } from "@/lib/sanity";
+import { configuracionSitioQuery } from "@/sanity/lib/queries";
+import type { ConfiguracionSitio } from "@/sanity/lib/types";
+import { formatWhatsAppDisplay, telUrl, whatsappUrl } from "@/lib/whatsapp";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-display",
@@ -89,21 +93,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await sanityFetch<ConfiguracionSitio | null>(configuracionSitioQuery)
+  const numeroWhatsApp = config?.numeroWhatsApp
+  const contactWhatsappUrl = whatsappUrl(numeroWhatsApp)
+  const contactWhatsappDisplay = formatWhatsAppDisplay(numeroWhatsApp)
+  const contactPhoneTelUrl = telUrl(numeroWhatsApp)
+
   return (
     <html lang="es">
       <body
         className={`${cormorant.variable} ${dmSans.variable} antialiased`}
       >
         <CartProvider>
-          <ConditionalNavbar />
+          <ConditionalNavbar whatsappUrl={contactWhatsappUrl} />
           <main className="min-h-screen flex flex-col">
             <div className="flex-grow">{children}</div>
-            <ConditionalFooter />
+            <ConditionalFooter
+              whatsappUrl={contactWhatsappUrl}
+              whatsappDisplay={contactWhatsappDisplay}
+              phoneTelUrl={contactPhoneTelUrl}
+            />
           </main>
         </CartProvider>
         <MarketingPixels />

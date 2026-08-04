@@ -6,18 +6,18 @@ const BRAND_NAME = 'Salas Art Gallery'
 
 /** Mensaje completo para pegar (copiar, WhatsApp): más contexto que solo la URL */
 function buildFullShareMessage(productTitle: string, productUrl: string): string {
-  return `✨ ¡Mira esta joya en ${BRAND_NAME}!
+  return `Te comparto esta obra de ${BRAND_NAME}:
 
 "${productTitle}"
 
-🔗 ${productUrl}
+${productUrl}
 
-💍 Joyería en plata · Piezas únicas. ¡Te va a encantar!`
+Arte contemporáneo · Obras únicas`
 }
 
 /** Texto para X: la URL va en el parámetro aparte del intent */
 function buildTwitterShareText(productTitle: string): string {
-  return `✨ ${productTitle}\n\n¡Échale un ojo en ${BRAND_NAME}! 💎`
+  return `"${productTitle}"\n\nDescúbrela en ${BRAND_NAME}`
 }
 
 interface ProductShareButtonsProps {

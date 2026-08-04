@@ -24,6 +24,15 @@ export default function CheckoutClient() {
   const [couponError, setCouponError] = useState<string | null>(null)
   const [couponLoading, setCouponLoading] = useState(false)
 
+  const [colabInput, setColabInput] = useState('')
+  const [appliedColab, setAppliedColab] = useState<{
+    code: string
+    nombre: string
+    exposicionTitulo?: string | null
+  } | null>(null)
+  const [colabError, setColabError] = useState<string | null>(null)
+  const [colabLoading, setColabLoading] = useState(false)
+
   const envio = 0
   const descuento = appliedCoupon?.descuento ?? 0
   const total = Math.max(0, subtotal - descuento)
@@ -114,6 +123,47 @@ export default function CheckoutClient() {
     setCouponInput('')
   }
 
+  const handleApplyColab = async () => {
+    setColabError(null)
+    const code = colabInput.trim()
+    if (!code) return
+    setColabLoading(true)
+    try {
+      const res = await fetch('/api/codigos-colaboracion/validar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: code }),
+      })
+      const data = (await res.json()) as {
+        ok?: boolean
+        error?: string
+        codigo?: string
+        nombre?: string
+        exposicionTitulo?: string | null
+      }
+      if (!res.ok || !data.ok || !data.codigo || !data.nombre) {
+        setColabError(data.error || 'Código de colaboración no válido')
+        return
+      }
+      setAppliedColab({
+        code: data.codigo,
+        nombre: data.nombre,
+        exposicionTitulo: data.exposicionTitulo,
+      })
+      setColabInput('')
+    } catch {
+      setColabError('No se pudo validar el código. Intenta de nuevo.')
+    } finally {
+      setColabLoading(false)
+    }
+  }
+
+  const handleRemoveColab = () => {
+    setAppliedColab(null)
+    setColabError(null)
+    setColabInput('')
+  }
+
   const [form, setForm] = useState({
     nombre: '',
     email: '',
@@ -186,6 +236,7 @@ export default function CheckoutClient() {
         descuento,
         total,
         ...(appliedCoupon && { cupon: appliedCoupon.code }),
+        ...(appliedColab && { codigoColaboracion: appliedColab.code }),
         ...(form.notas && { notas: form.notas }),
       }),
     })
@@ -317,6 +368,12 @@ export default function CheckoutClient() {
                     <div className="flex justify-between text-green-700">
                       <span>Descuento ({appliedCoupon.code})</span>
                       <span>−${appliedCoupon.descuento.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {appliedColab && (
+                    <div className="flex justify-between text-violet-700">
+                      <span>Colaboración</span>
+                      <span className="font-medium">{appliedColab.code}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-base font-bold text-gray-900 pt-1">
@@ -573,7 +630,7 @@ export default function CheckoutClient() {
               </ul>
 
               {/* Cupón */}
-              <div className="border-t border-gray-100 pt-3 pb-3">
+              <div className="border-t border-gray-100 pt-3 pb-3 space-y-3">
                 {appliedCoupon ? (
                   <div className="flex items-center justify-between rounded-lg bg-green-50 border border-green-200 px-4 py-2.5">
                     <span className="text-sm font-medium text-green-800">
@@ -615,7 +672,70 @@ export default function CheckoutClient() {
                   </div>
                 )}
                 {couponError && (
-                  <p className="mt-2 text-xs text-red-600" role="alert">{couponError}</p>
+                  <p className="text-xs text-red-600" role="alert">{couponError}</p>
+                )}
+
+                {appliedColab ? (
+                  <div className="flex items-center justify-between rounded-lg bg-violet-50 border border-violet-200 px-4 py-2.5">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-violet-900">
+                        Colaboración {appliedColab.code}
+                      </p>
+                      <p className="text-xs text-violet-700 truncate">
+                        {appliedColab.nombre}
+                        {appliedColab.exposicionTitulo
+                          ? ` · ${appliedColab.exposicionTitulo}`
+                          : ''}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveColab}
+                      className="shrink-0 text-sm text-violet-700 hover:text-violet-900 underline cursor-pointer ml-3"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex gap-2">
+                      <label htmlFor="codigo-colaboracion" className="sr-only">
+                        Código de colaboración
+                      </label>
+                      <input
+                        id="codigo-colaboracion"
+                        type="text"
+                        value={colabInput}
+                        onChange={(e) => {
+                          setColabInput(e.target.value)
+                          setColabError(null)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            if (!colabLoading) void handleApplyColab()
+                          }
+                        }}
+                        disabled={colabLoading}
+                        placeholder="Código de colaboración"
+                        className="flex-1 min-w-0 rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 disabled:opacity-60"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => void handleApplyColab()}
+                        disabled={colabLoading}
+                        className="shrink-0 rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {colabLoading ? '…' : 'Aplicar'}
+                      </button>
+                    </div>
+                    <p className="mt-1.5 text-xs text-gray-500">
+                      Si compraste en una exposición, ingresa su código. No modifica el precio.
+                    </p>
+                  </div>
+                )}
+                {colabError && (
+                  <p className="text-xs text-red-600" role="alert">{colabError}</p>
                 )}
               </div>
 

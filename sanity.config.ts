@@ -11,7 +11,26 @@ export default defineConfig({
 
   basePath: '/studio',
 
-  plugins: [structureTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title('Contenido')
+          .items([
+            S.listItem()
+              .title('Configuración del sitio')
+              .id('configuracionSitio')
+              .child(
+                S.document()
+                  .schemaType('configuracionSitio')
+                  .documentId('configuracionSitio'),
+              ),
+            ...S.documentTypeListItems().filter(
+              (item) => item.getId() !== 'configuracionSitio',
+            ),
+          ]),
+    }),
+  ],
 
   schema: {
     types: schemaTypes,

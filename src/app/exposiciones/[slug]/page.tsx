@@ -135,6 +135,24 @@ export default async function ExposicionPage({ params }: PageProps) {
         </div>
       </section>
 
+      {exposicion.videoUrl && (
+        <section className="overflow-hidden border-b border-violet-900 bg-gradient-to-br from-gray-950 via-violet-950 to-gray-950 py-8 sm:py-14">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="overflow-hidden rounded-2xl border border-white/15 bg-black shadow-2xl shadow-black/40 sm:rounded-3xl">
+              <video
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-video max-h-[80svh] w-full bg-black object-contain"
+              >
+                <source src={exposicion.videoUrl} />
+                Tu navegador no admite la reproducción de video.
+              </video>
+            </div>
+          </div>
+        </section>
+      )}
+
       {exposicion.artistas && exposicion.artistas.length > 0 && (
         <section className="py-12 sm:py-14 border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

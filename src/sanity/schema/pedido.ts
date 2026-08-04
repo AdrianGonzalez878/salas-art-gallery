@@ -155,6 +155,25 @@ export default defineType({
       description: 'Vacío si no hubo cupón',
     }),
     defineField({
+      name: 'codigoColaboracion',
+      title: 'Código de colaboración',
+      type: 'string',
+      description:
+        'Código usado en checkout para saber qué exposición o colaborador vendió la obra. No afecta el precio.',
+    }),
+    defineField({
+      name: 'colaboracionNombre',
+      title: 'Nombre del colaborador / exposición',
+      type: 'string',
+      description: 'Etiqueta guardada al momento de la venta (histórico).',
+    }),
+    defineField({
+      name: 'exposicionColaboracionTitulo',
+      title: 'Exposición de colaboración',
+      type: 'string',
+      description: 'Título de la exposición vinculada al código, si existía.',
+    }),
+    defineField({
       name: 'total',
       title: 'Total',
       type: 'number',

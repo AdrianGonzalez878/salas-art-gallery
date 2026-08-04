@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import type { DisponibilidadFiltro } from '@/lib/productos-filtros'
 
 interface PaginationProps {
   paginaActual: number
@@ -8,6 +9,10 @@ interface PaginationProps {
   etiqueta?: string
   orden?: string
   q?: string
+  artista?: string
+  precioMin?: number
+  precioMax?: number
+  disponibilidad?: DisponibilidadFiltro
   /** Si se indica, los enlaces usan esta ruta (ej: /promociones) en lugar de /productos */
   basePath?: string
 }
@@ -18,6 +23,10 @@ export default function Pagination({
   etiqueta,
   orden,
   q,
+  artista,
+  precioMin,
+  precioMax,
+  disponibilidad,
   basePath = '/productos',
 }: PaginationProps) {
   if (totalPaginas <= 1) return null
@@ -26,13 +35,18 @@ export default function Pagination({
     const params = new URLSearchParams()
     if (q) params.set('q', q)
     if (etiqueta) params.set('etiqueta', etiqueta)
+    if (artista) params.set('artista', artista)
+    if (precioMin && precioMin > 0) params.set('precioMin', String(precioMin))
+    if (precioMax && precioMax > 0) params.set('precioMax', String(precioMax))
+    if (disponibilidad && disponibilidad !== 'disponibles') {
+      params.set('disponibilidad', disponibilidad)
+    }
     if (orden && orden !== 'recientes') params.set('orden', orden)
     params.set('page', String(page))
     return `${basePath}?${params.toString()}`
   }
 
   const paginas: (number | 'ellipsis')[] = []
-  const mostrarExtremos = 1
   const mostrarAlrededor = 2
 
   if (totalPaginas <= 7) {
@@ -58,7 +72,6 @@ export default function Pagination({
       className="flex items-center justify-center gap-2 mt-12"
       aria-label="Paginación de productos"
     >
-      {/* Anterior */}
       {paginaActual > 1 ? (
         <Link
           href={buildHref(paginaActual - 1)}
@@ -94,7 +107,6 @@ export default function Pagination({
         )}
       </div>
 
-      {/* Siguiente */}
       {paginaActual < totalPaginas ? (
         <Link
           href={buildHref(paginaActual + 1)}

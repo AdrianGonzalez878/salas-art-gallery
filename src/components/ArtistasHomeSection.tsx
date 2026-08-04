@@ -9,7 +9,7 @@ interface ArtistasHomeSectionProps {
 }
 
 export default function ArtistasHomeSection({ artistas }: ArtistasHomeSectionProps) {
-  const seleccion = artistas.slice(0, 4)
+  const seleccion = artistas.slice(0, 12)
 
   if (seleccion.length === 0) return null
 
@@ -35,7 +35,12 @@ export default function ArtistasHomeSection({ artistas }: ArtistasHomeSectionPro
               : null
 
             return (
-              <AnimateInView key={artista._id} delay={index * 0.06} y={16}>
+              <AnimateInView
+                key={artista._id}
+                delay={index * 0.06}
+                y={16}
+                className={index >= 4 ? 'hidden lg:block' : undefined}
+              >
                 <Link
                   href={`/artistas/${artista.slug.current}`}
                   className="group block overflow-hidden rounded-xl sm:rounded-2xl border border-gray-100 bg-gray-50 transition-all hover:border-violet-200 hover:shadow-md"

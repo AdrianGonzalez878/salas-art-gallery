@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sanityFetch, urlFor } from '@/lib/sanity'
-import { productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, seccionesDestacadasQuery, productosPorEtiquetaQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
-import type { Producto, Hero, SobreNosotros, SeccionDestacada, Exposicion, Artista } from '@/sanity/lib/types'
-import ProductCarousel from '@/components/ProductCarousel'
+import { productosMasNuevosQuery, heroQuery, sobreNosotrosQuery, exposicionesQuery, artistasQuery } from '@/sanity/lib/queries'
+import type { Producto, Hero, SobreNosotros, Exposicion, Artista } from '@/sanity/lib/types'
+import ProductGrid from '@/components/ProductGrid'
 import AboutSection from '@/components/AboutSection'
 import AnimateInView from '@/components/AnimateInView'
-import FeaturedCategorySection from '@/components/FeaturedCategorySection'
 import HeroCarousel from '@/components/HeroCarousel'
-import StarCategoryShortcuts from '@/components/StarCategoryShortcuts'
 import ExposicionesSection from '@/components/ExposicionesSection'
 import ArtistasHomeSection from '@/components/ArtistasHomeSection'
 import VisitaGaleriaForm from '@/components/VisitaGaleriaForm'
@@ -23,28 +21,18 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  // Obtener obras más nuevas, hero, artistas, sobre nosotros, secciones destacadas y exposiciones
-  const [productosMasNuevos, hero, sobreNosotros, seccionesDestacadas, exposiciones, artistas] = await Promise.all([
+  // Obtener obras más nuevas, hero, artistas, sobre nosotros y exposiciones
+  // (Secciones destacadas siguen en Sanity; por ahora no se muestran en home)
+  const [productosMasNuevos, hero, sobreNosotros, exposiciones, artistas] = await Promise.all([
     sanityFetch<Producto[]>(productosMasNuevosQuery),
     sanityFetch<Hero | null>(heroQuery),
     sanityFetch<SobreNosotros | null>(sobreNosotrosQuery),
-    sanityFetch<SeccionDestacada[]>(seccionesDestacadasQuery),
     sanityFetch<Exposicion[]>(exposicionesQuery),
     sanityFetch<Artista[]>(artistasQuery),
   ])
-  
-  // Para cada sección destacada, obtener sus productos
-  const seccionesConProductos = await Promise.all(
-    seccionesDestacadas.map(async (seccion) => {
-      const productos = await sanityFetch<Producto[]>(
-        productosPorEtiquetaQuery,
-        { etiqueta: seccion.etiqueta }
-      )
-      return { seccion, productos: productos.slice(0, 8) }
-    })
-  )
-  
-  const productosMasNuevosList = productosMasNuevos.slice(0, 8)
+
+  // 4 filas × 4 columnas en desktop
+  const productosMasNuevosList = productosMasNuevos.slice(0, 16)
 
   // Valores por defecto si no hay hero activo
   const heroData = hero || {
@@ -104,7 +92,7 @@ export default async function Home() {
     <div className="min-h-screen bg-white">
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden h-[78svh] bg-neutral-900">
+      <section className="relative overflow-hidden h-[84svh] sm:h-[88svh] bg-neutral-900">
         {hasHeroMedia ? (
           <HeroCarousel
             imagenes={imagenesCarrusel}
@@ -114,14 +102,14 @@ export default async function Home() {
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-neutral-900 to-black" aria-hidden />
         )}
-        <div className="relative z-30 h-full flex flex-col items-center justify-end md:justify-center px-4 sm:px-6 lg:px-8 pb-10 md:pb-0 text-center">
+        <div className="relative z-30 h-full flex flex-col items-center justify-end px-5 sm:px-6 lg:px-8 pb-16 sm:pb-20 md:justify-center md:pb-0 text-center">
           <div
-            className={`max-w-5xl mx-auto space-y-4 md:space-y-8 ${
+            className={`max-w-4xl mx-auto ${
               hasHeroVideo ? 'animate-hero-content-delayed' : ''
             }`}
           >
             <h1
-              className={`font-display text-[2rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] font-light text-white mb-3 md:mb-6 drop-shadow-lg sm:leading-[1.05] tracking-[0.04em] ${
+              className={`font-display text-[2.35rem] leading-[0.98] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5rem] font-light text-white tracking-[0.02em] ${
                 hasHeroVideo ? '' : 'animate-fadeIn'
               }`}
             >
@@ -129,7 +117,7 @@ export default async function Home() {
             </h1>
             {heroData.subtitulo && (
               <p
-                className={`font-sans text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-5 md:mb-8 max-w-3xl mx-auto drop-shadow-md font-light leading-relaxed tracking-wide ${
+                className={`mt-4 sm:mt-5 font-sans text-[0.95rem] sm:text-lg md:text-xl text-white/80 max-w-xl mx-auto font-light leading-relaxed ${
                   hasHeroVideo ? '' : 'animate-fadeInUp'
                 }`}
               >
@@ -137,20 +125,20 @@ export default async function Home() {
               </p>
             )}
             <div
-              className={`flex flex-row gap-2.5 sm:gap-4 justify-center ${
+              className={`mt-7 sm:mt-9 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center ${
                 hasHeroVideo ? '' : 'animate-fadeInUp'
               }`}
               style={hasHeroVideo ? undefined : { animationDelay: '0.3s', animationFillMode: 'both' }}
             >
               <Link
                 href={heroData.hrefBotonPrincipal || '/productos'}
-                className="inline-flex flex-1 sm:flex-initial items-center justify-center min-w-0 px-4 py-3.5 sm:px-10 sm:py-5 border border-transparent text-sm sm:text-lg font-semibold rounded-lg text-black bg-yellow-400 hover:bg-yellow-500 sm:hover:scale-105 transition-all shadow-2xl"
+                className="inline-flex items-center justify-center px-7 py-3.5 rounded-full bg-white text-sm font-semibold text-gray-900 hover:bg-violet-50 transition-colors"
               >
-                {heroData.textoBotonPrincipal || 'Ver Productos'}
+                {heroData.textoBotonPrincipal || 'Ver obras'}
               </Link>
               <Link
                 href={heroData.hrefBotonSecundario || '/galeria'}
-                className="inline-flex flex-1 sm:flex-initial items-center justify-center min-w-0 px-4 py-3.5 sm:px-10 sm:py-5 border-2 border-white text-sm sm:text-lg font-semibold rounded-lg text-white hover:bg-white/10 sm:hover:scale-105 transition-all shadow-2xl backdrop-blur-sm"
+                className="inline-flex items-center justify-center px-7 py-3.5 rounded-full border border-white/70 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
               >
                 {heroData.textoBotonSecundario || 'Agendar una visita'}
               </Link>
@@ -160,9 +148,6 @@ export default async function Home() {
       </section>
 
       <div className="lg:mx-auto lg:max-w-[1440px] lg:border-x lg:border-gray-100">
-        {/* ── Atajos a categorías estrella ─────────────────────── */}
-        <StarCategoryShortcuts />
-
         {/* ── Exposiciones ─────────────────────────────────────── */}
         {exposiciones.length > 0 && <ExposicionesSection exposiciones={exposiciones} />}
 
@@ -186,7 +171,7 @@ export default async function Home() {
                   Las últimas obras incorporadas a la colección.
                 </p>
               </div>
-              <ProductCarousel productos={productosMasNuevosList} />
+              <ProductGrid productos={productosMasNuevosList} mobileLimit={6} />
               <div className="mt-9 flex justify-center">
                 <Link
                   href="/productos"
@@ -205,49 +190,22 @@ export default async function Home() {
           <AboutSection data={sobreNosotros} />
         )}
 
-        {/* ── Secciones Destacadas ─────────────────────────────── */}
-        {seccionesConProductos.map(({ seccion, productos }, index) => (
-          <FeaturedCategorySection
-            key={seccion._id}
-            seccion={seccion}
-            productos={productos}
-            variant={index % 2 === 0 ? 'dark' : 'light'}
-          />
-        ))}
-
         {/* ── Agenda tu visita ─────────────────────────────────── */}
-        <AnimateInView as="section" className="relative isolate py-14 sm:py-20 bg-white">
-          <div
-            className="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-[#f7f6f8]"
-            aria-hidden
-          />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-9 lg:gap-14 items-start">
-              <div className="lg:col-span-2 pt-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-4">
-                  Visita con cita previa
-                </p>
-                <h2 className="font-display text-3xl sm:text-4xl font-light leading-[1.05] text-gray-900 mb-4">
-                  Conoce el lugar donde el arte sucede
-                </h2>
-                <p className="text-sm sm:text-base leading-relaxed text-gray-600 max-w-md">
-                  Agenda una visita para recorrer la galería, descubrir las obras en persona y recibir atención personalizada.
-                </p>
-                <ul className="mt-7 space-y-3 text-sm text-gray-600">
-                  <li className="flex gap-3">
-                    <span className="text-violet-600" aria-hidden>•</span>
-                    Horario confirmado directamente contigo
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-violet-600" aria-hidden>•</span>
-                    Grupos de hasta 12 personas
-                  </li>
-                </ul>
-              </div>
-
-              <div className="lg:col-span-3 rounded-2xl border border-violet-100 bg-white p-5 sm:p-8 shadow-sm">
-                <VisitaGaleriaForm />
-              </div>
+        <AnimateInView as="section" className="relative isolate py-14 sm:py-16 bg-[#f7f6f8]">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-7 sm:mb-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700 mb-3">
+                Visita con cita previa
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl font-light text-gray-900 leading-tight">
+                Agenda tu visita
+              </h2>
+              <p className="mt-3 text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
+                Recorre la galería en persona. Te confirmamos horario y detalles por correo.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-violet-100 bg-white p-5 sm:p-8 shadow-sm">
+              <VisitaGaleriaForm />
             </div>
           </div>
         </AnimateInView>

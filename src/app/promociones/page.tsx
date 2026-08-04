@@ -134,7 +134,7 @@ export default async function PromocionesPage({
                 {etiquetas.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-gray-100">
                     <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest text-center mb-3">
-                      Palabras clave
+                      Tipo
                     </p>
                     <div className="flex flex-wrap justify-center gap-2">
                       <Link

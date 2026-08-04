@@ -5,6 +5,7 @@ import { sanityFetch, urlFor } from '@/lib/sanity'
 import { artistasQuery, paginaArtistasQuery } from '@/sanity/lib/queries'
 import type { Artista, PaginaArtistas } from '@/sanity/lib/types'
 import AnimateInView from '@/components/AnimateInView'
+import ArtistasAlbum from '@/components/ArtistasAlbum'
 
 export const metadata: Metadata = {
   title: 'Artistas | Salas Art Gallery',
@@ -12,9 +13,6 @@ export const metadata: Metadata = {
     'Artistas colaboradores de Salas Art Gallery: un archivo vivo de creadores contemporáneos en exposiciones, proyectos y procesos dentro del espacio.',
   alternates: { canonical: '/artistas' },
 }
-
-const TEXTO_CIERRE_DEFAULT =
-  'Salas Art Gallery trabaja en colaboración con artistas contemporáneos, explorando de forma constante nuevas formas de diálogo, exhibición y adquisición de obra.'
 
 const TEXTO_CIERRE_SECUNDARIO_DEFAULT =
   'Programa una visita a nuestro espacio y descubre el lugar donde el arte sucede.'
@@ -25,11 +23,26 @@ export default async function ArtistasPage() {
     sanityFetch<PaginaArtistas | null>(paginaArtistasQuery),
   ])
 
-  const imagenCierreUrl = paginaArtistas?.imagenCierre?.asset
-    ? urlFor(paginaArtistas.imagenCierre).width(1500).height(900).quality(90).url()
-    : null
+  const albumFromSanity =
+    paginaArtistas?.album
+      ?.filter((img) => img?.asset)
+      .map((img, index) => ({
+        url: urlFor(img).width(1600).height(900).quality(90).url(),
+        alt: img.alt || `Salas Art Gallery ${index + 1}`,
+      })) ?? []
 
-  const textoCierre = paginaArtistas?.textoCierre?.trim() || TEXTO_CIERRE_DEFAULT
+  const albumFallback =
+    albumFromSanity.length === 0 && paginaArtistas?.imagenCierre?.asset
+      ? [
+          {
+            url: urlFor(paginaArtistas.imagenCierre).width(1600).height(900).quality(90).url(),
+            alt: paginaArtistas.imagenCierre.alt || 'Salas Art Gallery',
+          },
+        ]
+      : []
+
+  const album = albumFromSanity.length > 0 ? albumFromSanity : albumFallback
+
   const textoCierreSecundario =
     paginaArtistas?.textoCierreSecundario?.trim() || TEXTO_CIERRE_SECUNDARIO_DEFAULT
 
@@ -96,61 +109,39 @@ export default async function ArtistasPage() {
             </div>
           )}
 
-          <AnimateInView className="mt-12 sm:mt-16 pt-10 sm:pt-12 border-t border-gray-100" y={16}>
-            <div className="max-w-6xl mx-auto px-2">
-              <div
-                className={
-                  imagenCierreUrl
-                    ? 'grid grid-cols-1 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-6 lg:gap-10 items-center'
-                    : 'max-w-3xl mx-auto text-center'
-                }
-              >
-                {imagenCierreUrl ? (
-                  <div className="relative aspect-[5/3] w-full rounded-2xl overflow-hidden bg-gradient-to-br from-fuchsia-50 via-violet-50 to-sky-50 shadow-sm border border-gray-100">
-                    <Image
-                      src={imagenCierreUrl}
-                      alt={paginaArtistas?.imagenCierre?.alt || 'Salas Art Gallery — artistas colaboradores'}
-                      fill
-                      className="object-cover object-center"
-                      sizes="(max-width: 768px) 100vw, 55vw"
-                    />
-                  </div>
-                ) : null}
+          {album.length > 0 && (
+            <AnimateInView className="mt-12 sm:mt-16 pt-10 sm:pt-12 border-t border-gray-100" y={16}>
+              <div className="max-w-6xl mx-auto px-2">
+                <ArtistasAlbum imagenes={album} />
 
-                <div className={imagenCierreUrl ? 'text-center md:text-left' : ''}>
-                  <p className="font-display text-lg sm:text-xl md:text-2xl text-gray-800 leading-relaxed">
-                    {textoCierre}
-                  </p>
+                <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-gray-100 max-w-3xl mx-auto">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 sm:gap-8 md:gap-10 items-center">
+                    <div className="text-center md:text-left">
+                      <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                        {textoCierreSecundario}
+                      </p>
+                      <Link
+                        href="/galeria"
+                        className="inline-flex items-center justify-center mt-6 px-6 py-3 rounded-full border border-violet-200 bg-violet-50 text-sm font-semibold text-violet-900 hover:bg-violet-100 transition-colors"
+                      >
+                        Agendar visita
+                      </Link>
+                    </div>
+
+                    <AnimateInView delay={0.15} y={12} className="flex justify-end">
+                      <Image
+                        src="/logo.png"
+                        alt="Salas Art Gallery"
+                        width={280}
+                        height={100}
+                        className="h-20 sm:h-24 md:h-28 w-auto object-contain opacity-90"
+                      />
+                    </AnimateInView>
+                  </div>
                 </div>
               </div>
-
-              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-gray-100 max-w-3xl mx-auto">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 sm:gap-8 md:gap-10 items-center">
-                  <div className="text-center md:text-left">
-                    <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
-                      {textoCierreSecundario}
-                    </p>
-                    <Link
-                      href="/galeria"
-                      className="inline-flex items-center justify-center mt-6 px-6 py-3 rounded-full border border-violet-200 bg-violet-50 text-sm font-semibold text-violet-900 hover:bg-violet-100 transition-colors"
-                    >
-                      Agendar visita
-                    </Link>
-                  </div>
-
-                  <AnimateInView delay={0.15} y={12} className="flex justify-end">
-                    <Image
-                      src="/logo.png"
-                      alt="Salas Art Gallery"
-                      width={280}
-                      height={100}
-                      className="h-20 sm:h-24 md:h-28 w-auto object-contain opacity-90"
-                    />
-                  </AnimateInView>
-                </div>
-              </div>
-            </div>
-          </AnimateInView>
+            </AnimateInView>
+          )}
         </div>
       </section>
     </div>

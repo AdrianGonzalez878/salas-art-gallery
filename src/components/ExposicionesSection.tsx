@@ -18,31 +18,23 @@ export default function ExposicionesSection({ exposiciones }: ExposicionesSectio
   return (
     <AnimateInView as="section" className="py-16 sm:py-20 bg-[var(--background)] border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-0.5 bg-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
-                Agenda
-              </span>
-              <div className="w-8 h-0.5 bg-amber-400" />
-            </div>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-              Exposiciones
-            </h2>
-            <p className="text-gray-500 text-sm sm:text-base max-w-xl">
-              Presentamos nuestra colección en distintos espacios y ciudades
-            </p>
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-0.5 bg-amber-400" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
+              Agenda
+            </span>
+            <div className="w-8 h-0.5 bg-amber-400" />
           </div>
-          <Link
-            href="/exposiciones"
-            className="inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-violet-200 text-sm font-semibold text-violet-800 hover:bg-violet-50 transition-colors shrink-0"
-          >
-            Ver todas
-          </Link>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+            Exposiciones
+          </h2>
+          <p className="text-gray-500 text-sm sm:text-base max-w-xl">
+            Presentamos nuestra colección en distintos espacios y ciudades
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
           {destacadas.map((exposicion, index) => {
             const imagenUrl = exposicion.imagenPrincipal?.asset
               ? urlFor(exposicion.imagenPrincipal).width(900).height(675).quality(90).url()
@@ -53,6 +45,15 @@ export default function ExposicionesSection({ exposiciones }: ExposicionesSectio
               </AnimateInView>
             )
           })}
+        </div>
+
+        <div className="mt-9 flex justify-center">
+          <Link
+            href="/exposiciones"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-violet-200 text-sm font-semibold text-violet-800 hover:bg-violet-50 transition-colors"
+          >
+            Ver todas
+          </Link>
         </div>
       </div>
     </AnimateInView>

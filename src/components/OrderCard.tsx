@@ -40,6 +40,12 @@ export default function OrderCard({ pedido }: OrderCardProps) {
           </div>
           <p className="text-sm text-gray-600 truncate">{pedido.cliente.nombre}</p>
           <p className="text-xs text-gray-400 truncate">{pedido.cliente.email}</p>
+          {pedido.codigoColaboracion && (
+            <p className="mt-1.5 inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-800 ring-1 ring-violet-200">
+              Colab. {pedido.codigoColaboracion}
+              {pedido.colaboracionNombre ? ` · ${pedido.colaboracionNombre}` : ''}
+            </p>
+          )}
         </div>
         {imagenUrl ? (
           <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 ring-1 ring-gray-200">

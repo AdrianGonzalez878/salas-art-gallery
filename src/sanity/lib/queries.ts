@@ -221,157 +221,110 @@ export const productosRelacionadosQuery = groq`
   }
 `
 
-// Contar productos (todos o por categoría) para paginación
-export const productosCountQuery = groq`
-  count(*[_type == "producto" && disponible == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])])
+// Filtro compartido de catálogo:
+// $disponibilidad: "disponibles" | "vendidas" | "todas"
+// $etiqueta, $artistaSlug, $pattern (ej. "%term%")
+// $precioMin / $precioMax: 0 = sin límite
+// $soloDestacadas: true/false
+const productosFiltro = `
+  _type == "producto"
+  && (
+    $disponibilidad == "todas"
+    || ($disponibilidad == "vendidas" && disponible != true)
+    || ($disponibilidad != "todas" && $disponibilidad != "vendidas" && disponible == true)
+  )
+  && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])
+  && (!defined($artistaSlug) || $artistaSlug == "" || artista->slug.current == $artistaSlug)
+  && (!defined($precioMin) || $precioMin <= 0 || precio >= $precioMin)
+  && (!defined($precioMax) || $precioMax <= 0 || precio <= $precioMax)
+  && (
+    !defined($pattern) || $pattern == ""
+    || lower(titulo) match $pattern
+    || lower(artista->nombre) match $pattern
+  )
+  && ($soloDestacadas != true || destacada == true)
 `
 
-// Contar productos para orden "destacadas"
-export const productosCountDestacadosQuery = groq`
-  count(*[_type == "producto" && disponible == true && destacada == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])])
-`
-
-// Palabras clave usadas en obras disponibles (para filtros)
-export const etiquetasDisponiblesQuery = groq`
-  array::unique(*[_type == "producto" && disponible == true && defined(etiquetas) && count(etiquetas) > 0].etiquetas[])
-`
-
-// Búsqueda por texto (título o artista). $pattern debe ser ej. "%term%" en minúsculas
-export const productosBusquedaQuery = groq`
-  *[_type == "producto" && disponible == true && ((lower(titulo) match $pattern || lower(artista->nombre) match $pattern))] | order(_createdAt desc) [$skip...$end] {
+const productoCardProjection = `
+  _id,
+  titulo,
+  slug,
+  precio,
+  tieneDescuento,
+  tipoDescuento,
+  valorDescuento,
+  textoBadge,
+  fechaInicioDescuento,
+  fechaFinDescuento,
+  imagenPrincipal,
+  galeria,
+  etiquetas,
+  artista->{
     _id,
-    titulo,
+    nombre,
     slug,
-    precio,
-    tieneDescuento,
-    tipoDescuento,
-    valorDescuento,
-    textoBadge,
-    fechaInicioDescuento,
-    fechaFinDescuento,
-    imagenPrincipal,
-    galeria,
-    etiquetas,
-    artista->{
-      _id,
-      nombre,
-      slug,
-      foto,
-      resumen
-    },
-    disponible,
+    foto,
+    resumen
+  },
+  disponible,
+`
+
+// Contar productos con filtros
+export const productosCountQuery = groq`
+  count(*[${productosFiltro}])
+`
+
+// Alias: el conteo de destacadas usa el mismo filtro con $soloDestacadas
+export const productosCountDestacadosQuery = productosCountQuery
+
+// Tipos (etiquetas) usadas en el catálogo
+export const etiquetasDisponiblesQuery = groq`
+  array::unique(*[_type == "producto" && defined(etiquetas) && count(etiquetas) > 0].etiquetas[])
+`
+
+// Artistas con al menos una obra (para filtro)
+export const artistasFiltroQuery = groq`
+  *[_type == "artista" && activo != false && count(*[_type == "producto" && artista._ref == ^._id]) > 0] | order(nombre asc) {
+    _id,
+    nombre,
+    "slug": slug.current
   }
 `
 
-export const productosCountBusquedaQuery = groq`
-  count(*[_type == "producto" && disponible == true && ((lower(titulo) match $pattern || lower(artista->nombre) match $pattern))])
+// Búsqueda unificada (usa mismos filtros; orden recientes)
+export const productosBusquedaQuery = groq`
+  *[${productosFiltro}] | order(_createdAt desc) [$skip...$end] {
+    ${productoCardProjection}
+  }
 `
+
+export const productosCountBusquedaQuery = productosCountQuery
 
 // Productos paginados - Más recientes
 export const productosPaginadosRecientesQuery = groq`
-  *[_type == "producto" && disponible == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])] | order(_createdAt desc) [$skip...$end] {
-    _id,
-    titulo,
-    slug,
-    precio,
-    tieneDescuento,
-    tipoDescuento,
-    valorDescuento,
-    textoBadge,
-    fechaInicioDescuento,
-    fechaFinDescuento,
-    imagenPrincipal,
-    galeria,
-    etiquetas,
-    artista->{
-      _id,
-      nombre,
-      slug,
-      foto,
-      resumen
-    },
-    disponible,
+  *[${productosFiltro}] | order(_createdAt desc) [$skip...$end] {
+    ${productoCardProjection}
   }
 `
 
 // Productos paginados - Precio menor a mayor
 export const productosPaginadosPrecioAscQuery = groq`
-  *[_type == "producto" && disponible == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])] | order(precio asc) [$skip...$end] {
-    _id,
-    titulo,
-    slug,
-    precio,
-    tieneDescuento,
-    tipoDescuento,
-    valorDescuento,
-    textoBadge,
-    fechaInicioDescuento,
-    fechaFinDescuento,
-    imagenPrincipal,
-    galeria,
-    etiquetas,
-    artista->{
-      _id,
-      nombre,
-      slug,
-      foto,
-      resumen
-    },
-    disponible,
+  *[${productosFiltro}] | order(precio asc) [$skip...$end] {
+    ${productoCardProjection}
   }
 `
 
 // Productos paginados - Precio mayor a menor
 export const productosPaginadosPrecioDescQuery = groq`
-  *[_type == "producto" && disponible == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])] | order(precio desc) [$skip...$end] {
-    _id,
-    titulo,
-    slug,
-    precio,
-    tieneDescuento,
-    tipoDescuento,
-    valorDescuento,
-    textoBadge,
-    fechaInicioDescuento,
-    fechaFinDescuento,
-    imagenPrincipal,
-    galeria,
-    etiquetas,
-    artista->{
-      _id,
-      nombre,
-      slug,
-      foto,
-      resumen
-    },
-    disponible,
+  *[${productosFiltro}] | order(precio desc) [$skip...$end] {
+    ${productoCardProjection}
   }
 `
 
 // Productos paginados - Destacadas
 export const productosPaginadosDestacadosQuery = groq`
-  *[_type == "producto" && disponible == true && destacada == true && (!defined($etiqueta) || $etiqueta == "" || $etiqueta in etiquetas[])] | order(_createdAt desc) [$skip...$end] {
-    _id,
-    titulo,
-    slug,
-    precio,
-    tieneDescuento,
-    tipoDescuento,
-    valorDescuento,
-    textoBadge,
-    fechaInicioDescuento,
-    fechaFinDescuento,
-    imagenPrincipal,
-    galeria,
-    etiquetas,
-    artista->{
-      _id,
-      nombre,
-      slug,
-      foto,
-      resumen
-    },
-    disponible,
+  *[${productosFiltro}] | order(_createdAt desc) [$skip...$end] {
+    ${productoCardProjection}
   }
 `
 
@@ -394,6 +347,11 @@ export const pedidosQuery = groq`
     },
     subtotal,
     envio,
+    descuentoCupon,
+    cuponCodigo,
+    codigoColaboracion,
+    colaboracionNombre,
+    exposicionColaboracionTitulo,
     total,
     estado,
     metodoPago,
@@ -422,6 +380,11 @@ export const pedidoPorIdQuery = groq`
     },
     subtotal,
     envio,
+    descuentoCupon,
+    cuponCodigo,
+    codigoColaboracion,
+    colaboracionNombre,
+    exposicionColaboracionTitulo,
     total,
     estado,
     metodoPago,
@@ -450,6 +413,11 @@ export const pedidosPorEstadoQuery = groq`
     },
     subtotal,
     envio,
+    descuentoCupon,
+    cuponCodigo,
+    codigoColaboracion,
+    colaboracionNombre,
+    exposicionColaboracionTitulo,
     total,
     estado,
     metodoPago,
@@ -527,9 +495,12 @@ export const sobreNosotrosQuery = groq`
     estadisticas[] {
       numero,
       etiqueta
-    },
-    mostrarBotonWhatsApp,
-    textoBotonWhatsApp,
+    }
+  }
+`
+
+export const configuracionSitioQuery = groq`
+  *[_type == "configuracionSitio"][0] {
     numeroWhatsApp
   }
 `
@@ -606,6 +577,22 @@ export const cuponesActivosQuery = groq`
   }
 `
 
+/** Códigos de colaboración activos (atribución de venta a exposición / colaborador) */
+export const codigosColaboracionActivosQuery = groq`
+  *[_type == "codigoColaboracion" && activo == true] {
+    _id,
+    codigo,
+    nombre,
+    activo,
+    notas,
+    exposicion->{
+      _id,
+      titulo,
+      slug
+    }
+  }
+`
+
 // Primer producto disponible que coincida con un término (para atajos de categoría en home)
 export const productoImagenPorTerminoQuery = groq`
   *[_type == "producto" && disponible == true && (
@@ -633,11 +620,14 @@ export const artistasQuery = groq`
 
 export const paginaArtistasQuery = groq`
   *[_type == "paginaArtistas" && activo == true][0] {
+    album[] {
+      asset,
+      alt
+    },
     imagenCierre {
       asset,
       alt
     },
-    textoCierre,
     textoCierreSecundario
   }
 `
@@ -710,6 +700,7 @@ export const exposicionPorSlugQuery = groq`
     resumen,
     imagenPrincipal,
     galeria,
+    "videoUrl": video.asset->url,
     fechaInicio,
     fechaFin,
     ubicacion,

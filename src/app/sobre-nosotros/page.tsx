@@ -73,16 +73,31 @@ export default async function SobreNosotrosPage() {
       {data?.estadisticas && data.estadisticas.length > 0 && (
         <AnimateInView as="section" className="border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
-              {data.estadisticas.map((stat, idx) => (
-                <div key={idx} className="py-8 px-6 text-center">
-                  <p className="font-display text-3xl sm:text-4xl font-light text-violet-950 mb-1">
-                    {stat.numero}
-                  </p>
-                  <p className="text-sm text-gray-500">{stat.etiqueta}</p>
-                </div>
-              ))}
-            </div>
+            {data.estadisticas.length === 1 ? (
+              <div className="py-10 sm:py-12 text-center">
+                <p className="font-display text-5xl sm:text-6xl font-light text-violet-950 leading-none">
+                  {data.estadisticas[0].numero}
+                </p>
+              </div>
+            ) : (
+              <div
+                className={`grid divide-x divide-gray-100 ${
+                  data.estadisticas.length === 2
+                    ? 'grid-cols-2'
+                    : data.estadisticas.length === 3
+                      ? 'grid-cols-1 sm:grid-cols-3'
+                      : 'grid-cols-2 md:grid-cols-4'
+                }`}
+              >
+                {data.estadisticas.map((stat, idx) => (
+                  <div key={idx} className="py-8 px-6 text-center">
+                    <p className="font-display text-3xl sm:text-4xl font-light text-violet-950">
+                      {stat.numero}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </AnimateInView>
       )}

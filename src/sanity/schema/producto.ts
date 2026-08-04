@@ -149,11 +149,11 @@ export default defineType({
     }),
     defineField({
       name: 'etiquetas',
-      title: 'Palabras clave',
+      title: 'Tipo',
       type: 'array',
       of: [{ type: 'string' }],
       description:
-        'Palabras clave libres para filtrar en la tienda. Ej: Óleo, Paisaje, Abstracto, Pequeño formato',
+        'Tipos o técnicas para filtrar en la tienda. Ej: Óleo, Paisaje, Abstracto, Pequeño formato',
       options: {
         layout: 'tags',
       },
