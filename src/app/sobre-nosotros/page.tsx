@@ -8,7 +8,7 @@ import GaleriaCarousel from '@/components/GaleriaCarousel'
 import AnimateInView from '@/components/AnimateInView'
 
 export const metadata: Metadata = {
-  title: 'Nuestra Historia | Salas Art Gallery',
+  title: 'Nuestra Historia',
   description:
     'Conoce la historia de Salas Art Gallery: una galería dedicada al arte contemporáneo, con obras de artistas seleccionados en pintura, escultura y fotografía.',
   keywords: [

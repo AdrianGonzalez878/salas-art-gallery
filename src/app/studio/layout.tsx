@@ -1,8 +1,10 @@
 import StudioLogoutButton from '@/components/StudioLogoutButton'
 
 export const metadata = {
-  title: 'Sanity Studio - Tienda de Joyería',
-  description: 'Gestiona los productos de tu tienda',
+  title: {
+    absolute: 'Sanity Studio | Salas Art Gallery',
+  },
+  description: 'Gestiona el contenido de Salas Art Gallery',
   robots: { index: false, follow: false },
 }
 

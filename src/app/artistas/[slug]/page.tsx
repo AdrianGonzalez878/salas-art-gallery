@@ -20,9 +20,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const artista = await sanityFetch<Artista | null>(artistaPorSlugQuery, { slug })
   if (!artista) return { title: 'Artista no encontrado' }
+
+  const ogImage = artista.foto?.asset
+    ? urlFor(artista.foto).width(1200).height(630).url()
+    : '/logo.png'
+
   return {
-    title: `${artista.nombre} | Salas Art Gallery`,
+    title: artista.nombre,
     description: artista.resumen || `Obras de ${artista.nombre} en Salas Art Gallery.`,
+    openGraph: {
+      title: artista.nombre,
+      description: artista.resumen || `Obras de ${artista.nombre} en Salas Art Gallery.`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: artista.nombre }],
+      type: 'website',
+      url: `/artistas/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: artista.nombre,
+      description: artista.resumen || `Obras de ${artista.nombre} en Salas Art Gallery.`,
+      images: [ogImage],
+    },
     alternates: { canonical: `/artistas/${slug}` },
   }
 }

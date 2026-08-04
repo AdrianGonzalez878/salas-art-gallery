@@ -23,7 +23,7 @@ import {
 } from '@/lib/productos-filtros'
 
 export const metadata: Metadata = {
-  title: 'Obras | Salas Art Gallery',
+  title: 'Obras',
   description:
     'Explora el catálogo de Salas Art Gallery: obras de arte contemporáneo filtradas por tipo, artista y precio.',
   keywords: [

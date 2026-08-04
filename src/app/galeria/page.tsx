@@ -3,7 +3,7 @@ import AnimateInView from '@/components/AnimateInView'
 import VisitaGaleriaForm from '@/components/VisitaGaleriaForm'
 
 export const metadata: Metadata = {
-  title: 'Visita la galería | Salas Art Gallery',
+  title: 'Visita la galería',
   description:
     'Programa una visita privada a Salas Art Gallery. Nuestro espacio físico atiende con cita previa para una experiencia personalizada.',
   alternates: {

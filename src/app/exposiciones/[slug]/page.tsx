@@ -22,9 +22,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const exposicion = await sanityFetch<Exposicion | null>(exposicionPorSlugQuery, { slug })
   if (!exposicion) return { title: 'Exposición no encontrada' }
+
+  const description =
+    exposicion.resumen || `Exposición ${exposicion.titulo} de Salas Art Gallery.`
+  const ogImage = exposicion.imagenPrincipal?.asset
+    ? urlFor(exposicion.imagenPrincipal).width(1200).height(630).url()
+    : '/logo.png'
+
   return {
-    title: `${exposicion.titulo} | Exposiciones | Salas Art Gallery`,
-    description: exposicion.resumen || `Exposición ${exposicion.titulo} de Salas Art Gallery.`,
+    title: exposicion.titulo,
+    description,
+    openGraph: {
+      title: exposicion.titulo,
+      description,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: exposicion.titulo }],
+      type: 'website',
+      url: `/exposiciones/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: exposicion.titulo,
+      description,
+      images: [ogImage],
+    },
     alternates: { canonical: `/exposiciones/${slug}` },
   }
 }

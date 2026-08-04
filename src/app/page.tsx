@@ -12,7 +12,9 @@ import ArtistasHomeSection from '@/components/ArtistasHomeSection'
 import VisitaGaleriaForm from '@/components/VisitaGaleriaForm'
 
 export const metadata: Metadata = {
-  title: 'Salas Art Gallery | Galería de arte contemporáneo',
+  title: {
+    absolute: 'Salas Art Gallery | Galería de arte contemporáneo',
+  },
   description:
     'Descubre obras de arte contemporáneo en Salas Art Gallery: pintura, escultura y fotografía de artistas seleccionados. Compra piezas únicas en línea.',
   alternates: {

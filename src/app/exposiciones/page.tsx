@@ -7,7 +7,7 @@ import AnimateInView from '@/components/AnimateInView'
 import ExposicionCard from '@/components/ExposicionCard'
 
 export const metadata: Metadata = {
-  title: 'Exposiciones | Salas Art Gallery',
+  title: 'Exposiciones',
   description:
     'Exposiciones de Salas Art Gallery en distintos espacios y ciudades. Consulta fechas, ubicaciones y artistas participantes.',
   alternates: { canonical: '/exposiciones' },

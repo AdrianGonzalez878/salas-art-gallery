@@ -5,8 +5,9 @@ import type { ConfiguracionSitio } from '@/sanity/lib/types'
 import { formatWhatsAppDisplay, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata = {
-  title: 'Términos y condiciones | Salas Art Gallery',
+  title: 'Términos y condiciones',
   description: 'Términos y condiciones de uso de la tienda Salas Art Gallery.',
+  alternates: { canonical: '/terminos' },
 }
 
 export default async function TerminosPage() {

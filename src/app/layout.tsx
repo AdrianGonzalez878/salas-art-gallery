@@ -88,9 +88,6 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
-  alternates: {
-    canonical: siteUrl,
-  },
 };
 
 export default async function RootLayout({
@@ -104,11 +101,51 @@ export default async function RootLayout({
   const contactWhatsappDisplay = formatWhatsAppDisplay(numeroWhatsApp)
   const contactPhoneTelUrl = telUrl(numeroWhatsApp)
 
+  const orgJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': ['Organization', 'ArtGallery'],
+        '@id': `${siteUrl}/#organization`,
+        name: 'Salas Art Gallery',
+        url: siteUrl,
+        logo: `${siteUrl}/logo.png`,
+        sameAs: ['https://www.instagram.com/salasartgalleryoaxaca'],
+        telephone: contactPhoneTelUrl.replace('tel:', '') || undefined,
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'customer service',
+          url: contactWhatsappUrl,
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${siteUrl}/#website`,
+        url: siteUrl,
+        name: 'Salas Art Gallery',
+        publisher: { '@id': `${siteUrl}/#organization` },
+        inLanguage: 'es-MX',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${siteUrl}/productos?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  }
+
   return (
     <html lang="es">
       <body
         className={`${cormorant.variable} ${dmSans.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
         <CartProvider>
           <ConditionalNavbar whatsappUrl={contactWhatsappUrl} />
           <main className="min-h-screen flex flex-col">

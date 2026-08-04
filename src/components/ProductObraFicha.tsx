@@ -43,9 +43,10 @@ export default function ProductObraFicha({
 
   return (
     <div className="sm:rounded-xl sm:border sm:border-gray-100 sm:bg-[var(--background)] sm:px-6 sm:py-6">
+      <h1 className="font-display text-2xl sm:text-3xl font-medium text-gray-900 leading-tight mb-4 sm:mb-5">
+        {producto.titulo}
+      </h1>
       <dl className="space-y-2 sm:space-y-3.5">
-        <FichaRow label="Título">{producto.titulo}</FichaRow>
-
         {producto.artista?.nombre && (
           <FichaRow label="Artista">
             {producto.artista.slug?.current ? (

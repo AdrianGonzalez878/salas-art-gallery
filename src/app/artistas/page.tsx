@@ -8,7 +8,7 @@ import AnimateInView from '@/components/AnimateInView'
 import ArtistasAlbum from '@/components/ArtistasAlbum'
 
 export const metadata: Metadata = {
-  title: 'Artistas | Salas Art Gallery',
+  title: 'Artistas',
   description:
     'Artistas colaboradores de Salas Art Gallery: un archivo vivo de creadores contemporáneos en exposiciones, proyectos y procesos dentro del espacio.',
   alternates: { canonical: '/artistas' },

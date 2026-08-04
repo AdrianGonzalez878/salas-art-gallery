@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/lib/sanity'
 import { productoPorSlugQuery, productoMetadataQuery, productosRelacionadosQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/lib/sanity'
 import { descuentoVigente, calcularPrecioFinal } from '@/lib/descuento'
+import { getSiteUrl } from '@/lib/site'
 import type { Producto } from '@/sanity/lib/types'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import ProductBuyOptions from '@/components/ProductBuyOptions'
@@ -61,8 +61,10 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
 
   const etiquetas = (producto.etiquetas ?? []).filter(Boolean)
 
+  const titleBase = `${producto.titulo}${producto.artista?.nombre ? ` — ${producto.artista.nombre}` : ''}`
+
   return {
-    title: `${producto.titulo}${producto.artista?.nombre ? ` — ${producto.artista.nombre}` : ''} | Salas Art Gallery`,
+    title: titleBase,
     description: descripcionPlain,
     keywords: [
       producto.titulo,
@@ -73,10 +75,17 @@ export async function generateMetadata({ params }: ProductoPageProps): Promise<M
       'obra de arte',
     ].filter(Boolean) as string[],
     openGraph: {
-      title: `${producto.titulo} — $${precioFinal.toLocaleString()} | Salas Art Gallery`,
+      title: `${producto.titulo} — $${precioFinal.toLocaleString('es-MX')}`,
       description: descripcionPlain,
       images: [{ url: ogImage, width: 1200, height: 630, alt: producto.titulo }],
       type: 'website',
+      url: `/productos/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: titleBase,
+      description: descripcionPlain,
+      images: [ogImage],
     },
     alternates: {
       canonical: `/productos/${slug}`,
@@ -90,14 +99,11 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
     slug,
   })
 
-  const headersList = await headers()
-  const host = headersList.get('host') ?? ''
-  const protocol = headersList.get('x-forwarded-proto') ?? 'http'
-  const productUrl = host ? `${protocol}://${host}/productos/${slug}` : ''
-
   if (!producto || !producto.disponible) {
     notFound()
   }
+
+  const productUrl = `${getSiteUrl()}/productos/${slug}`
 
   const relacionados = await sanityFetch<Producto[]>(productosRelacionadosQuery, {
     etiquetas: producto.etiquetas ?? [],
@@ -141,7 +147,7 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
     brand: { '@type': 'Brand', name: 'Salas Art Gallery' },
     offers: {
       '@type': 'Offer',
-      url: productUrl || `https://salasartgallery.com/productos/${producto.slug.current}`,
+      url: productUrl,
       priceCurrency: 'MXN',
       price: precioFinal,
       availability: disponibilidadSchema,
@@ -202,11 +208,9 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
                 />
               </AnimateInView>
 
-              {productUrl ? (
-                <AnimateInView delay={0.2} y={16}>
-                  <ProductShareButtons title={producto.titulo} url={productUrl} />
-                </AnimateInView>
-              ) : null}
+              <AnimateInView delay={0.2} y={16}>
+                <ProductShareButtons title={producto.titulo} url={productUrl} />
+              </AnimateInView>
             </div>
           </div>
         </div>

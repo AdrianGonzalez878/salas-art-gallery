@@ -5,8 +5,9 @@ import type { ConfiguracionSitio } from '@/sanity/lib/types'
 import { formatWhatsAppDisplay, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata = {
-  title: 'Aviso de privacidad | Salas Art Gallery',
-  description: 'Aviso de privacidad y protección de datos personales.',
+  title: 'Aviso de privacidad',
+  description: 'Aviso de privacidad y protección de datos personales de Salas Art Gallery.',
+  alternates: { canonical: '/aviso-de-privacidad' },
 }
 
 export default async function AvisoPrivacidadPage() {
