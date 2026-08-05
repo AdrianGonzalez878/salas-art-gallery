@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 
-interface SearchPreviewItem {
+interface SearchObraItem {
   _id: string
   titulo: string
   slug: string
@@ -14,7 +14,23 @@ interface SearchPreviewItem {
   precioFinal: number
   tieneDescuento?: boolean
   imagenUrl: string | null
+  artistaNombre?: string | null
 }
+
+interface SearchArtistaItem {
+  _id: string
+  nombre: string
+  slug: string
+  resumen?: string | null
+  imagenUrl: string | null
+}
+
+interface SearchResults {
+  obras: SearchObraItem[]
+  artistas: SearchArtistaItem[]
+}
+
+const emptySearchResults: SearchResults = { obras: [], artistas: [] }
 
 /** Desktop — estilo editorial galería (Salas) */
 function navLinkClass(active: boolean) {
@@ -66,7 +82,7 @@ export default function Navbar() {
   const [isDesktopTiendaOpen, setIsDesktopTiendaOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<SearchPreviewItem[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResults>(emptySearchResults)
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   /** Escritorio: solo ícono de lupa hasta que el usuario abre el campo */
@@ -100,7 +116,7 @@ export default function Navbar() {
   useEffect(() => {
     const q = searchQuery.trim()
     if (q.length < 2) {
-      setSearchResults([])
+      setSearchResults(emptySearchResults)
       setSearchOpen(false)
       return
     }
@@ -109,12 +125,33 @@ export default function Navbar() {
       setSearchLoading(true)
       fetch(`/api/search?q=${encodeURIComponent(q)}`)
         .then((res) => res.json())
-        .then((data) => setSearchResults(Array.isArray(data) ? data : []))
-        .catch(() => setSearchResults([]))
+        .then((data) =>
+          setSearchResults({
+            obras: Array.isArray(data?.obras) ? data.obras : [],
+            artistas: Array.isArray(data?.artistas) ? data.artistas : [],
+          })
+        )
+        .catch(() => setSearchResults(emptySearchResults))
         .finally(() => setSearchLoading(false))
     }, 300)
     return () => clearTimeout(t)
   }, [searchQuery])
+
+  const hasSearchHits =
+    searchResults.obras.length > 0 || searchResults.artistas.length > 0
+
+  const closeSearch = () => {
+    setSearchOpen(false)
+    setSearchQuery('')
+    setDesktopSearchExpanded(false)
+  }
+
+  const closeMobileSearch = () => {
+    setSearchOpen(false)
+    setSearchQuery('')
+    setIsSearchOpen(false)
+    setIsMenuOpen(false)
+  }
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -383,7 +420,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:text-violet-700 hover:border-violet-200 hover:bg-violet-50/50 transition-all duration-200"
-                      aria-label="Buscar obras"
+                      aria-label="Buscar obras o artistas"
                       aria-expanded={false}
                       onClick={() => {
                         setDesktopSearchExpanded(true)
@@ -396,7 +433,7 @@ export default function Navbar() {
                     </button>
                   ) : (
                     <form onSubmit={handleSearch}>
-                      <label htmlFor="nav-search" className="sr-only">Buscar obras</label>
+                      <label htmlFor="nav-search" className="sr-only">Buscar obras o artistas</label>
                       <div className="relative min-w-0">
                         <input
                           ref={desktopSearchInputRef}
@@ -414,9 +451,9 @@ export default function Navbar() {
                               }
                             }
                           }}
-                          placeholder="Buscar obras..."
+                          placeholder="Buscar obras o artistas..."
                           className="w-full min-w-0 rounded-full border border-neutral-200 bg-white py-2 pl-4 pr-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-300/50"
-                          aria-label="Buscar obras"
+                          aria-label="Buscar obras o artistas"
                           autoComplete="off"
                         />
                         <button
@@ -432,60 +469,89 @@ export default function Navbar() {
                     </form>
                   )}
                   {searchOpen && searchQuery.trim().length >= 2 && (
-                    <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border border-neutral-200/80 bg-white shadow-xl z-50 max-h-[min(80vh,400px)] overflow-y-auto">
+                    <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border border-neutral-200/80 bg-white shadow-xl z-50 max-h-[min(80vh,420px)] overflow-y-auto">
                       {searchLoading ? (
                         <div className="p-4 text-center text-sm text-neutral-500">Buscando...</div>
-                      ) : searchResults.length === 0 ? (
+                      ) : !hasSearchHits ? (
                         <div className="p-4 text-center text-sm text-neutral-500">No hay resultados</div>
                       ) : (
                         <>
-                          <ul className="py-1">
-                            {searchResults.map((item) => (
-                              <li key={item._id}>
-                                <Link
-                                  href={`/productos/${item.slug}`}
-                                  onClick={() => {
-                                    setSearchOpen(false)
-                                    setSearchQuery('')
-                                    setDesktopSearchExpanded(false)
-                                  }}
-                                  className="flex gap-3 px-3 py-2.5 hover:bg-violet-50/80 transition-colors duration-200"
-                                >
-                                  <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
-                                    {item.imagenUrl ? (
-                                      <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
-                                    )}
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
-                                    <p className="text-sm text-neutral-600">
-                                      {item.tieneDescuento ? (
-                                        <>
-                                          <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
-                                          {' '}
-                                          <span className="font-semibold text-neutral-900">${item.precioFinal.toLocaleString()}</span>
-                                        </>
-                                      ) : (
-                                        <span className="font-semibold text-neutral-900">${item.precio.toLocaleString()}</span>
-                                      )}
-                                    </p>
-                                  </div>
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                          {searchResults.artistas.length > 0 && (
+                            <div>
+                              <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                                Artistas
+                              </p>
+                              <ul className="pb-1">
+                                {searchResults.artistas.map((item) => (
+                                  <li key={item._id}>
+                                    <Link
+                                      href={`/artistas/${item.slug}`}
+                                      onClick={closeSearch}
+                                      className="flex gap-3 px-3 py-2.5 hover:bg-violet-50/80 transition-colors duration-200"
+                                    >
+                                      <div className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-neutral-100">
+                                        {item.imagenUrl ? (
+                                          <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
+                                        )}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-neutral-900 line-clamp-1">{item.nombre}</p>
+                                        <p className="text-xs text-neutral-500">Artista</p>
+                                      </div>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {searchResults.obras.length > 0 && (
+                            <div>
+                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                                Obras
+                              </p>
+                              <ul className="pb-1">
+                                {searchResults.obras.map((item) => (
+                                  <li key={item._id}>
+                                    <Link
+                                      href={`/productos/${item.slug}`}
+                                      onClick={closeSearch}
+                                      className="flex gap-3 px-3 py-2.5 hover:bg-violet-50/80 transition-colors duration-200"
+                                    >
+                                      <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
+                                        {item.imagenUrl ? (
+                                          <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
+                                        )}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
+                                        <p className="text-sm text-neutral-600">
+                                          {item.tieneDescuento ? (
+                                            <>
+                                              <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
+                                              {' '}
+                                              <span className="font-semibold text-neutral-900">${item.precioFinal.toLocaleString()}</span>
+                                            </>
+                                          ) : (
+                                            <span className="font-semibold text-neutral-900">${item.precio.toLocaleString()}</span>
+                                          )}
+                                        </p>
+                                      </div>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                           <Link
                             href={`/productos?q=${encodeURIComponent(searchQuery.trim())}`}
-                            onClick={() => {
-                              setSearchOpen(false)
-                              setSearchQuery('')
-                              setDesktopSearchExpanded(false)
-                            }}
+                            onClick={closeSearch}
                             className="block border-t border-neutral-100 px-3 py-3 text-center text-sm font-medium text-violet-800 hover:bg-violet-50 transition-colors duration-200"
                           >
-                            Ver todos los resultados
+                            Ver todas las obras
                           </Link>
                         </>
                       )}
@@ -768,16 +834,16 @@ export default function Navbar() {
                       Buscar
                     </button>
                     <form onSubmit={handleSearch} className="shrink-0">
-                      <label htmlFor="nav-search-mobile" className="sr-only">Buscar obras</label>
+                      <label htmlFor="nav-search-mobile" className="sr-only">Buscar obras o artistas</label>
                       <div className="relative">
                         <input
                           id="nav-search-mobile"
                           type="search"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Buscar obras..."
+                          placeholder="Buscar obras o artistas..."
                           className="w-full rounded-full border border-neutral-200 bg-neutral-50 py-3 pl-4 pr-12 text-base text-neutral-900 placeholder-neutral-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-300/50 focus:bg-white"
-                          aria-label="Buscar obras"
+                          aria-label="Buscar obras o artistas"
                           autoComplete="off"
                         />
                         <button
@@ -796,49 +862,86 @@ export default function Navbar() {
                         <div className="rounded-xl border border-neutral-200 bg-white overflow-hidden">
                           {searchLoading ? (
                             <div className="p-4 text-center text-sm text-neutral-500">Buscando...</div>
-                          ) : searchResults.length === 0 ? (
+                          ) : !hasSearchHits ? (
                             <div className="p-4 text-center text-sm text-neutral-500">No hay resultados</div>
                           ) : (
                             <>
-                              <ul className="py-1">
-                                {searchResults.map((item) => (
-                                  <li key={item._id}>
-                                    <Link
-                                      href={`/productos/${item.slug}`}
-                                      onClick={() => { setSearchOpen(false); setSearchQuery(''); setIsSearchOpen(false); setIsMenuOpen(false) }}
-                                      className="flex gap-3 px-3 py-3 active:bg-violet-50/80 transition-colors border-b border-neutral-100 last:border-0"
-                                    >
-                                      <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
-                                        {item.imagenUrl ? (
-                                          <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
-                                        ) : (
-                                          <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
-                                        )}
-                                      </div>
-                                      <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
-                                        <p className="text-sm text-neutral-600">
-                                          {item.tieneDescuento ? (
-                                            <>
-                                              <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
-                                              {' '}
-                                              <span className="font-semibold">${item.precioFinal.toLocaleString()}</span>
-                                            </>
-                                          ) : (
-                                            <span className="font-semibold">${item.precio.toLocaleString()}</span>
-                                          )}
-                                        </p>
-                                      </div>
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
+                              {searchResults.artistas.length > 0 && (
+                                <div>
+                                  <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                                    Artistas
+                                  </p>
+                                  <ul>
+                                    {searchResults.artistas.map((item) => (
+                                      <li key={item._id}>
+                                        <Link
+                                          href={`/artistas/${item.slug}`}
+                                          onClick={closeMobileSearch}
+                                          className="flex gap-3 px-3 py-3 active:bg-violet-50/80 transition-colors border-b border-neutral-100"
+                                        >
+                                          <div className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-neutral-100">
+                                            {item.imagenUrl ? (
+                                              <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
+                                            ) : (
+                                              <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
+                                            )}
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-medium text-neutral-900 line-clamp-1">{item.nombre}</p>
+                                            <p className="text-xs text-neutral-500">Artista</p>
+                                          </div>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {searchResults.obras.length > 0 && (
+                                <div>
+                                  <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                                    Obras
+                                  </p>
+                                  <ul>
+                                    {searchResults.obras.map((item) => (
+                                      <li key={item._id}>
+                                        <Link
+                                          href={`/productos/${item.slug}`}
+                                          onClick={closeMobileSearch}
+                                          className="flex gap-3 px-3 py-3 active:bg-violet-50/80 transition-colors border-b border-neutral-100 last:border-0"
+                                        >
+                                          <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-neutral-100">
+                                            {item.imagenUrl ? (
+                                              <Image src={item.imagenUrl} alt="" fill className="object-cover" sizes="48px" />
+                                            ) : (
+                                              <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">—</div>
+                                            )}
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-medium text-neutral-900 line-clamp-2">{item.titulo}</p>
+                                            <p className="text-sm text-neutral-600">
+                                              {item.tieneDescuento ? (
+                                                <>
+                                                  <span className="line-through text-neutral-400">${item.precio.toLocaleString()}</span>
+                                                  {' '}
+                                                  <span className="font-semibold">${item.precioFinal.toLocaleString()}</span>
+                                                </>
+                                              ) : (
+                                                <span className="font-semibold">${item.precio.toLocaleString()}</span>
+                                              )}
+                                            </p>
+                                          </div>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
                               <Link
                                 href={`/productos?q=${encodeURIComponent(searchQuery.trim())}`}
-                                onClick={() => { setSearchOpen(false); setSearchQuery(''); setIsSearchOpen(false); setIsMenuOpen(false) }}
+                                onClick={closeMobileSearch}
                                 className="block border-t border-neutral-100 px-4 py-3 text-center text-sm font-medium text-violet-800 active:bg-violet-50"
                               >
-                                Ver todos los resultados
+                                Ver todas las obras
                               </Link>
                             </>
                           )}

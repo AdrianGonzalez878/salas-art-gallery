@@ -26,13 +26,18 @@ function ExposicionGrid({
 
   return (
     <div className="mb-14 sm:mb-16 last:mb-0">
-      <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-        {titulo}
-      </h2>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+      <div className="flex items-baseline justify-between gap-4 mb-6">
+        <h2 className="font-display text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
+          {titulo}
+        </h2>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+          {exposiciones.length}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
         {exposiciones.map((exposicion, index) => {
           const imagenUrl = exposicion.imagenPrincipal?.asset
-            ? urlFor(exposicion.imagenPrincipal).width(900).height(675).quality(90).url()
+            ? urlFor(exposicion.imagenPrincipal).width(900).height(1200).quality(90).url()
             : null
           return (
             <AnimateInView key={exposicion._id} delay={startDelay + index * 0.05} y={20}>
@@ -50,8 +55,8 @@ export default async function ExposicionesPage() {
   const { enCurso, proximas, finalizadas } = agruparExposiciones(exposiciones)
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="pt-12 pb-8 border-b border-gray-100 bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--background)]">
+      <section className="pt-12 pb-8 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="w-8 h-0.5 bg-amber-400" />
@@ -60,11 +65,12 @@ export default async function ExposicionesPage() {
             </span>
             <div className="w-8 h-0.5 bg-amber-400" />
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="font-display text-3xl sm:text-5xl font-light text-gray-900 tracking-tight mb-2">
             Exposiciones
           </h1>
           <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">
-            Nuestra galería se presenta en distintos espacios. Aquí encontrarás las exposiciones en curso, próximas y recientes.
+            Nuestra galería se presenta en distintos espacios. Aquí encontrarás las exposiciones en
+            curso, próximas y recientes.
           </p>
         </div>
       </section>

@@ -618,6 +618,17 @@ export const artistasQuery = groq`
   }
 `
 
+// Búsqueda de artistas por nombre. $pattern ej. "%term%"
+export const artistasBusquedaQuery = groq`
+  *[_type == "artista" && activo != false && defined(slug.current) && lower(nombre) match $pattern] | order(nombre asc) [0...$end] {
+    _id,
+    nombre,
+    slug,
+    foto,
+    resumen
+  }
+`
+
 export const paginaArtistasQuery = groq`
   *[_type == "paginaArtistas" && activo == true][0] {
     album[] {

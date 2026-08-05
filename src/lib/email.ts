@@ -322,7 +322,7 @@ export async function sendPedidoEnviado(opts: {
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#1a1a1a;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
-    ${emailHeader(logoUrl, 'Tu pedido está en camino')}
+    ${emailHeader(logoUrl, 'Tu obra está en camino')}
 
     <div style="padding:32px;">
       <div style="text-align:center;margin-bottom:28px;">
@@ -331,7 +331,7 @@ export async function sendPedidoEnviado(opts: {
 
       <p style="font-size:16px;margin:0 0 8px;color:#111827;">Hola <strong>${clienteNombre}</strong>,</p>
       <p style="font-size:15px;margin:0 0 24px;color:#374151;">
-        ¡Tu pedido ya está en camino! Pronto llegará a tu puerta.
+        ¡Tu obra ya está en camino! Pronto llegará a tu puerta.
       </p>
 
       <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:4px;margin-bottom:24px;">
@@ -357,7 +357,7 @@ export async function sendPedidoEnviado(opts: {
   await resend.emails.send({
     from: FROM,
     to: clienteEmail,
-    subject: `📦 Tu pedido ${numeroPedido} está en camino — Salas Art Gallery`,
+    subject: `📦 Tu obra ${numeroPedido} está en camino — Salas Art Gallery`,
     html,
   })
 }
